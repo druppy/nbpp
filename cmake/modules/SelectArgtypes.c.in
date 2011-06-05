@@ -1,0 +1,33 @@
+/* The config.h has not been generated yet */
+#cmakedefine NBPP_HAVE_SYS_TYPES_H
+#cmakedefine NBPP_HAVE_SYS_TIME_H
+#cmakedefine NBPP_HAVE_UNISTD_H
+#cmakedefine NBPP_HAVE_SYS_SELECT_H
+#cmakedefine NBPP_HAVE_SYS_SOCKET_H
+
+#ifdef NBPP_HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef NBPP_HAVE_SYS_TIME_H
+# include <sys/time.h>
+#endif
+#ifdef NBPP_HAVE_UNISTD_H
+# include <unistd.h>
+#endif
+#ifdef NBPP_HAVE_SYS_SELECT_H
+# include <sys/select.h>
+#endif
+#ifdef NBPP_HAVE_SYS_SOCKET_H
+# include <sys/socket.h>
+#endif
+#ifdef __STDC__
+extern int select ( ${CUR_ARG1},
+                   ${CUR_ARG234}, ${CUR_ARG234}, ${CUR_ARG234},
+                   ${CUR_ARG5} ); 
+#else
+extern int select ();
+  ${CUR_ARG1} s;
+  ${CUR_ARG234} p;
+  ${CUR_ARG5} t;
+#endif
+int main(){}
