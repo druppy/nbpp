@@ -1,0 +1,68 @@
+This is nb++, a nuts-and-bolts C++ toolkit.
+Copyright (C) 1999-2001 Benjamin Geer, Eduardo J. Blanco
+Copyright (C) 2001 Bo Lorentsen
+=========================================================
+
+
+Where to find nb++
+---------------------
+
+nb++'s web site is http://nbpp.zigzak.net.
+
+
+What's new in this release?
+---------------------------
+
+See the file NEWS.
+
+
+Build instructions
+------------------
+
+The default installation prefix is /usr/local.  To install there, type "./configure; make;
+make install".  To install somewhere else, use the option "--prefix=<path>" with
+"configure".
+
+To run the regression tests, type "make check".
+
+gcc does not yet (as of version 2.95.2) support exceptions in shared libraries on some
+platforms.  We have encountered this problem on HP/UX.  As a workaround, you can use nb++
+as a static library.  When building, use the option "--enable-static-tests" with
+"configure".  For production code, you may also wish to build nb++ without debugging
+information to reduce the size of the executable; use "--disable-debug" with "configure".
+gcc exception handling is known to work with shared libraries on x86 GNU/Linux platforms.
+
+See the file INSTALL for detailed instructions.
+
+
+Documentation
+-------------
+
+The manual is provided in Texinfo format.  If you have Info, type "info nb++" after
+installation to read the manual.  The API documentation is in HTML format, and is
+installed in <prefix>/share/nb++/doc.
+
+
+Platform-specific notes
+-----------------------
+
+GNU/Linux: Programs linked to nb++ must also be linked to pthread.
+
+
+Mailing Lists
+-------------
+
+There are two mailing lists for nb++:
+
+nbpp-announce@lists.sourceforge.net is a low-traffic list for
+announcements of new versions, and related news.  To subscribe, you can either
+go to http://lists.sourceforge.net/mailman/listinfo/nbpp-announce, or send a
+message to nbpp-announce-request@lists.sourceforge.net, with the word SUBSCRIBE
+as the body of the message.
+
+nbpp-devel@lists.sourceforge.net is for discussion with and among the
+developers.  Use this list to report bugs, request features, and ask
+other questions about nb++.  To subscribe, you can either go to
+http://lists.sourceforge.net/mailman/listinfo/nbpp-devel, or send a messae to
+nbpp-devel-request@lists.sourceforge.net, with the word SUBSCRIBE as the body.
+Please read the FAQ at http://nbpp.sourceforge.net before posting.

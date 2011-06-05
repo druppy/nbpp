@@ -1,0 +1,2495 @@
+2004/07/31   Bo Lorentsen <bl@lue.dk>
+
+	* Release 0.7.1
+	* Config file rewrite to have own lexer
+	* Lots of small code fixups
+	
+2003/06/07   Bo Lorentsen <bl@lue.dk>
+
+        * Release 0.7.0 	
+	* Moved header files to the subdir "nb++", to make all header file prefixed by this.
+	* Added a simpler result from regex
+	* Made Time class return real ISO 8601 time strings
+	* Added Curl support in the URL class and the possibility of other schemes
+
+2003/01/28   Bo Lorentsen <bl@lue.dk>
+
+	* Changed the way we start up threads, and makes sure to really keep a ref count
+	* Added a real ThreadPerCommand class, that is'nt a special version of MultiThreader
+	* Added a ThreaderTest in sample
+
+2002/11/14   Bo Lorentsen <bl@lue.dk>
+
+	* Update the exception system, so IOexception contains the proper errno
+	* Update detach to include custom unix streams
+	* Added the tl utility and moved logdef_cnv.py to the utils lib too
+	
+2002/10/29  Bo Lorentsen <bl@lue.dk>
+
+	* Added the Time.hpp class
+	* HTTPserver can have other addresses, without enherit
+	* Detach now redirect child io to /dev/null
+
+2002/10/07  Bo Lorentsen <bl@lue.dk>
+
+	* Added HTTPserver and the URL class
+	* Added nb++.pc
+	* Update nb++ will now compile on gcc 3.2
+
+2002/08/05  Bo Lorentsen <bl@lue.dk>
+	
+	* Added the first draft to the log system
+	* Removed the RefCounter from the Configfile system for simplicity
+	* Changed library version, to differ from the 0.6 release (0.5 -> 0.6)
+	* Added --add-missing to the automake script (GNUmakefile)
+	
+2002/07/22  Bo Lorentsen <bl@lue.dk>
+
+	* added the patches from Christopher Drexler <drexler@informatik.uni-erlangen.de>
+
+2002/03/20  Bo Lorentsen <bl@lue.dk>  --- pending
+	
+	* New reference handler have been added in the RefCount.hpp
+	* Handle.hpp file removed
+	* libtool and automake fixups
+	* Thread classes will be destroyed automaticly on termination, if
+	  not refered.
+
+2001/06/23  Benjamin Geer <benjamin.geer@btinternet.com>
+
+	* Release 0.6.0.
+	* Added changes to Socket (disabled for now) to use non-blocking
+	I/O.
+	* Added Socket::checkForInput() [daniel@jadeb.com].
+	* Added maxThreads parameter to ThreadPool.
+	* Various other small fixes.
+
+1999/12/16  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	Release 0.5.0.
+
+1999/12/12  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* include/ServerSocket.hpp:
+	* include/Socket.hpp:
+	* include/SocketBaseImpl.hpp:
+	* src/ServerSocket.cpp:
+	* src/Socket.cpp:
+	* src/SocketBaseImpl.cpp:
+	Added getFd() to access the file descriptor directly for libc compatibility.
+	[Bernhard Rieder <e9325898@student.tuwien.ac.at>]
+
+1999/12/12  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* include/CommandQueue.hpp:
+	* include/ConfigFile.hpp:
+	* include/Handle.hpp:
+	* include/SignalManager.hpp:
+	Doc fixes.
+
+	* include/CommandLineOptions.hpp:
+	Doc fixes.
+
+1999/12/11  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* README:
+	Changed mailing-list URL and added instructions to subscribe by mail.
+	
+	* doc/nb++.texi:
+	Changed doc to clarify namespace.
+
+	* NEWS:
+	Added some missing classes/functions.
+
+1999/12/11  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* doc/nb++.texi:
+	More small corrections.
+
+	* doc/nb++.texi:
+	A couple more tweaks to the manual.
+
+	* doc/nb++.texi:
+	Changed "reentrant" to "thread-safe".
+
+1999/12/10  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* AUTHORS:
+	* README:
+	Updated contact and list info.
+
+1999/12/04  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Makefile.am:
+	* README:
+	* samples/Makefile.am:
+	* samples/linecount.cpp:
+	Added source-code line-counting program.
+
+1999/12/02  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* support/nb++.spec.in:
+	Corrected package descriptions.
+
+	* doc/nb++.texi:
+	* include/SignalManager.hpp:
+	Minor doc fixes.
+
+	* NEWS:
+	* doc/nb++.texi:
+	Clarified project scope in manual; updated NEWS.
+
+1999/12/02  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* support/nb++.spec.in:
+	Changed documentation directory in spec file.
+
+	* GNUmakefile:
+	* configure.in:
+	* doc/Makefile.am:
+	* Attic/doc/doxygen.config:
+	* doc/doxygen.config.in:
+	* samples/Makefile.am:
+	* samples/regtest:
+	* samples/regtest-data/clientservertest-1.script:
+	* samples/regtest-data/daemontest-1.script:
+	* src/Makefile.am:
+	* support/mdate-sh:
+	Fixed doxygen automake rules.
+	Fixed Makefile.ams and test suite to allow building on a different
+	directory. (ie. srcdir != builddir)
+
+	* src/ServerSocketImpl.cpp:
+	Third argument to accept should be socklen_t.
+
+1999/12/02  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* include/Command.hpp:
+	* include/Daemon.hpp:
+	* include/DaemonBase.hpp:
+	* include/Exception.hpp:
+	* include/Mutex.hpp:
+	* include/NetworkAddressTemplate.hpp:
+	* include/NetworkDaemon.hpp:
+	* include/RWLocker.hpp:
+	* include/SignalManager.hpp:
+	* include/ThreadObserver.hpp:
+	* include/Threader.hpp:
+	Doc fixes.
+
+	* GNUmakefile:
+	* doc/nb++.texi:
+	Automake now sets the version number in the texinfo manual.
+
+1999/12/01  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* include/Command.hpp:
+	* include/CommandLineOptions.hpp:
+	* include/NetworkDaemon.hpp:
+	* include/Runnable.hpp:
+	* include/SignalManager.hpp:
+	* include/ThreadObserver.hpp:
+	Doc fixes.
+
+	* doc/Makefile.am:
+	* doc/doxygen.config:
+	Moved html docs into a subdirectory, doc/html.
+
+	* doc/Makefile.am:
+	* doc/doxygen.config:
+	* doc/nb++.texi:
+	* include/Assert.hpp:
+	* include/Command.hpp:
+	* include/CommandLineOptions.hpp:
+	* include/ConfigFile.hpp:
+	* include/Daemon.hpp:
+	* include/DaemonBase.hpp:
+	* include/Exception.hpp:
+	* include/ExceptionGuard.hpp:
+	* include/Handle.hpp:
+	* include/InetAddress.hpp:
+	* include/Mutex.hpp:
+	* include/NetworkAddress.hpp:
+	* include/NetworkAddressTemplate.hpp:
+	* include/Regex.hpp:
+	* include/RegexResult.hpp:
+	* include/ServerSocket.hpp:
+	* include/SignalManager.hpp:
+	* include/Socket.hpp:
+	* include/SocketBaseImpl.hpp:
+	* include/TempFile.hpp:
+	* include/Thread.hpp:
+	* include/Threader.hpp:
+	* include/UnixAddress.hpp:
+	* include/split.hpp:
+	Preliminary changes for using doxygen.
+
+	* README:
+	Preliminary changes for using doxygen.
+
+1999/11/29  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* README:
+	Added instructions on building with --enable-static-tests and --disable-debug.
+
+1999/11/29  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+	* configure.in:
+	* support/ltmain.sh:
+	Added --disable-debug flag.
+
+1999/11/29  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* NEWS:
+	* README:
+	* acconfig.h:
+	* include/Assert.hpp:
+	* include/Command.hpp:
+	* include/CommandLineOptions.hpp:
+	* include/CommandQueue.hpp:
+	* include/CommandQueueImpl.hpp:
+	* include/CommandThread.hpp:
+	* include/ConfigFile.hpp:
+	* include/Daemon.hpp:
+	* include/DaemonBase.hpp:
+	* include/EventMulticaster.hpp:
+	* include/Exception.hpp:
+	* include/ExceptionGuard.hpp:
+	* include/ForkThreader.hpp:
+	* include/ForkThreaderImpl.hpp:
+	* include/Handle.hpp:
+	* include/InetAddress.hpp:
+	* include/InetAddressImpl.hpp:
+	* include/List.hpp:
+	* include/Makefile.am:
+	* include/Map.hpp:
+	* include/MultiMap.hpp:
+	* include/MultiThreader.hpp:
+	* include/MultiThreaderImpl.hpp:
+	* include/Mutex.hpp:
+	* include/NetworkAddress.hpp:
+	* include/NetworkAddressImpl.hpp:
+	* include/NetworkAddressTemplate.hpp:
+	* include/NetworkDaemon.hpp:
+	* include/RWLocker.hpp:
+	* include/Regex.hpp:
+	* include/RegexImpl.hpp:
+	* include/RegexResult.hpp:
+	* include/RegexResultImpl.hpp:
+	* include/RegexSubResult.hpp:
+	* include/Runnable.hpp:
+	* include/ServerSocket.hpp:
+	* include/ServerSocketImpl.hpp:
+	* include/Set.hpp:
+	* include/SignalManager.hpp:
+	* include/SingleThreader.hpp:
+	* include/SingleThreaderImpl.hpp:
+	* include/Socket.hpp:
+	* include/SocketBaseImpl.hpp:
+	* include/SocketImpl.hpp:
+	* include/TempFile.hpp:
+	* include/TempFileImpl.hpp:
+	* include/Thread.hpp:
+	* include/ThreadImpl.hpp:
+	* include/ThreadObserver.hpp:
+	* include/ThreadPerCommand.hpp:
+	* include/ThreadPerCommandImpl.hpp:
+	* include/ThreadPool.hpp:
+	* include/Threader.hpp:
+	* include/ThreaderImpl.hpp:
+	* include/UnixAddress.hpp:
+	* include/UnixAddressImpl.hpp:
+	* include/Vector.hpp:
+	* include/osdep.hpp:
+	* include/split.hpp:
+	* src/CommandLineOptions.cpp:
+	* src/DaemonBase.cpp:
+	* src/SignalManager.cpp:
+	* src/SocketBaseImpl.cpp:
+	* src/ThreadImpl.cpp:
+	* src/osdep.cpp:
+	Changed NBPLUSPLUS to NBPP in all files for consistency.
+
+1999/11/29  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* configure.in:
+	* samples/Makefile.am:
+	Added --enable-static-tests flags.
+
+1999/11/28  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* include/ExceptionGuard.hpp:
+	* samples/regtest-data/daemontest-1.script:
+	* samples/regtest-data/optiontest-1.script:
+	* src/ExceptionGuard.cpp:
+	More HP/UX fixes.
+
+	* acconfig.h:
+	* configure.in:
+	* src/getopt_long.c:
+	HP/UX fixes.
+
+1999/11/27  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* doc/nb++.texi:
+	Added directory entry to nb++.texi.
+
+	* include/TempFile.hpp:
+	* src/TempFileImpl.cpp:
+	Removed thread ID from temp-file name.
+
+1999/11/27  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	Changed directory structure.
+
+1999/11/26  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Attic/nb++.texi:
+	* doc/nb++.texi:
+	* doc/Makefile.am:
+	* doc/texinfo.tex:
+	* nb++.spec.in:
+	Moved texinfo manual to doc.  Added target to automake & spec.
+
+1999/11/26  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Assert.hpp:
+	* Command.cpp:
+	* Command.hpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandQueueImpl.cpp:
+	* CommandQueueImpl.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* EventMulticaster.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* ExceptionGuard.cpp:
+	* ExceptionGuard.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* ForkThreaderImpl.cpp:
+	* ForkThreaderImpl.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Makefile.am:
+	* Map.hpp:
+	* MultiMap.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* MultiThreaderImpl.cpp:
+	* MultiThreaderImpl.hpp:
+	* Mutex.cpp:
+	* Mutex.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* NetworkDaemon.hpp:
+	* RWLocker.cpp:
+	* RWLocker.hpp:
+	* Regex.cpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexImpl.hpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Set.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* SingleThreaderImpl.cpp:
+	* SingleThreaderImpl.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* Attic/nbpp.texi:
+	* SocketImpl.hpp:
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.cpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPerCommandImpl.cpp:
+	* ThreadPerCommandImpl.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* ThreaderImpl.cpp:
+	* ThreaderImpl.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* configure.in:
+	* nb++.texi:
+	* osdep.cpp:
+	* osdep.hpp:
+	* samples/Foo.hpp:
+	* samples/circular.cpp:
+	* samples/configtest.cpp:
+	* samples/daemontest.cpp:
+	* samples/eventtest.cpp:
+	* samples/hostinfotest.cpp:
+	* split.cpp:
+	* split.hpp:
+	* samples/listtest.cpp:
+	* samples/maptest.cpp:
+	* samples/optiontest.cpp:
+	* samples/recursivemutextest.cpp:
+	* samples/regextest.cpp:
+	* samples/regtest-data/daemontest-1.out:
+	* samples/serversocktest.cpp:
+	* samples/settest.cpp:
+	* samples/socktest.cpp:
+	* samples/splittest.cpp:
+	* samples/tempfiletest.cpp:
+	* samples/threadtest-multi.cpp:
+	* samples/threadtest.cpp:
+	* samples/vectortest.cpp:
+	Renamed the namespace nbpp.  Renamed nbplusplus_config.h -> nb++_config.h.
+	Renamed nbpp.texi -> nb++.texi.
+
+	* nbpp.texi:
+	Added texinfo manual.
+
+1999/11/26  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* acinclude.m4:
+	* configure.in:
+	Changed UCK macro prefix to NBPP.
+
+	* Attic/nbplusplus.spec.in:
+	* Makefile.am:
+	* configure.in:
+	* nb++.spec.in:
+	* samples/Makefile.am:
+	Changed some nbplusplus to nb++.
+
+1999/11/26  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* AUTHORS:
+	* Assert.hpp:
+	* Command.cpp:
+	* Command.hpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandQueueImpl.cpp:
+	* CommandQueueImpl.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* EventMulticaster.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* ExceptionGuard.cpp:
+	* ExceptionGuard.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* ForkThreaderImpl.cpp:
+	* ForkThreaderImpl.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Makefile.am:
+	* Map.hpp:
+	* MultiMap.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* MultiThreaderImpl.cpp:
+	* MultiThreaderImpl.hpp:
+	* Mutex.cpp:
+	* Mutex.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* NetworkDaemon.hpp:
+	* README:
+	* RWLocker.cpp:
+	* RWLocker.hpp:
+	* Regex.cpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexImpl.hpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	* nbplusplus.spec.in:
+	* Attic/ucppkit.spec.in:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Set.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* SingleThreaderImpl.cpp:
+	* SingleThreaderImpl.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.cpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPerCommandImpl.cpp:
+	* ThreadPerCommandImpl.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* ThreaderImpl.cpp:
+	* ThreaderImpl.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* acconfig.h:
+	* configure.in:
+	* osdep.cpp:
+	* osdep.hpp:
+	* samples/Foo.hpp:
+	* samples/Makefile.am:
+	* samples/circular.cpp:
+	* samples/configtest.cpp:
+	* samples/daemontest.cpp:
+	* samples/eventtest.cpp:
+	* samples/hostinfotest.cpp:
+	* samples/listtest.cpp:
+	* samples/maptest.cpp:
+	* samples/optiontest.cpp:
+	* samples/recursivemutextest.cpp:
+	* samples/regextest.cpp:
+	* samples/regtest-data/daemontest-1.out:
+	* samples/serversocktest.cpp:
+	* samples/settest.cpp:
+	* samples/socktest.cpp:
+	* samples/splittest.cpp:
+	* samples/tempfiletest.cpp:
+	* samples/threadtest-multi.cpp:
+	* samples/threadtest.cpp:
+	* samples/vectortest.cpp:
+	* split.cpp:
+	* split.hpp:
+	Renamed the library nb++.
+
+	* Assert.hpp:
+	* ForkThreader.hpp:
+	* MultiThreaderImpl.cpp:
+	* NEWS:
+	* Thread.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* samples/threadtest-multi.cpp:
+	* samples/threadtest.cpp:
+	Changed ThreadPool::push() to ThreadPool::queue(), for consistency with
+	Threader.  Removed the package overview from the doc comments; that
+	material will go in the manual.
+
+1999/11/24  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Attic/Multimap.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandQueueImpl.cpp:
+	* CommandQueueImpl.hpp:
+	* ConfigFile.hpp:
+	* EventMulticaster.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* ForkThreaderImpl.cpp:
+	* ForkThreaderImpl.hpp:
+	* Handle.hpp:
+	* Makefile.am:
+	* MultiMap.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* MultiThreaderImpl.cpp:
+	* MultiThreaderImpl.hpp:
+	* NetworkDaemon.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* SingleThreaderImpl.cpp:
+	* SingleThreaderImpl.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPerCommandImpl.cpp:
+	* ThreadPerCommandImpl.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* ThreaderImpl.cpp:
+	* ThreaderImpl.hpp:
+	Moved some classes into separate files to get them out of the generated
+	documentation.  Renamed Multimap -> MultiMap for consistency.
+
+	* CommandLineOptions.hpp:
+	* DaemonBase.hpp:
+	* NetworkDaemon.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* ThreadObserver.hpp:
+	* ThreadPool.hpp:
+	Removed Socket::getAddress() and ServerSocket::getAddress().  More doc comment fixes.
+
+	* CommandThread.cpp:
+	Fixed exception specification in CommandThread.
+
+	* Command.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ForkThreader.hpp:
+	* MultiThreader.hpp:
+	* NetworkDaemon.hpp:
+	* Runnable.hpp:
+	* SingleThreader.hpp:
+	* Socket.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.hpp:
+	Added and corrected doc comments.
+
+1999/11/24  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile.am:
+	* configure.in:
+	Changed release number.
+
+	* MultiThreader.cpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Moved ThreadPool::cleanUp to destructor.
+
+1999/11/24  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Assert.hpp:
+	* Command.cpp:
+	* Command.hpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* EventMulticaster.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* ExceptionGuard.cpp:
+	* ExceptionGuard.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* Multimap.hpp:
+	* Mutex.cpp:
+	* Mutex.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* NetworkDaemon.hpp:
+	* README:
+	* RWLocker.cpp:
+	* RWLocker.hpp:
+	* Regex.cpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexImpl.hpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Set.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.cpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* osdep.cpp:
+	* osdep.hpp:
+	* split.cpp:
+	* split.hpp:
+	* ucppkit.spec.in:
+	Removed `tiny' from headers. :-)
+
+	* DaemonBase.hpp:
+	* NetworkDaemon.hpp:
+	Minor documentation fixes.
+
+1999/11/24  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* NetworkDaemon.hpp:
+	* samples/daemontest.cpp:
+	Daemon destructors must be called.
+
+	* NetworkDaemon.hpp:
+	Ignore SIGPIPE.
+
+	* ConfigFile.cpp:
+	* Daemon.cpp:
+	* DaemonBase.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadPool.cpp:
+	* split.cpp:
+	* split.hpp:
+	Added missing exception specification & catches.
+
+1999/11/24  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Exception.cpp:
+	* Exception.hpp:
+	* ExceptionGuard.cpp:
+	* ExceptionGuard.hpp:
+	* Makefile.am:
+	* samples/circular.cpp:
+	* samples/configtest.cpp:
+	* samples/daemontest.cpp:
+	* samples/eventtest.cpp:
+	* samples/handletest-main.cpp:
+	* samples/hostinfotest.cpp:
+	* samples/listtest.cpp:
+	* samples/maptest.cpp:
+	* samples/optiontest.cpp:
+	* samples/recursivemutextest.cpp:
+	* samples/regextest.cpp:
+	* samples/serversocktest.cpp:
+	* samples/settest.cpp:
+	* samples/socktest.cpp:
+	* samples/splittest.cpp:
+	* samples/tempfiletest.cpp:
+	* samples/threadtest-multi.cpp:
+	* samples/threadtest.cpp:
+	* samples/vectortest.cpp:
+	Added ExceptionGuard.  Fixed exception specifications in test programs.
+
+1999/11/23  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Command.cpp:
+	* Command.hpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* EventMulticaster.hpp:
+	* Exception.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* Multimap.hpp:
+	* Mutex.cpp:
+	* Mutex.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* NetworkDaemon.hpp:
+	* RWLocker.cpp:
+	* RWLocker.hpp:
+	* Regex.cpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexImpl.hpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Set.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.cpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* samples/daemontest.cpp:
+	* split.cpp:
+	* split.hpp:
+	Added the rest of the missing exception specifications, and added AssertException to most
+	of the specifications.  Constructors that create null objects have throw(exception).
+	Other constructors have at least throw(AssertException, exception).  operator bool() and
+	destructors have throw().  (ucppkit destructors are guaranteed not to throw exceptions;
+	exceptions from user-defined destructors (e.g. in Handle) are ignored.)  Some other
+	methods (e.g. in Runnable) have throw() because it's unlikely that an exception could be
+	handled.  Pure virtual methods that users can override, and that won't necessarily be
+	called by ucppkit classes, have no exception specification; however, exceptions thrown by
+	these methods are likely to be ignored by ucppkit.  Pure virtual methods that are meant to
+	be called only by ucppkit classes can have throw(Exception, exception).
+
+	* Assert.hpp:
+	* Command.cpp:
+	* Command.hpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* DaemonBase.cpp:
+	* DaemonBase.hpp:
+	* EventMulticaster.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* NetworkDaemon.hpp:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* ThreadObserver.cpp:
+	* ThreadObserver.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* samples/daemontest.cpp:
+	Added exception-specifications for most of the classes.  Added error-checking to Thread,
+	and modified error-checking in the daemon classes to handle system exceptions as well
+	as Exception.
+
+1999/11/23  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* samples/daemontest.cpp:
+	* samples/regtest-data/Makefile.am:
+	* samples/regtest-data/daemontest-1.in:
+	* samples/regtest-data/daemontest-1.out:
+	* samples/regtest-data/daemontest-1.script:
+	* samples/regtest-data/optiontest-1.in:
+	* samples/regtest-data/optiontest-1.out:
+	* samples/regtest-data/optiontest-1.script:
+	* samples/socktest.cpp:
+	Added regression test for optiontest and basic (single threaded) regression test for
+	daemontest.
+
+1999/11/23  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* README:
+	* split.hpp:
+	Added split() docs.
+
+1999/11/22  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	* ThreadObserver.cpp:
+	CommandQueue must initialize impl.
+	Fix off-by-one error in CommandThread.
+	Minor change to FSM for more reliability.
+
+	* ThreadObserver.cpp:
+	Change handling of states to be a FSM.  Also, a function canWait() was added
+	to ThreadObserver to check if the thread should wait for commands or exit.
+
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* Makefile.am:
+	* ThreadObserver.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	* samples/splittest.cpp:
+	Change handling of states to be a FSM.  Also, a function canWait() was added
+	to ThreadObserver to check if the thread should wait for commands or exit.
+
+1999/11/22  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* ThreadPool.cpp:
+	Removed CommandQueue::empty(), and made CommandQueue's mutex a Mutex instead
+	of a RecursiveMutex.
+
+	* CommandThread.cpp:
+	* CommandThread.hpp:
+	* Makefile.am:
+	* ThreadObserver.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Added ThreadObserver interface for ThreadPool.  Transferred all thread-pool-management
+	responsibility to ThreadPool, and made CommandThread unaware of ThreadPool.
+
+	* Attic/CommandThreadImpl.cpp:
+	* Attic/CommandThreadImpl.hpp:
+	* Attic/ThreadPoolParams.cpp:
+	* Attic/ThreadPoolParams.hpp:
+	* CommandThread.hpp:
+	* Makefile.am:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Reorganized thread pooling code: added CommandQueue, moved code from ThreadPoolParams
+	into ThreadPool and CommandQueue, added CommandThread proxy, made CommandThread and
+	ThreadPool more independent.
+
+	* CommandQueue.cpp:
+	* CommandQueue.hpp:
+	* CommandThread.cpp:
+	Reorganized thread pooling code: added CommandQueue, moved code from ThreadPoolParams
+	into ThreadPool and CommandQueue, added CommandThread proxy, made CommandThread and
+	ThreadPool more independent.
+
+1999/11/22  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* getopt_long.c:
+	Added getopt_long function.
+
+	* configure.in:
+	Fixed LTLIBOBJS support.
+
+	* samples/regtest-data/Makefile.am:
+	Added settest-1 in/out files.
+
+1999/11/22  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressTemplate.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* UnixAddress.hpp:
+	Gave the Threader hierarchy the same structure as the NetworkAddress
+	hierarchy: ThreaderTemplate, etc.
+
+1999/11/21  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* samples/regtest-data/settest-1.in:
+	* samples/regtest-data/settest-1.out:
+	Fixed erroneous cvs commit.
+
+	* Set.hpp:
+	* samples/settest.cpp:
+	Fixed erroneous cvs commit.
+
+	* Set.hpp:
+	* samples/Makefile.am:
+	* samples/optiontest.cpp:
+	Added settest; fixed optiontest.
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	Changed CommandLineOptions::pad() to take string::size_type.
+
+1999/11/21  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	Changed some ints to unsigned ints.
+
+1999/11/21  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* samples/configtest.cpp:
+	Improved ConfigFile error-checking.  Changed ConfigFile and CommandLineOptions to
+	throw ParseException.  Fixed ConfigFile docs.
+
+1999/11/21  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* configure.in:
+	Added -Wall.
+
+	* CommandLineOptions.cpp:
+	* Makefile.am:
+	* configure.in:
+	* getopt_long.c:
+	* getopt_long.h:
+	Added GNU getopt sources.
+
+1999/11/21  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* samples/configtest.cpp:
+	* samples/optiontest.cpp:
+	* ucppkit.spec.in:
+	Improved formatting in CommandLineOptions::usage().  Added stream constructor and
+	docs to ConfigFile.
+
+1999/11/21  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	Fixed usage printing.
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* samples/optiontest.cpp:
+	Changed CommandLineOptions to support NoArgument, Optional and Required
+	option arguments.
+	Improved error reports.
+
+	* CommandLineOptions.cpp:
+	Added ambiguous option checking.
+
+1999/11/20  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* samples/optiontest.cpp:
+	Avoid using a temporary file for getopt results.
+
+1999/11/20  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Attic/ForkThreadingImpl.hpp:
+	* Attic/MultiThreadingImpl.cpp:
+	* Attic/MultiThreadingImpl.hpp:
+	* Attic/SingleThreadingImpl.cpp:
+	* Attic/SingleThreadingImpl.hpp:
+	* Attic/ThreadPerCommandImpl.cpp:
+	* Attic/ThreadPerCommandImpl.hpp:
+	* Attic/Threading.cpp:
+	* Attic/Threading.hpp:
+	* Makefile.am:
+	* MultiThreader.cpp:
+	* MultiThreader.hpp:
+	* NetworkDaemon.hpp:
+	* SingleThreader.cpp:
+	* SingleThreader.hpp:
+	* TempFile.hpp:
+	* ThreadPerCommand.cpp:
+	* ThreadPerCommand.hpp:
+	* Threader.cpp:
+	* Threader.hpp:
+	* samples/Makefile.am:
+	* samples/daemontest.cpp:
+	* samples/optiontest.cpp:
+	Renamed *Threading -> *Threader, and made a refcounted proxy for each one.
+	Added CommandLineOptions.
+
+	* Attic/ForkThreadingImpl.cpp:
+	* CommandLineOptions.cpp:
+	* CommandLineOptions.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* ForkThreader.cpp:
+	* ForkThreader.hpp:
+	Renamed *Threading -> *Threader, and made a refcounted proxy for each one.
+	Added CommandLineOptions.
+
+	* NetworkDaemon.hpp:
+	Corrected for gcc 2.95.
+
+	* NetworkDaemon.hpp:
+	Documenation fixes.
+
+1999/11/20  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Attic/ForkThreadingImpl.cpp:
+	* Attic/MultiThreadingImpl.cpp:
+	* Attic/Threading.cpp:
+	* Attic/Threading.hpp:
+	* NetworkDaemon.hpp:
+	* samples/daemontest.cpp:
+	Renamed needsCleanUp to isInitialized, and made it available thru the proxy.
+	Changed NetworkDaemon to use new Threading classes.
+	Changed daemontest to dynamically select threading model.
+
+	* Attic/ForkThreadingImpl.cpp:
+	* Attic/ForkThreadingImpl.hpp:
+	* Attic/MultiThreadingImpl.cpp:
+	* Attic/MultiThreadingImpl.hpp:
+	* Attic/SingleThreadingImpl.cpp:
+	* Attic/SingleThreadingImpl.hpp:
+	* Attic/Threading.cpp:
+	* Attic/Threading.hpp:
+	Avoid virtual functions in destructors.
+	Don't doInit() more than once.
+
+	* Attic/ForkThreadingImpl.cpp:
+	* Attic/ForkThreadingImpl.hpp:
+	* Attic/MultiThreadingImpl.cpp:
+	* Attic/MultiThreadingImpl.hpp:
+	* Attic/SingleThreadingImpl.cpp:
+	* Attic/SingleThreadingImpl.hpp:
+	* Attic/Threading.cpp:
+	* Attic/Threading.hpp:
+	Do automatic cleanUp on TheadingImpl destructor if init was called.
+	Made doInit (former init) and cleanUp protected virtual methods.
+
+1999/11/20  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Attic/ForkThreadStrategy.cpp:
+	* Attic/ForkThreadStrategy.hpp:
+	* Attic/ForkThreadingImpl.cpp:
+	* Attic/ForkThreadingImpl.hpp:
+	* Attic/MultiThreadedStrategy.hpp:
+	* Attic/MultiThreadingImpl.cpp:
+	* Attic/MultiThreadingImpl.hpp:
+	* Attic/SingleThreadedStrategy.cpp:
+	* Attic/SingleThreadedStrategy.hpp:
+	* Attic/SingleThreadingImpl.cpp:
+	* Attic/SingleThreadingImpl.hpp:
+	* Attic/ThreadPerCommandImpl.cpp:
+	* Attic/ThreadPerCommandImpl.hpp:
+	* Attic/ThreadPoolStrategy.cpp:
+	* Attic/ThreadPoolStrategy.hpp:
+	* Attic/Threading.cpp:
+	* Attic/Threading.hpp:
+	* Attic/ThreadingStrategy.hpp:
+	* Makefile.am:
+	* samples/daemontest.cpp:
+	Renamed ThreadingStrategy -> Threading, and made it a refcounted proxy for ThreadingImpl.
+	Renamed its derived classes accordingly.  The one that uses a thread pool is now
+	called MultiThreadingImpl; its derived class, which creates a new thread for each command,
+	is now called ThreadPerCommandImpl.  Changed NetworkDaemon to take a Threading argument in
+	its constructor.
+
+1999/11/20  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Attic/ForkThreadStrategy.cpp:
+	* Attic/ForkThreadStrategy.hpp:
+	* Attic/MultiThreadedStrategy.hpp:
+	* Attic/SingleThreadedStrategy.cpp:
+	* Attic/SingleThreadedStrategy.hpp:
+	* Attic/ThreadPoolStrategy.cpp:
+	* Attic/ThreadPoolStrategy.hpp:
+	* Attic/ThreadingStrategy.hpp:
+	* Makefile.am:
+	* NetworkDaemon.hpp:
+	* samples/daemontest.cpp:
+	Changed strategies to be regular classes instead of templates.
+
+	* Assert.hpp:
+	* TempFileImpl.hpp:
+	* split.hpp:
+	Fixed includes. (first osdep.hpp)
+
+1999/11/20  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Command.cpp:
+	* Command.hpp:
+	Added missing methods to Command.
+
+1999/11/19  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Makefile.am:
+	Makefile.am for previous changes.
+
+	* Attic/CommandThreadImpl.cpp:
+	* Attic/CommandThreadImpl.hpp:
+	* Attic/ForkThreadStrategy.hpp:
+	* Attic/MultiThreadedStrategy.hpp:
+	* Attic/SingleThreadedStrategy.hpp:
+	* Attic/ThreadPoolImpl.cpp:
+	* Attic/ThreadPoolImpl.hpp:
+	* Attic/ThreadPoolParams.cpp:
+	* Attic/ThreadPoolParams.hpp:
+	* Attic/ThreadPoolStrategy.hpp:
+	* Attic/ThreadPoolStrategyImpl.hpp:
+	* Command.cpp:
+	* Command.hpp:
+	* NetworkDaemon.hpp:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Renamed and reorganized some things relating to daemons and threads.  The object
+	representing the action to be taken for a connection request is now a Command, in
+	keeping with Design Patterns.  A thread that handles queued Command objects is now
+	a CommandThread.  Since Command is generally useful, it now has a refcounted proxy.
+	A Command that calls a one-argument method is now implemented by a OneArgCommandImpl.
+
+1999/11/19  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile.am:
+	* samples/regtest-data/Makefile.am:
+	Distribution fixes.
+
+	* Attic/ThreadPoolStrategy.hpp:
+	* Attic/ThreadPoolStrategyImpl.hpp:
+	* Makefile.am:
+	Moved ThreadPoolStrategy.hpp auxiliary stuff to ThreadPoolStrategyImpl.hpp.
+
+	* samples/Makefile.am:
+	* samples/daemontest.cpp:
+	* samples/threadtest-multi.cpp:
+	Added daemontest and threadtest-multi.
+
+	* samples/threadtest.cpp:
+	Fix string access race condition.
+
+	* Attic/ThreadPoolImpl.cpp:
+	* ThreadPool.cpp:
+	Avoid busy-wait on cleanUp.
+
+	* Attic/MultiThreadedStrategy.hpp:
+	* Attic/ThreadPoolImpl.cpp:
+	* Attic/ThreadPoolImpl.hpp:
+	* Attic/ThreadPoolParams.cpp:
+	* Attic/ThreadPoolParams.hpp:
+	* Attic/ThreadPoolStrategy.hpp:
+	* Makefile.am:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Added true thread-pool management code.  Now it works with min/max spare servers and
+	max requests processed by thread. (Apache-like)
+
+1999/11/18  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Attic/ThreadPoolImpl.cpp:
+	* Attic/ThreadPoolImpl.hpp:
+	* Attic/ThreadPoolStrategy.hpp:
+	* Makefile.am:
+	* ThreadPool.cpp:
+	* ThreadPool.hpp:
+	Added basic thread pool multi-threading strategy.
+
+	* Attic/ForkThreadStrategy.hpp:
+	* Attic/SingleThreadedStrategy.hpp:
+	* NetworkDaemon.hpp:
+	Added strategy initialization/cleanup functions.
+
+	* Attic/ForkThreadStrategy.hpp:
+	* Attic/SingleThreadedStrategy.hpp:
+	* NetworkDaemon.hpp:
+	Added basic threading strategies.
+
+1999/11/17  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ConfigFile.cpp:
+	* SocketBaseImpl.cpp:
+	Nasty things happen if you don't return a NetworkAddress properly.
+	Ignored eof 'failure' on ConfigFile::load.
+
+1999/11/17  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* NetworkAddressTemplate.hpp:
+	* ServerSocket.hpp:
+	* Socket.hpp:
+	* SocketBaseImpl.hpp:
+	Added explicit to socket constructors.  Removed unused method from SocketBaseImpl.hpp.
+	Minor doc corrections.
+
+1999/11/17  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	Added getPeerAddress and getLocalAddress.
+
+1999/11/16  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Handle.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressTemplate.hpp:
+	Improved upcast from InetAddress/UnixAddress to NetworkAddress.
+
+1999/11/15  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	Added prefix/suffix for the generated filename.
+
+	* ConfigFile.hpp:
+	Throws IOException on save/load (const string& filename) error.
+
+	* ConfigFile.cpp:
+	Throws IOException on save/load (const string& filename) error.
+
+1999/11/14  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* samples/regtest-data/threadtest-1.out:
+	* samples/threadtest.cpp:
+	Made threadtest PASS/FAIL more timing-independant.
+
+1999/11/13  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* samples/regtest-data/tempfiletest-1.out:
+	* samples/tempfiletest.cpp:
+	Fixed permission checking to allow set-uid/set-gid programs to create temporary
+	files on directories accesible only by euid/egid.
+	Fixed tempfiletest.
+
+1999/11/13  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Makefile.am:
+	* RWLocker.cpp:
+	* SocketBaseImpl.hpp:
+	* TempFile.cpp:
+	* TempFile.hpp:
+	* TempFileImpl.cpp:
+	* TempFileImpl.hpp:
+	* samples/Makefile.am:
+	* samples/regtest-data/tempfiletest-1.in:
+	* samples/regtest-data/tempfiletest-1.out:
+	* samples/tempfiletest.cpp:
+	Added TempFile.  Added some comments and error-checking to ConfigFile.  Changed RWLocker
+	to use prefix increment operators.
+
+1999/11/12  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* samples/configtest.cpp:
+	* samples/regtest-data/configtest-1.in:
+	* samples/regtest-data/configtest-1.out:
+	Added findFirstMatch() to allow searching sections for specific name/value pairs.
+	Fixed test to include this functionality.
+
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	Added substr() to RegexResult.
+	Added offset to substr(). (defaults to 0, just as in Regex::match())
+
+1999/11/12  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Multimap.hpp:
+	Added getImpl().
+
+	* samples/regtest-data/Makefile.am:
+	* samples/regtest-data/splittest-1.in:
+	* samples/regtest-data/splittest-1.out:
+	added splittest
+
+	* Makefile.am:
+	* samples/Makefile.am:
+	* samples/splittest.cpp:
+	* split.cpp:
+	* split.hpp:
+	Added Eduardo's split() functions.
+
+1999/11/12  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ConfigFile.cpp:
+	* Regex.hpp:
+	* RegexImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	Added substr() function to RegexSubResult.
+
+1999/11/11  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* samples/serversocktest.cpp:
+	* samples/socktest.cpp:
+	Added getIOStream() method (bgeer).
+	Minor fixes for close() and waitForInput() for new method. (ejbs)
+
+1999/11/11  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* samples/configtest.cpp:
+	* samples/regtest-data/configtest-1.out:
+	Changed configtest to show aliasing.
+
+1999/11/11  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Multimap.hpp:
+	Removed allocator-related stuff, as libstdc++ 2.9.0 doesn't declare them.
+
+1999/11/10  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	Changed ConfigFile to make the patterns static rather than the Regex objects.
+
+	* Multimap.hpp:
+	Added Multimap.
+
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* List.hpp:
+	* Makefile.am:
+	* Map.hpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* Set.hpp:
+	* Vector.hpp:
+	Gave the STL containers virtual destructors.  Added Multimap; made ConfigFile inherit
+	from it.  Made ConfigFile's Regex objects static constants.  Changed Regex and RegexResult
+	to throw AssertException for index-out-of-bounds errors.
+
+1999/11/10  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile.am:
+	* configure.in:
+	* ucppkit.spec.in:
+	Added Redhat spec file.
+
+	* ConfigFile.cpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	Throws a NoSuchElementException if operator[] const doesn't find an item.
+
+	* ConfigFile.cpp:
+	* ConfigFile.hpp:
+	* Makefile.am:
+	* samples/Makefile.am:
+	* samples/configtest.cpp:
+	* samples/regtest-data/Makefile.am:
+	* samples/regtest-data/configtest-1.in:
+	* samples/regtest-data/configtest-1.out:
+	Added ConfigFile and basic tests.
+
+1999/11/09  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Daemon.cpp:
+	* Daemon.hpp:
+	* SignalManager.cpp:
+	* SignalManager.hpp:
+	Fixes for Daemon signal handling.
+	Added SignalEvent, and made SignalHandlerData a nested private struct of
+	SignalManager.
+
+1999/11/09  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	Release 0.4.0.
+
+1999/11/09  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* osdep.cpp:
+	* osdep.hpp:
+	* samples/recursivemutextest.cpp:
+	* samples/serversocktest.cpp:
+	* samples/threadtest.cpp:
+	Changed to usleep() -> reliable_usleep().
+	Test works better under heavy load.
+
+1999/11/08  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Assert.hpp: 
+	* Daemon.cpp: 
+	* Daemon.hpp: 
+	* DaemonBase.cpp: 
+	* DaemonBase.hpp: 
+	* InetAddress.cpp: 
+	* InetAddress.hpp: 
+	* InetAddressImpl.cpp: 
+	* InetAddressImpl.hpp: 
+	* NetworkDaemon.hpp: 
+	* SignalManager.cpp: 
+	Made SignalManager into a singleton.  Removed InetAddress::getLocalHost().
+	Updated the documentation.
+
+1999/11/08  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* NetworkDaemon.hpp:
+	Removed redundant exception handling code.  You should use handleException.
+
+1999/11/05  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* SignalManager.hpp:
+	Fixed failed attempt to make SignalHandlerData a nested class.
+
+	* Daemon.hpp:
+	Comment correction in Daemon.hpp
+
+	* Daemon.hpp: 
+	* DaemonBase.cpp: 
+	* DaemonBase.hpp: 
+	* NetworkDaemon.hpp: 
+	* SignalManager.cpp: 
+	Added more doc comments to daemon classes and SignalManager, and renamed a couple of
+	SignalManager methods.
+
+	* Exception.hpp: 
+	Added using-declaration to Exception.hpp
+
+1999/11/05  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Daemon.cpp: 
+	* Daemon.hpp: 
+	* NetworkDaemon.hpp: 
+	Improved Daemon exception handling.
+	Hid serverSock and fromInetd in NetworkDaemon.
+
+1999/11/04  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile.am:
+	* NetworkDaemon.hpp:
+	Added NetworkDaemon class.
+
+	* Daemon.cpp:
+	* Daemon.hpp:
+	mainLoop() can return false to terminate loop.
+
+	* osdep.hpp:
+	glibc fixes.
+
+	* ServerSocketImpl.cpp:
+	* SocketImpl.cpp:
+	Added socket close to implementation destructor.
+
+	* Exception.cpp:
+	* Exception.hpp:
+	Made toString, getName and getMessage const members.
+
+1999/11/03  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* InetAddressImpl.cpp: 
+	* ServerSocketImpl.cpp: 
+	* SocketBaseImpl.cpp: 
+	* UnixAddressImpl.cpp: 
+	* osdep.hpp: 
+	Avoided C-style casts.  Switched to reinterpret_cast and static_cast as appropiate.
+
+	* InetAddressImpl.cpp: 
+	* InetAddressImpl.hpp: 
+	* NetworkAddressImpl.hpp: 
+	* NetworkAddressTemplate.hpp: 
+	* ServerSocketImpl.cpp: 
+	* UnixAddressImpl.cpp: 
+	* UnixAddressImpl.hpp: 
+	Changed some const sockaddr& to const sockaddr*.
+
+	* DaemonBase.hpp:
+	Fixed documentation.
+	Made detach() virtual. (needed by NetworkDaemon classes)
+
+	* InetAddressImpl.cpp
+	* NetworkAddressImpl.cpp
+	* NetworkAddressImpl.hpp
+	* NetworkAddressTemplate.hpp
+	* ServerSocketImpl.cpp
+	* UnixAddressImpl.cpp
+	Added getNativeFormMaxSize, and fixed ServerSocketImpl::accept.
+
+1999/10/31  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* EventMulticaster.hpp
+	* Exception.cpp
+	* Exception.hpp
+	* Makefile.am
+	* SignalManager.cpp
+	* SignalManager.hpp
+	* configure.in
+	Added signal handling classes.
+
+	* Daemon.cpp
+	* Daemon.hpp
+	* DaemonBase.cpp
+	* DaemonBase.hpp
+	Added basic daemon classes.
+
+1999/10/28  Benjamin Geer  <benjamin.geer@mindspring.com>
+	
+	Release 0.3.1. (tag: release-0-3-1)
+
+1999/10/28  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Handle.hpp
+	* InetAddress.cpp
+	* InetAddressImpl.cpp
+	* Mutex.cpp
+	* Mutex.hpp
+	* osdep.hpp
+	Mutex/Condition variables hold their attribute information.
+	Made gethostbyname_r buffers bigger.
+
+1999/10/27  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* samples/Makefile.am:
+	* samples/hostinfotest.script:
+	* samples/regtest:
+	* samples/regtest-data/clientservertest-1.script:
+	* samples/regtest-data/hostinfotest-1.args:
+	* samples/regtest-data/hostinfotest-1.in:
+	* samples/regtest-data/hostinfotest-1.out:
+	* samples/Makefile.am
+	* samples/regtest-data/Makefile.am
+	Added hostinfotest and clientservertest that were missing.
+
+1999/10/27  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* InetAddres.hpp:
+	* InetAddres.cpp:
+	* InetAddresImpl.hpp:
+	* InetAddresImpl.cpp:
+	* samples/serversocktest.cpp:
+	Added getAnyLocalHost factory method to bind to INADDR_ANY.
+	(Mika Kuoppala <mak@icon.fi>)
+	
+1999/10/27  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ltmain.sh:
+	Changed default libtool script to allow compilation of shared
+	library without debugging, and static library without optimization.
+
+1999/10/26  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* samples/*:
+	* SocketBaseImpl.cpp:
+	* acinclude.m4:
+	* configure.in:
+	* osdep.hpp:
+	* osdep.cpp:
+	* ThreadImpl.cpp
+	* ThreadImpl.hpp
+	Portability changes for HP/UX.
+	Now works on HP/UX too.
+
+	* config.guess:
+	* config.sub:
+	* ltconfig:
+	* ltmain.sh:
+	Upgraded to libtool 1.3.3.
+
+	* Assert.hpp:
+	* EventMulticaster.hpp:
+	* Exception.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* Mutex.hpp:
+	* NetworkAddressImpl.hpp:
+	* RegexImpl.hpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.hpp:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocketImpl.cpp:
+	* Set.hpp:
+	* Socket.cpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* ThreadImpl.hpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* osdep.cpp:
+	All headers and source files include osdep.hpp first of all.
+	osdep.hpp in turn includes ucppkit_config.h first of all.
+
+1999/10/25  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* configure.in:
+	gcc 2.95.1 doesn't compile autoconf tests right, and then produces
+	compile errors.
+
+1999/10/25  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* ChangeLog:
+	* Makefile.am:
+	Added GNU ChangeLog.
+	Change AUTOMAKE_OPTIONS to gnu.
+
+1999/10/25  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Exception.hpp:
+	added explicit to constructors
+	
+	* AUTHORS:
+	Now we can use AUTOMAKE_OPTIONS = gnu. :-)
+
+	* bugs.html:
+	* changelog.html:
+	* index.html:
+	* todo.html:
+	* Makefile.am:
+	got rid of the top-level html files; will replace them with text files.
+	Removed targets for top-level html files that I just removed.  Added
+	_REENTRANT to compile flags.
+
+	* NEWS:
+	The news file is now in standard GNU format.
+
+	* README:
+	updated README
+
+	* samples/README:
+	removed unneccesary README in samples directory.
+
+1999/10/25  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Assert.hpp:
+	* EventMulticaster.hpp:
+	* Exception.hpp:
+	* Handle.hpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* Mutex.hpp:
+	* NetworkAddressImpl.hpp:
+	* RegexImpl.hpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.hpp:
+	* Runnable.hpp:
+	* Set.hpp:
+	* SocketImpl.hpp:
+	* ThreadImpl.hpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* osdep.hpp:
+	All headers now include 'ucppkit_config.h' first of all. [except those
+	whose first include is another library header]
+	Moved _REENTRANT to configure.in.
+	Added NDEBUG to shared library.
+
+	* Makefile.am:
+	* acconfig.h:
+	* configure.in:
+	Moved _REENTRANT to configure.in.
+	Added NDEBUG to shared library.
+
+	* configure.in:
+	Don't change lowercase defines. (like inline, const, size_t, etc)
+
+1999/10/24  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* GNUmakefile:
+	Added a GNUmakefile to help maintainers.
+	Added automatic configure --enable-maintainer-mode.
+	Added 'make dist'.
+
+	* INSTALL:
+	Added standard INSTALL instructions.
+
+	* Makefile.am:
+	* configure.in:
+	Remove $(EXTRA_HEADERS) in distclean only.
+	Fixed location of HTML documentation.
+	'make check' really runs the tests.
+	hostinfotest & clientservertest are missing yet.
+
+	* ServerSocket.cpp:
+	* ServerSocketImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* configure.in:
+	Check for time headers portably.
+
+	* doc/Makefile.am:
+	Fix kdoc path.
+	Removed AUTOMAKE_OPTIONS from Makefile.am in subdirectories.
+	Fixed location of HTML documentation.
+
+	* samples/clientservertest.py:
+	* samples/hostinfotest.py:
+	* samples/regtest.py:
+	* samples/Makefile.am:
+	* samples/clientserver-regtests/test1.in:
+	* samples/clientserver-regtests/test1.out:
+	* samples/event-regtests/test1.in:
+	* samples/event-regtests/test1.out:
+	* samples/handle-regtests/test1.in:
+	* samples/handle-regtests/test1.out:
+	* samples/hostinfo-regtests/test1.in:
+	* samples/hostinfo-regtests/test1.out:
+	* samples/hostinfotest.script:
+	* samples/list-regtests/test1.in:
+	* samples/list-regtests/test1.out:
+	* samples/map-regtests/test1.in:
+	* samples/map-regtests/test1.out:
+	* samples/recursivemutex-regtests/test1.in:
+	* samples/recursivemutex-regtests/test1.out:
+	* samples/regex-regtests/test1.in:
+	* samples/regex-regtests/test1.out:
+	* samples/regtest:
+	* samples/regtest-data/Makefile.am:
+	* samples/regtest-data/Makefile.am:
+	* samples/regtest-data/clientservertest-1.in:
+	* samples/regtest-data/clientservertest-1.out:
+	* samples/regtest-data/eventtest-1.in:
+	* samples/regtest-data/eventtest-1.out:
+	* samples/regtest-data/handletest-1.in:
+	* samples/regtest-data/handletest-1.out:
+	* samples/regtest-data/listtest-1.in:
+	* samples/regtest-data/listtest-1.out:
+	* samples/regtest-data/maptest-1.in:
+	* samples/regtest-data/maptest-1.out:
+	* samples/regtest-data/recursivemutextest-1.in:
+	* samples/regtest-data/recursivemutextest-1.out:
+	* samples/regtest-data/regextest-1.in:
+	* samples/regtest-data/regextest-1.out:
+	* samples/regtest-data/threadtest-1.in:
+	* samples/regtest-data/threadtest-1.out:
+	* samples/regtest-data/vectortest-1.in:
+	* samples/regtest-data/vectortest-1.out:
+	* samples/thread-regtests/test1.in:
+	* samples/thread-regtests/test1.out:
+	* samples/vector-regtests/test1.in:
+	* samples/vector-regtests/test1.out:
+	Changed regression test engine from python to sh.
+	'make check' really runs the tests.
+	hostinfotest & clientservertest are missing yet.
+
+1999/10/23  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* LICENSE:
+	* COPYING:
+	* Makefile:
+	* Makefile.am:
+	* install-sh:
+	* ltconfig:
+	* ltmain.sh:
+	* missing:
+	* mkinstalldirs:
+	* stamp-h.in:
+	Change to automake/autoconf/libtool.
+
+	* Makefile.am:
+	* doc/Makefile.am:
+	Improved doc targets.
+	Added alpha support for samples.
+	Added install & uninstall targets to doc.  Added top-dir 'make docs'.
+	Added doc to distribution.
+
+	* configure.in:
+	Samples/tests are build with make check.
+	Added doc to distribution, need to 'install' it also.
+
+	* samples/Makefile.am:
+	Samples/tests are build with make check.
+
+	* samples//Makefile:
+	* samples/Makefile.am:
+	Added alpha support for samples.
+
+
+1999/10/22  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* List.hpp:
+	* Map.hpp:
+	* Set.hpp:
+	* Vector.hpp:
+	* samples/serversocktest.cpp:
+	Minor fixes to STL wrappers.  Added Set.hpp.
+
+1999/10/19  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	version 0.2.1
+
+	* Makefile:
+	* bugs.html:
+	* changelog.txt:
+	* index.html:
+	* todo.html:
+	Added html status pages.
+
+	* changelog.html:
+	Added changelog.html
+
+	* List.hpp:
+	* Map.hpp:
+	* Vector.hpp:
+	Fixed List, Vector, and Map to work with gcc 2.95.
+
+	* samples/FooCache.cpp:
+	* samples/hostinfotest.cpp:
+	* samples/listtest.cpp:
+	* samples/maptest.cpp:
+	* samples/serversocktest.cpp:
+	* samples/vectortest.cpp:
+	Fixed the samples to work with gcc 2.95.
+
+1999/10/19  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	* InetAddress.cpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* ServerSocketImpl.cpp:
+	* SocketBaseImpl.cpp:
+	* SocketImpl.cpp:
+	* osdep.cpp:
+	* osdep.hpp:
+	Preliminary portability fixes. (use reentrant functions)
+
+1999/10/18  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* doc.txt:
+	* dxxgifs.tex:
+	* exceptions.txt:
+	* memory.txt:
+	* overview.txt:
+	Removed old doc++ files.
+
+1999/10/18  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	Auto-remake object dependencies.
+
+1999/10/17  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* Makefile:
+	* Assert.hpp:
+	* EventMulticaster.hpp:
+	* List.hpp:
+	* Exception.hpp:
+	* Handle.hpp:
+	* InetAddress.hpp:
+	* Map.hpp:
+	* Mutex.hpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressTemplate.hpp:
+	* README:
+	* RWLocker.hpp:
+	* Regex.hpp:
+	* RegexResult.hpp:
+	* RegexSubResult.hpp:
+	* ServerSocket.hpp:
+	* Socket.hpp:
+	* SocketBaseImpl.hpp:
+	* Thread.hpp:
+	* Vector.hpp:
+	Switched from doc++ to kdoc.
+
+	* Makefile:
+	* ReadWriteLocker.cpp:
+	* changelog.txt:
+	* doc.txt:
+	* overview.txt:
+	* EventMulticaster.hpp:
+	* InetAddress.hpp:
+	* Mutex.hpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressTemplate.hpp:
+	* RWLocker.cpp:
+	* RWLocker.hpp:
+	* ServerSocket.hpp:
+	* Socket.hpp:
+	* SocketBaseImpl.hpp:
+	* UnixAddress.hpp:
+	Renamed ReadWriteLocker -> RWLocker and
+	RecursiveReadWriteLocker -> RecursiveRWLocker.
+	Fixed a bunch of things in the documentation.
+
+	* samples/Makefile:
+	* samples/recursivemutex-regtests/test1.in:
+	* samples/recursivemutex-regtests/test1.out:
+	* samples/thread-regtests/test1.out:
+	* samples/threadtest.cpp:
+	Added recursivemutex test to the regression tests.
+
+	* Assert.hpp:
+	* ReadWriteLocker.hpp:
+	Fixed documentation error.
+
+	* doc.txt:
+	* changelog.txt:
+	* overview.txt:
+	* Mutex.hpp:
+	Fixed a few documentation errors.
+
+	* Makefile:
+	* Assert.hpp:
+	* ReadWriteLocker.cpp:
+	* ReadWriteLocker.hpp:
+	* changelog.txt:
+	* EventMulticaster.hpp:
+	* Exception.cpp:
+	* Exception.hpp:
+	* Handle.hpp:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* Mutex.cpp:
+	* Mutex.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* README:
+	* Regex.cpp:
+	* Regex.hpp:
+	* RegexImpl.cpp:
+	* RegexImpl.hpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* RegexSubResult.cpp:
+	* RegexSubResult.hpp:
+	* Runnable.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* Thread.cpp:
+	* Thread.hpp:
+	* ThreadImpl.cpp:
+	* ThreadImpl.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* Vector.hpp:
+	* samples/Makefile:
+	* samples/README:
+	* samples/clientservertest.py:
+	* samples/hostinfotest.py:
+	* samples/regtest.py:
+	* samples/clientserver-regtests/test1.in:
+	* samples/clientserver-regtests/test1.out:
+	* samples/hostinfo-regtests/test1.out:
+	* samples/hostinfotest.cpp:
+	* samples/serversocktest.cpp:
+	* samples/socktest.cpp:
+	Improved the test suite.  Make the header the same on all source
+	files.
+	Added RecursiveReadWriteLocker.
+
+1999/10/17  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	* samples/Makefile:
+	* samples/recursivemutextest.cpp:
+	Added NDEBUG to shared lib.
+	Added RecursiveMutex sample.
+
+	* InetAddressImpl.cpp:
+	* Mutex.cpp:
+	* UnixAddressImpl.cpp:
+	Minor portability fixes.
+
+	* Mutex.cpp:
+	* Mutex.hpp:
+	Fixed nasty bug with RecursiveMutex on wait().
+
+1999/10/16  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	Changed to build a static library with debugging and a shared
+	library without.
+	Updated dependencies.
+
+1999/10/14  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* samples/Makefile:
+	* samples/regtest.py:
+	* samples/Makefile:
+	* samples/regtest.py:
+	* samples/event-regtests/test1.in:
+	* samples/event-regtests/test1.out:
+	* samples/eventtest.cpp:
+	* samples/handle-regtests/test1.in:
+	* samples/handle-regtests/test1.out:
+	* samples/hostinfo-regtests/test1.in:
+	* samples/hostinfo-regtests/test1.out:
+	* samples/hostinfo-regtests/test1.out:
+	* samples/list-regtests/test1.in:
+	* samples/list-regtests/test1.out:
+	* samples/map-regtests/test1.in:
+	* samples/map-regtests/test1.out:
+	* samples/regex-regtests/test1.in:
+	* samples/regex-regtests/test1.out:
+	* samples/thread-regtests/test1.in:
+	* samples/thread-regtests/test1.out:
+	* samples/vector-regtests/test1.in:
+	* samples/vector-regtests/test1.out:
+	Fixed the regression tester so it doesn't make assumptions about
+	where python is located.
+	Added basic regression testing.  All the test programs can now
+	be run with "make test", except for the ones that test sockets;
+	different test programs will be needed in order to regression-test
+	the networking classes.
+
+	* samples/hostinfotest.cpp:
+	Fixed hostinfotest.cpp to work with the regression-test script.
+
+1999/10/14  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	Added address cloning.
+	New accept() method to ServerSocket that clones it's own address
+	to use as the new socket's address buffer.
+
+1999/10/13  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* NetworkAddressImpl.cpp:
+	* RegexResult.cpp:
+	* RegexResult.hpp:
+	* RegexResultImpl.cpp:
+	* RegexResultImpl.hpp:
+	* UnixAddressImpl.cpp:
+	* samples/Makefile:
+	* samples/README:
+	* samples/hostinfotest.cpp:
+	* samples/regextest.cpp:
+	Added InetAddress::getAllByName().
+	Removed RegexResult::getSubResult() (operator [] is fine).
+	Fixed a couple of assertion messages.
+
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* samples/serversocktest.cpp:
+	Fixed a bug in InetAddressImpl::getLocalHost().  The local host
+	has to be stored as an in_addr and a name (string) rather than an
+	InetAddressImpl, because InetAddressImpl now contains a port, but
+	the local address is a singleton, and should be the same regardless
+	of the local port that's requested.
+	Also changed InetAddressImpl::getLocalHost() to use uname() (which
+	is part of POSIX) instead of gethostname() (which isn't).
+
+1999/10/11  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Handle.hpp:
+	* List.hpp:
+	* Map.hpp:
+	* Vector.hpp:
+	Use relative includes instead of absolute.
+	Set object/refpointer to NULL after delete.
+
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* ServerSocketImpl.cpp:
+	* SocketImpl.cpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	Make getNativeForm return sockaddr* instead as sockaddr&.  All
+	networking functions use sockaddr*, and &getNativeForm() looks ugly.
+
+1999/10/08  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* changelog.txt:
+	* doc.txt:
+	* overview.txt:
+	* InetAddress.hpp:
+	* Mutex.hpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressTemplate.hpp:
+	* UnixAddress.hpp:
+	Minor fixes to documentation.
+
+	* ServerSocket.hpp:
+	Fixed Socket docs.
+
+1999/10/08  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* samples/serversocktest.cpp:
+	Fixed the accept problem on ServerSocket.  Now accept stores
+	the address of the client in the network address provided by
+	the caller.
+
+1999/10/06  Eduardo J. Blanco  <ejbs@netlabs.com.uy>
+
+	* Makefile:
+	* InetAddress.cpp:
+	* InetAddress.hpp:
+	* InetAddressImpl.cpp:
+	* InetAddressImpl.hpp:
+	* NetworkAddress.cpp:
+	* NetworkAddress.hpp:
+	* NetworkAddressImpl.cpp:
+	* NetworkAddressImpl.hpp:
+	* NetworkAddressTemplate.hpp:
+	* ServerSocket.cpp:
+	* ServerSocket.hpp:
+	* ServerSocketImpl.cpp:
+	* ServerSocketImpl.hpp:
+	* Socket.cpp:
+	* Socket.hpp:
+	* SocketBaseImpl.cpp:
+	* SocketBaseImpl.hpp:
+	* SocketImpl.cpp:
+	* SocketImpl.hpp:
+	* UnixAddress.cpp:
+	* UnixAddress.hpp:
+	* UnixAddressImpl.cpp:
+	* UnixAddressImpl.hpp:
+	* samples/Makefile:
+	* samples/serversocktest.cpp:
+	* samples/socktest.cpp:
+	Changed network address class structure to provide a flexible
+	framework to develop new address families.
+
+1999/10/04  Benjamin Geer  <benjamin.geer@mindspring.com>
+
+	* doc.txt:
+	* overview.txt:
+	* List.hpp:
+	* Map.hpp:
+	* Mutex.hpp:
+	* Vector.hpp:
+	* Vector.hpp:
+	* samples/Makefile:
+	* samples/maptest.cpp:
+	* samples/vectortest.cpp:
+	* samples/vectortest.cpp:
+	Added List.hpp, samples/listtest.cpp, Map.hpp, and
+	samples/maptest.cpp.
+	Added Vector and vectortest.  Cleaned up the Mutex
+	documentation a little.
+
+	* samples/listtest.cpp:
+	Added samples/listtest.cpp (forgot last time).
+
+	** Imported ucppkit-0.1.6 into CVS.

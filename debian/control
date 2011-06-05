@@ -1,0 +1,35 @@
+Source: nbpp
+Section: libs
+Priority: extra
+Maintainer: Bo Lorentsen <bl@lue.dk> 
+Standards-Version: 3.7.2
+Build-Depends: debhelper (>= 5), cmake, fakeroot, libcurl3-dev|libcurl4-dev, texinfo, texi2html, doxygen 
+
+Package: libnbpp
+Architecture: any
+Section: libs
+Provides: libnbpp
+Depends: ${shlibs:Depends}, libcurl3|libcurl4 
+Description: nb++ is a nuts-and-bolts C++ toolkit. It includes classes 
+ for basic operating-system features such as sockets, threads and regular 
+ expressions, along with threading strategies, a framework for writing 
+ daemons, and tools for reference counting and event dispatching.  Special
+ attention has been given to thread safety.
+
+Package: libnbpp-doc
+Architecture: any
+Section: libs
+Provides: libnbpp-doc
+Description: Contain developer docucumentation for the nb++ library
+ 
+Package: libnbpp-dev
+Architecture: any
+Section: libdevel
+Provides: libnbpp-dev
+Depends: libc6-dev, libssl-dev, libnbpp (= ${Source-Version})
+Description: This package contains the static libraries, header files 
+ and documentation necessary for development of programs that will use 
+ the nb++ library.
+ .
+ You should install this package if you need to develop programs which
+ will use the nb++ library.  You'll also need to install the nb++.

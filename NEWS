@@ -1,0 +1,85 @@
+New in 0.6.0, 2001-06-23:
+* New Socket API (disabled for now), using non-blocking I/O.
+* ThreadPool now has maxThreads parameter.
+* Minor bug fixes.
+
+New in 0.5.0, 1999-12-16:
+* Command and CommandQueue.
+* Threading strategies.
+* MultiMap.
+* ConfigFile.
+* CommandLineOptions.
+* Exception specifications.
+* ExceptionGuard.
+* TempFile.
+* split family of functions.
+* Removed unsafe thread cancellation.
+* Various small interface changes.
+* Bug fixes in test programs.
+* A texinfo manual.
+* Switched to Doxygen for generated API docs.
+* Added a program that tests lots of threads.
+* Reorganized source directories.
+* Various other fixes.
+
+New in 0.4.0, 1999-11-09:
+* Classes for dispatching signals.
+* Base classes for daemons.
+
+New in 0.3.1, 1999-10-28:
+* Everything is now really reentrant.
+* Libtool is now used to build the package.
+* Python test scripts have been replaced with shell scripts.
+* Portability wrappers for platform-dependent system calls.
+* Support for HP-UX is mostly complete.
+* Added InetAddress::getAnyLocalHost().
+* Various bug fixes.
+
+New in 0.2.1, 1999-10-18:
+* Fixed incompatibilities with gcc 2.95.1.
+
+New in 0.2, 1999-10-17:
+* Fixed a bug in RecursiveMutex, and added a test program for it.
+* Switched to kdoc for HTML documentation.
+
+New in 0.1.8, 1999-10-16:
+* Added RecursiveRWLocker.
+* Improved the test suite.
+* Changed the Makefile to make both shared (production) and static (development)
+libraries.
+
+New in 0.1.7, 1999-10-08:
+* Many changes to the networking classes.  Added UnixAddress, and
+restructured things to facilitate adding other types of addresses.
+
+New in 0.1.6, 1999-10-03:
+* Added wait(), notify(), and notifyAll() to Mutex.
+* Reimplemented RWLocker to use this feature.
+* Renamed the lock classes again.
+* Changed Assert() back into a function.
+* Added a DEBUG macro.
+
+New in 0.1.5, 1999-10-03:
+* Added RecursiveMutex.
+* Changed Assert() to a macro.
+
+New in 0.1.4, 1999-10-02:
+* Changed the interfaces for locks.
+* Fixed a bug in EventMulticaster.
+
+New in 0.1.3, 1999-10-02:
+* Fixed a memory leak in Handle.
+
+New in 0.1.2, 1999-10-01:
+* Fixed a race condition in Handle.
+* Changed semaphores to mutexes for exclusive locks.
+* Changed the license to LGPL.
+
+New in 0.1.1, 1999-10-01:
+* Put everything in a namespace.
+* Removed exception specifications and checks for null objects.
+* Added Assert().
+* Made use of const more consistent.
+
+New in 0.1.0, 1999-09-30:
+* First working development version.

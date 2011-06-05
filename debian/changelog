@@ -1,0 +1,48 @@
+nbpp (0.7.5-1) unstable; urgency=low
+
+  * Add SMTP client classes
+
+ -- Bo Lorentsen <bl@lue.dk>  Tue, 04 Jan 2011 15:40:02 +0100
+
+nbpp (0.7.4-1) unstable; urgency=low
+
+  * add wait with timeout for the lutex lock
+
+ -- Bo Lorentsen <bl@lue.dk>  Mon, 22 Nov 2010 18:17:10 +0100
+
+nbpp (0.7.3-2) unstable; urgency=low
+
+  * make it possible to list http header elements
+
+ -- Bo Lorentsen <bl@lue.dk>  Fri, 05 Nov 2010 15:24:12 +0100
+
+nbpp (0.7.3-1) unstable; urgency=low
+
+  * HTTP 1.1 RFC2616 added the HTTPServer
+
+ -- Bo Lorentsen <bl@lue.dk>  Wed, 15 Sep 2010 10:52:06 +0200
+
+nbpp (0.7.2-1) unstable; urgency=low
+
+  * Now build using g++ 4.3
+
+ -- Bo Lorentsen <bl@lue.dk>  Mon, 27 Apr 2009 00:00:46 +0200
+
+nbpp (0.7.1-2) unstable; urgency=low
+
+  * All building are now performed by cmake
+
+ -- Bo Lorentsen <bl@lue.dk>  Tue, 27 Mar 2007 12:30:54 +0200
+
+nbpp (0.7.1-1) unstable; urgency=low
+
+  * Config file rewrite to have own lexer
+  * Lots of small code fixups
+
+ -- Bo Lorentsen <bl@lue.dk>  Sat, 31 Jul 2004 15:00:00 +0200
+
+nbpp (0.7.0-1) unstable; urgency=low
+
+  * First time packing for dpkg.
+
+ -- Bo Lorentsen <bl@lue.dk>  Fri, 4 Apr 2003 15:40:00 +0200

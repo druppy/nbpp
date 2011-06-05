@@ -1,0 +1,7 @@
+Makefile.in
+Makefile
+config.h.in
+config.h
+nb++_config.h
+stamp-h
+.exrc

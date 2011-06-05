@@ -1,0 +1,7 @@
+Makefile
+Makefile.in
+*.html
+nb++.info
+version.texi
+stamp-vti
+doxygen.config

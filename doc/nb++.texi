@@ -1,0 +1,786 @@
+\input texinfo   @c -*-texinfo-*-
+@c %**start of header
+@setfilename nb++.info
+@settitle nb++
+@setchapternewpage odd
+@c %**end of header
+
+@dircategory Libraries
+@direntry
+* nb++: (nb++).               A nuts-and-bolts C++ toolkit.
+@end direntry
+
+@ifinfo
+This document describes nb++, a nuts-and-bolts C++ toolkit.
+     
+Copyright @copyright{} 2003 Benjamin Geer, Eduardo J. Blanco and Bo Lorentsen
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries a copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that
+the section entitled ``Copying'' are included exactly as in the
+original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this
+one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+@end ifinfo
+
+@titlepage
+@title nb++
+@author Benjamin Geer
+@author Eduardo J. Blanco
+@author Bo Lorentsen
+
+@c  The following two commands
+@c  start the copyright page.
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} 2003 Benjamin Geer, Eduardo J. Blanco and Bo Lorentsen
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided also that
+the section entitled ``Copying'' is included exactly as in the
+original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this
+one.
+
+Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+@end titlepage
+
+@contents
+
+@ifnottex
+@node    Top,       Introduction, ,         (dir)
+@comment node-name, next,         previous, up
+@top nb++
+
+nb++ is a nuts-and-bolts C++ toolkit.
+
+@include version.texi
+
+This manual documents version @value{VERSION} of nb++.
+@end ifnottex
+
+@menu
+* Introduction::            nb++'s purpose.
+* Copying::                 Your rights.
+* Design::                  C++ as used in nb++.
+* Overview::                A tour of nb++.
+
+* Class Index::
+* Function Index::
+* Concept Index::
+
+@detailmenu
+--- Detailed Node Listing ---
+
+Design
+
+* Namespace::               The nbpp namespace.
+* Memory Management::       Handles and proxies.
+* Exceptions::              How nb++ uses exceptions.
+
+Overview
+
+* Events::                  Synchronous messaging.
+* Threads::                 Writing multi-threaded programs.
+* Locks::                   Synchronising threads.
+* Multi-threaded Design::   Giving tasks to threads.
+* Threading Strategies::    Selecting a threading strategy at run time.
+* Sockets::                 Client and server sockets.
+* Daemons::                 A framework for writing daemons.
+* URL::                     The URL class and its usage.
+* HTTPServer::              The build in http server.
+* Collections::             Deprecated: Reference-counted wrappers for STL collections.
+* Text Searches::           Regular expressions and @code{split()}.
+* Configuration::           Config files and command-line options.
+* Log::                     The nb++ language neutral log system.
+
+@end detailmenu
+@end menu
+
+@node    Introduction, Copying, Top,      Top
+@comment node-name,    next,    previous, up
+@chapter Introduction
+
+nb++ is intended to simplify tasks that are common to many types of
+C++ applications.  It contains the following types of components:
+
+@itemize @bullet
+@item Structures that facilitate the use of basic operating-system
+features, such as sockets, Url's, http server, threads, logging, basic string
+manipulation and regular expressions.
+
+@item General-purpose C++ tools, such as a smart pointer, threader model 
+and an event dispatcher.
+
+@item Tools that support common Unix idioms, such as command-line
+options and configuration files.
+@end itemize
+
+Except where noted in the API documentation, functions and methods in
+nb++ are thread-safe, in the same manner as the C++ stdlib is thread safe.
+
+@node     Copying,    Design, Introduction, Top
+@comment  node-name,  next,   previous,     up
+@chapter Copying
+
+nb++ is released under the GNU Lesser General Public License (LGPL),
+which accompanies it.
+
+The following is intended to clarify the application of section 5 of the
+LGPL to nb++: in our view, including material from nb++'s header files
+in a ``work that uses the library'' does not cause the work to be a
+derivative of nb++.
+
+@node     Design,    Overview, Copying,   Top
+@comment  node-name, next,     previous,  up
+@chapter Design
+
+nb++ uses certain C++ techniques in a consistent way.
+
+@menu
+* Namespace::                 The nbpp namespace.
+* Memory Management::         Handles and proxies.
+* Exceptions::                How nb++ uses exceptions.
+@end menu
+
+@node     Namespace, Memory Management, Design,    Design
+@comment  node-name, next,              previous,  up
+@section Namespace
+@cindex Namespaces
+
+All nb++ classes and functions are in the namespace @code{nbpp}.  We
+suggest that you use using-declarations to include the names you need.
+If you use a using-directive, you'll get a lot of names that you don't
+need.
+
+@node     Memory Management, Exceptions, Namespace, Design
+@comment  node-name,         next,       previous,  up
+@section Memory Management
+@cindex Memory management
+
+Most of the classes in nb++ are reference-counted; the API documentation
+indicates which ones are and aren't.  Use the reference-counted objects
+as automatic variables, but they are allocated as normal heap elements
+but they all need to enherite from the RefCounted base class to be used af
+ref counted objects.
+
+This is somewhat differant from the last nb++ release, as this was able to 
+take any heap allocated element, but easly could miss the reference count if
+passed around without much care. Hopefully this "new way" of doing it will 
+couse less problems.
+
+@cindex Reference counting
+
+For many of the reference-counted classes, the default constructor
+can't construct a usable object.  However, a default constructor is
+given so that you can have uninitialised variables of these classes;
+it creates a @dfn{null object}, which contains little more than a null
+pointer.  If you try to use a null object, a segmentation fault will
+probably result.  You can tell whether a reference-counted nb++ object
+is null by converting it to a @code{bool}; the result will be true if
+the object is initialised.  One way to do this is to use the
+@code{Assert()} function provided, e.g.:
+
+@findex Assert
+@cindex Null objects
+@cindex Assertions
+
+@example
+class Foo
+@{
+    InetAddress addr;
+
+public:
+    // ...
+
+    void f()
+    @{
+        Assert(addr, AssertException("addr not initialised"));
+        // ...
+    @}
+@};
+@end example
+
+@tindex AssertException
+
+The API documentation indicates which objects have default constructors
+that create null objects.
+
+Reference counting is implemented using a thread-safe @code{Handle}
+template.  You may find it convenient to use @code{Handle} for your own
+classes.  For example:
+
+@tindex Handle
+
+@example
+class Foo : public RefCounted @{ ... @};
+
+typedef RefHandle<Foo> FooHandle;
+
+FooHandle h()
+@{
+    return FooHandle(new Foo());
+@}
+@end example
+
+Another approach is to encapsulate the @code{RefHandle} objects in proxy
+classes; this is the approach used in nb++.
+
+@cindex Proxies
+
+Note that if two objects have @code{RefHandle} objects that point to each
+other, neither object's reference count can reach zero.  See the sample
+program @file{samples/circular.cpp} for an example.
+
+@node     Exceptions, , Memory Management, Design
+@comment  node-name,  next,  previous,          up
+@section Exceptions
+@cindex Exceptions
+
+nb++ uses its own hierarchy of exceptions, derived from a base class
+called @code{Exception}; they are all defined in the file
+@file{Exception.hpp}.  Any @code{Exception} can produce a string
+representation of itself, which includes its fully-qualified class
+name and a detail message.  Whenever possible, detail messages are the
+ones provided by the operating system.
+
+@tindex Exception
+
+Most functions does not have any exception specifications, as nb++ had before.
+This is the normal pracis used by C++, and it seem like a nice idear to stick 
+to this, exept for some few function and most for the destructors.
+
+A class called @code{ExceptionGuard} is provided to prevent unexpected
+exceptions from terminating the program.  If you instantiate an
+@code{ExceptionGuard} at the beginning of @code{main()}, any unexpected
+exceptions will be rethrown as @code{UnexpectedException}, which is
+derived from @code{AssertException}.
+
+@cindex Unexpected exceptions
+@tindex ExceptionGuard
+@tindex UnexpectedException
+@tindex AssertException
+
+@node     Overview,   Class Index,  Design,    Top
+@comment  node-name,  next,         previous,  up
+@chapter Overview
+
+This chapter provides a quick overview of the tools provided in nb++,
+and some tips on their use.  For more details, see the API
+documentation.
+
+@menu
+* Events::                  Synchronous messaging.
+* Threads::                 Writing multi-threaded programs.
+* Locks::                   Different kinds of locks.
+* Multi-threaded Design::   Giving tasks to threads.
+* Threading Strategies::    Selecting your program's threading strategy at run-time.
+* Sockets::                 Client and server sockets.
+* Daemons::                 A framework for writing daemons.
+* URL::                     URL handler classes.
+* HTTPServer::              A small and handy web server.
+* Collections::             Deprecated collections
+* Text Searches::           Regular expressions and other string manipulation.
+* Configuration::           Configuration files and command-line options.
+* Log::                     A log file system.
+
+@end menu
+
+@node     Events,     Threads, Overview, Overview
+@comment  node-name,  next,    previous, up
+@section Events
+@cindex Events
+
+@code{EventMulticaster} dispatches messages (@dfn{events}) to objects
+that are registered as being interested in them (@dfn{listeners}).
+Since @code{EventMulticaster} is a template, the listeners and event
+objects don't have to be of any particular type;
+@code{EventMulticaster::sendEvent()} takes a pointer to method, and
+calls that method on each listener, passing it the event object
+provided.  See @file{samples/eventtest.cpp} for sample code.
+
+@tindex EventMulticaster
+@cindex Event listeners
+@cindex Listeners
+
+@code{SignalManager} uses an @code{EventMulticaster} to allow objects to
+receive operating-system signals synchronously.  A signal-handler object
+needs to implement the @code{SignalHandler} interface, so it can receive
+@code{SignalEvent} objects.  @code{SignalManager} collects signals as
+they are received; when you call its @code{deliver()} method, it
+delivers them to the registered handler objects.  See the source code
+for the classes @code{DaemonBase} and @code{Daemon} for an example.
+
+@cindex Signals
+@tindex SignalManager
+@tindex SignalHandler
+@tindex SignalEvent
+
+@node     Threads,    Locks, Events,   Overview
+@comment  node-name,  next,  previous, up
+@section Threads
+@cindex Threads
+
+To start a new thread, you need two objects: a @code{Thread} and a
+@code{Runnable}.  @code{Runnable} is an interface that contains one pure
+virtual method, @code{void run() throw()}.  For each thread, you need to
+provide an object derived from @code{Runnable} to the constructor of a
+@code{Thread}.  When @code{Thread::start()} is started,
+@code{Runnable::run()} is called in the new thread; when
+@code{Runnable::run()} returns, the thread can no longer be used.
+
+@tindex Thread
+@tindex Runnable
+
+Often, it's convenient for the @code{Runnable} to encapsulate the
+@code{Thread}.  For example:
+
+@example
+..
+
+class MyThread : public Runnable
+@{
+public:
+    void run() throw() @{ /* .. do some hairy stuf . */ @}
+@};
+
+Thread thread( new MyThread());
+
+thread.start();
+
+@end example
+
+Low-level thread cancellation is not provided, because destructors
+cannot be called when a thread is cancelled.  To stop a thread safely,
+you can set a boolean variable that it checks from time to time.
+
+The Runnable is refcounted, so the thread will not stop even if the 
+Thread object that startet the runnable object is destroyed. This makes
+it possible to start a thread without keeping account of its doing and 
+donts. 
+
+@cindex Thread cancellation
+
+@node     Locks,     Multi-threaded Design, Threads,  Overview
+@comment  node-name, next,                  previous, up
+@section Locks
+@cindex Locks
+@cindex Thread synchronisation
+
+nb++ provides several ways to synchronise threads.  The simplest
+approach is to use a @code{Mutex}.  Typically, an object will have a
+@code{Mutex} as a private member variable.  You cannot lock or unlock a
+@code{Mutex} directly; you must use a @code{Lock} object as an automatic
+variable.  For example:
+
+@tindex Mutex
+@tindex Lock
+
+@example
+...
+
+class Foo
+@{
+public:
+    void bar() throw(AssertException, exception)
+    @{
+        Lock lock(mutex);
+        baz();
+    @}
+
+    void baz() throw(AssertException, exception)
+    @{
+        // ...
+    @}
+
+private:
+    Mutex mutex;
+@};
+...
+@end example
+
+The reason for this is that if @code{baz()} throws an exception, the
+destructor of the @code{Lock} will unlock the @code{Mutex}.
+
+A @code{Mutex} cannot be used in a recursive method.  Nor can it be used
+in class @code{Foo} if @code{baz()} also acquires the lock.  In these
+situations, you must use a @code{RecursiveMutex}.
+
+@tindex RecursiveMutex
+
+In many situations, it's desirable to allow multiple threads to read an
+object at the same time for maximum efficiency, but to give exclusive
+access to any thread that needs to modify the object.  You can do this
+with an @code{RWLocker}, which is locked and unlocked using
+@code{ReadLock} and @code{WriteLock} objects.  See
+@file{samples/threadtest.cpp} for an example.  For recursive methods or
+multiple successive locks, you must use a @code{RecursiveRWLocker}.
+
+@tindex RWLocker
+@tindex ReadLock
+@tindex WriteLock
+@tindex RecursiveRWLocker
+
+@node     Multi-threaded Design, Threading Strategies, Locks,     Overview
+@comment  node-name,             next,                 previous,  up
+@section Multi-threaded Design
+@cindex Multi-threaded design
+
+Often, a thread needs to give tasks to one or more other threads on a
+regular basis.  This can be accomplished by encapsulating a task in an
+object, using the Command design pattern.  A @code{Command} has one
+public method, @code{execute()}.  For ideas on how to use this pattern,
+see @cite{Design Patterns}, by Gamma et al.  The @code{Command} class in
+nb++ is a reference-counted proxy for a @code{CommandImpl}; to make
+your own @code{Command}, derive a class from @code{CommandImpl}, and
+pass it to the constructor of @code{Command}.  One implementation is
+provided: @code{OneArgCommandImpl}, a template whose @code{execute()}
+method calls a pointer to method on some other object, passing it one
+argument.
+
+@cindex Command design pattern
+@tindex Command
+@tindex CommandImpl
+@tindex OneArgCommandImpl
+
+Usually, @code{Command} objects are queued until some thread gets around
+to executing them.  This can be done with a @code{CommandQueue} object,
+which provides blocking and nonblocking methods for getting a
+@code{Command} from the queue.
+
+@tindex CommandQueue
+
+If you need a thread that does nothing but check a @code{CommandQueue}
+repeatedly and execute any commands that it finds, you can use a
+@code{CommandThread}.  @code{CommandThread} reports periodically on its
+current state (idle, waiting, working, or finished); you'll need to
+provide an object that implements @code{ThreadObserver} so the
+@code{CommandThread} can do this.
+
+@tindex CommandThread
+@tindex ThreadObserver
+
+To maintain a pool of threads that all read commands from the same
+queue, you can use a @code{ThreadPool}.  It maintains the threads and
+the queue, and can add or remove threads as needed, so that the number
+of idle threads stays within limits you specify.
+
+@tindex ThreadPool
+
+@node     Threading Strategies, Sockets, Multi-threaded Design, Overview
+@comment  node-name,            next,    previous,              up
+@section Threading Strategies
+@cindex Threading strategies
+
+Sometimes it's difficult to know what sort of threading model will be
+best for your program.  You may wish to start with a single-threaded
+model, and perhaps try a different model later on.  The @code{Threader}
+class allows you to select a threading strategy at run time.  Its
+@code{queue()} method queues a @code{Command} for execution according to
+the strategy of the type of @code{Threader} you've chosen.  There are
+several varieties:
+
+@tindex Threader
+
+@itemize @bullet
+@item @code{SingleThreader} executes the command immediately, in the
+same thread.
+@tindex SingleThreader
+
+@item @code{ForkThreader} spawns a child process to execute the
+command. (be aware the common data is no longer shared)
+@tindex ForkThreader
+
+@item @code{ThreadPerCommand} executes each command in a new thread.
+@tindex ThreadPerCommand
+
+@item @code{MultiThreader} delegates commands to a @code{ThreadPool}.
+@tindex MultiThreader
+@end itemize
+
+Since these are reference-counted proxies, they're not actually
+subclasses of @code{Threader} (the generic object), but for most
+purposes, they behave as if they are; you can instantiate a
+@code{MultiThreader} and convert it implicitly to a @code{Threader}, and
+it will still act as a @code{MultiThreader}.
+
+@cindex Proxies and conversions
+
+@node     Sockets,    Daemons, Threading Strategies, Overview
+@comment  node-name,  next,    previous,             up
+@section Sockets
+@cindex Sockets
+
+nb++ includes classes that represent Berkeley stream sockets and
+network addresses.
+
+Addresses are represented by @code{NetworkAddress} and its subtypes,
+@code{InetAddress} and @code{UnixAddress}.  Again, these are not really
+derived classes, but they behave as if they are.
+
+@cindex Addresses
+@cindex Network addresses
+@tindex NetworkAddress
+@tindex InetAddress
+@tindex UnixAddress
+
+To connect to a socket as a client, use a @code{Socket}.  This class
+provides input and output streams.  When receiving input or sending
+output, you should call @code{Socket::waitForInput()} or
+@code{Socket::waitToSend()} from time to time; these methods will throw
+a @code{SocketException} if the connection is lost.  See
+@file{samples/socktest.cpp} for an example.
+
+@tindex Socket
+@tindex ServerSocket
+@tindex SocketException
+
+To bind a server to a socket and wait for connections, use a
+@code{ServerSocket}; each connection is returned as a @code{Socket}.
+See @file{samples/serversocktest.cpp} for an example.  However, you
+don't need to write your server from scratch; nb++ provides a
+framework for daemons, described in the next section.
+
+@node     Daemons,    URL,         Sockets,  Overview
+@comment  node-name,  next,        previous, up
+@section Daemons
+@cindex Daemons
+
+The @code{DaemonBase} class provides a simple framework for daemons.
+It takes care of detaching the daemon process from the controlling
+terminal, then calls a pure virtual method, @code{run()}.
+
+@tindex DaemonBase
+
+If your daemon runs in an infinite loop, and handles SIGHUP, SIGTERM,
+and SIGINT in the usual way, you can derive it from @code{Daemon}.  You
+just need to implement the pure virtual methods @code{mainLoop()}, which
+is called repeatedly until SIGTERM is received, and @code{reload()},
+which is called when SIGHUP is received. @code{Daemon} uses
+@code{SignalManager} to handle signals synchronously.
+
+@cindex Signals
+@tindex SignalManager
+
+Daemons that listen for connections on a socket can be derived from
+@code{NetworkDaemon}.  In this case, your main task is to implement
+@code{handleConnection()}, which is called when a connection is
+received.  The constructor of @code{NetworkDaemon} takes a
+@code{Threader}, allowing you to select its threading model at run
+time.  It can be run either as a stand-alone program, or by
+@code{inetd}; if it's run by inetd, it detects this automatically and
+handles only one connection, without using the Threader.  See
+@file{samples/daemontest.cpp} for an example.
+
+@tindex NetworkDaemon
+@tindex Threader
+@cindex inetd
+
+@node     URL,        HTTPServer, Daemons,              Overview
+@comment  node-name,  next,       previous,             up
+@section URL
+@cindex URL
+
+It is possible to make a client connection using the URL class that 
+understand and uses normal URL strings. This can be used to gain a 
+flexible connection to any internet service or file, using a URL.
+
+If we need a connection to a webserver, and get the content of the 
+site we could do something like this :
+
+@example 
+...
+    URL url( "http://www.sunsite.dk" );
+
+    URLConnectionHndl conn = url.getConnection();
+
+    conn->setOutputStream( cout );
+    conn->perform();
+
+...
+@end example
+
+This is basicly it, first we make an URL class and the syntax will be checks
+and if any error occure an @code{URLException}. Then we ask the URL for a 
+@code{URLConnection} anf if the url scheme is known to nb++ it will return  
+a connection. 
+
+The connection will only make one request if the function @code{perform} is 
+called, and to make sure the output is send to our @code{cout} stream, we 
+set it as the current output stream.
+
+Vola, if the network is working and the danish sunsite.dk site is up, we will 
+get the content of there top @file{index.html}.
+
+@tindex curl 
+
+Most of the abilities of the URL connections, will come from a nb++ curl wrapper, 
+that will take care of http, shttp and ftp. 
+
+It is also possible to make a new custom scheme and register this along the existing 
+ones, but this is not within the scope of this docement.
+
+@node HTTPServer, Collections, URL, Overview
+@section HTTPServer
+@cindex HTTPServer
+
+This is a special Inet Daemon that takes care of simple HTTP 0.9 and 1.0 
+communication. This is not an alternertive to Apache or others, but a nice 
+tool to build in a simple protocol for easy data access, remode config or 
+others things like this.
+
+The basic idea is to define one or several handlers, and register these to 
+the HTTPServer, together with a filter telling the server when to call
+this handler. 
+
+This example shows how to make a handler that takes care of all request
+for files in @file{/files} on the server, using only the @file{html} 
+extension.
+
+@example
+...
+
+HTTPServer server( "testserver" );
+HTTPFilter filter;
+
+filter.addPath( "/files" );
+filter.addExt( "html" );
+
+server.addHandler( filter, new MyHandler());
+server.run();
+
+...
+@end example
+
+@tindex HTTPRequestHandler
+
+The handler object need to enherit from the @code{HTTPRequestHandler}, but 
+it only need to impliment the @code{handle} member function. The handler is
+reference counted, and may only be heap allocated.
+
+@tindex HTTPRequest 
+
+The @code{handle} function are only given one argument, and thats a HTTPRequest
+instance. This contains all the parsed mime header elements (if any) and, like
+the @code{Socket} class it has both an input and output stream. It is only possible
+to read as many bytes as defined in the http header, and hereafter will the input 
+stream be set into @code{eof} mode.
+
+@tindex FieldStorage
+
+If what is send to the server is url-encoded (se mime type), there is a 
+@code{FieldStorage} class that will be able to encode the format, to make 
+it possible to work with its content as a dictionary of normal C++ strings.
+
+It is possible to put normal text data back to the requesting client, or a file.
+
+To see a live example, please look in @file{samples/httpsvr.cpp}.
+
+@node     Collections, Text Searches, HTTPServer,  Overview
+@comment  node-name,   next,          previous, up
+@section Collections
+@cindex Collections
+
+nb++ no longer includes reference-counted wrappers for some of the STL
+collections classes.
+
+@node     Text Searches, Configuration, Collections, Overview
+@comment  node-name,     next,          previous,    up
+@section Text Searches
+@cindex Text searches
+@cindex Searching text
+
+@code{Regex} provides an interface to POSIX regular expressions.  For
+examples, see @file{samples/regextest.cpp} and the source code for
+@code{ConfigFile}.  Once a @code{Regex} is compiled, it can be used
+simultaneously by multiple threads.
+
+@cindex Regular expressions
+@tindex Regex
+@tindex ConfigFile
+
+A @code{split()} function is provided for splitting a string of text
+into substrings on its delimiters.  The delimiters can be matched using a
+@code{Regex}.  See @file{samples/splittest.cpp} for an example.
+
+@findex split
+
+@node     Configuration, Log ,Text Searches, Overview
+@comment  node-name, next, previous, up
+@section Configuration
+@cindex Configuration
+
+@code{ConfigFile} reads and writes config files in a simple format of
+key-value pairs, divided into sections.  It does some basic
+syntax-checking on files when it reads them.  It's derived from
+@code{multimap}, and provides some additional functions to make it easy
+to navigate the contents of a file.  See @file{samples/configtest.cpp}
+for sample code.
+
+@cindex Configuration files
+@tindex ConfigFile
+
+@code{CommandLineOptions} parses command-line options.  It understands
+short forms as well as GNU-style long forms, and can print a usage
+summary based on your specifications.  See @file{samples/optiontest.cpp}
+for an example.
+
+@cindex Command-line options
+@tindex CommandLineOptions
+
+@node Log, , Configuration, Overview
+@section Log
+@cindex Log 
+
+The log system in nb++ is both a C++ wrapper for global logging, and it is
+an atempt to make language independend logging.
+
+The base idea if this is to log only relevant data (timestamps, pid, parameter 
+names etc.) and then merge these data with the log text only on the request of
+the user (see @code{tl}) utility.
+
+The do this nb++ have both a log text converter a log translater, and some basic
+classes for the internal use.
+
+@node       Class Index,    Function Index, Overview, Top
+@comment    node-name,      next,           previous, up
+@unnumbered Class Index
+
+@printindex tp
+
+@node       Function Index, Concept Index,  Class Index, Top
+@comment    node-name,      next,           previous,    up
+@unnumbered Function Index
+
+@printindex fn
+
+@node       Concept Index, ,                Function Index, Top
+@comment    node-name,     next,            previous,       up
+@unnumbered Concept Index
+
+@printindex cp
+
+@bye

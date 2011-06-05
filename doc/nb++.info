@@ -1,0 +1,777 @@
+This is nb++.info, produced by makeinfo version 4.8 from nb++.texi.
+
+INFO-DIR-SECTION Libraries
+START-INFO-DIR-ENTRY
+* nb++: (nb++).               A nuts-and-bolts C++ toolkit.
+END-INFO-DIR-ENTRY
+
+   This document describes nb++, a nuts-and-bolts C++ toolkit.
+
+   Copyright (C) 2003 Benjamin Geer, Eduardo J. Blanco and Bo Lorentsen
+
+   Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+
+   Permission is granted to copy and distribute modified versions of
+this manual under the conditions for verbatim copying, provided also
+that the section entitled "Copying" are included exactly as in the
+original, and provided that the entire resulting derived work is
+distributed under the terms of a permission notice identical to this
+one.
+
+   Permission is granted to copy and distribute translations of this
+manual into another language, under the above conditions for modified
+versions, except that this permission notice may be stated in a
+translation approved by the Free Software Foundation.
+
+
+File: nb++.info,  Node: Top,  Next: Introduction,  Up: (dir)
+
+nb++
+****
+
+nb++ is a nuts-and-bolts C++ toolkit.
+
+   This manual documents version 0.7.1 of nb++.
+
+* Menu:
+
+* Introduction::            nb++'s purpose.
+* Copying::                 Your rights.
+* Design::                  C++ as used in nb++.
+* Overview::                A tour of nb++.
+
+* Class Index::
+* Function Index::
+* Concept Index::
+
+--- Detailed Node Listing ---
+
+Design
+
+* Namespace::               The nbpp namespace.
+* Memory Management::       Handles and proxies.
+* Exceptions::              How nb++ uses exceptions.
+
+Overview
+
+* Events::                  Synchronous messaging.
+* Threads::                 Writing multi-threaded programs.
+* Locks::                   Synchronising threads.
+* Multi-threaded Design::   Giving tasks to threads.
+* Threading Strategies::    Selecting a threading strategy at run time.
+* Sockets::                 Client and server sockets.
+* Daemons::                 A framework for writing daemons.
+* URL::                     The URL class and its usage.
+* HTTPServer::              The build in http server.
+* Collections::             Deprecated: Reference-counted wrappers for STL collections.
+* Text Searches::           Regular expressions and `split()'.
+* Configuration::           Config files and command-line options.
+* Log::                     The nb++ language neutral log system.
+
+
+File: nb++.info,  Node: Introduction,  Next: Copying,  Prev: Top,  Up: Top
+
+1 Introduction
+**************
+
+nb++ is intended to simplify tasks that are common to many types of C++
+applications.  It contains the following types of components:
+
+   * Structures that facilitate the use of basic operating-system
+     features, such as sockets, Url's, http server, threads, logging,
+     basic string manipulation and regular expressions.
+
+   * General-purpose C++ tools, such as a smart pointer, threader model
+     and an event dispatcher.
+
+   * Tools that support common Unix idioms, such as command-line
+     options and configuration files.
+
+   Except where noted in the API documentation, functions and methods in
+nb++ are thread-safe, in the same manner as the C++ stdlib is thread
+safe.
+
+
+File: nb++.info,  Node: Copying,  Next: Design,  Prev: Introduction,  Up: Top
+
+2 Copying
+*********
+
+nb++ is released under the GNU Lesser General Public License (LGPL),
+which accompanies it.
+
+   The following is intended to clarify the application of section 5 of
+the LGPL to nb++: in our view, including material from nb++'s header
+files in a "work that uses the library" does not cause the work to be a
+derivative of nb++.
+
+
+File: nb++.info,  Node: Design,  Next: Overview,  Prev: Copying,  Up: Top
+
+3 Design
+********
+
+nb++ uses certain C++ techniques in a consistent way.
+
+* Menu:
+
+* Namespace::                 The nbpp namespace.
+* Memory Management::         Handles and proxies.
+* Exceptions::                How nb++ uses exceptions.
+
+
+File: nb++.info,  Node: Namespace,  Next: Memory Management,  Prev: Design,  Up: Design
+
+3.1 Namespace
+=============
+
+All nb++ classes and functions are in the namespace `nbpp'.  We suggest
+that you use using-declarations to include the names you need.  If you
+use a using-directive, you'll get a lot of names that you don't need.
+
+
+File: nb++.info,  Node: Memory Management,  Next: Exceptions,  Prev: Namespace,  Up: Design
+
+3.2 Memory Management
+=====================
+
+Most of the classes in nb++ are reference-counted; the API documentation
+indicates which ones are and aren't.  Use the reference-counted objects
+as automatic variables, but they are allocated as normal heap elements
+but they all need to enherite from the RefCounted base class to be used
+af ref counted objects.
+
+   This is somewhat differant from the last nb++ release, as this was
+able to take any heap allocated element, but easly could miss the
+reference count if passed around without much care. Hopefully this "new
+way" of doing it will couse less problems.
+
+   For many of the reference-counted classes, the default constructor
+can't construct a usable object.  However, a default constructor is
+given so that you can have uninitialised variables of these classes; it
+creates a "null object", which contains little more than a null
+pointer.  If you try to use a null object, a segmentation fault will
+probably result.  You can tell whether a reference-counted nb++ object
+is null by converting it to a `bool'; the result will be true if the
+object is initialised.  One way to do this is to use the `Assert()'
+function provided, e.g.:
+
+     class Foo
+     {
+         InetAddress addr;
+
+     public:
+         // ...
+
+         void f()
+         {
+             Assert(addr, AssertException("addr not initialised"));
+             // ...
+         }
+     };
+
+   The API documentation indicates which objects have default
+constructors that create null objects.
+
+   Reference counting is implemented using a thread-safe `Handle'
+template.  You may find it convenient to use `Handle' for your own
+classes.  For example:
+
+     class Foo : public RefCounted { ... };
+
+     typedef RefHandle<Foo> FooHandle;
+
+     FooHandle h()
+     {
+         return FooHandle(new Foo());
+     }
+
+   Another approach is to encapsulate the `RefHandle' objects in proxy
+classes; this is the approach used in nb++.
+
+   Note that if two objects have `RefHandle' objects that point to each
+other, neither object's reference count can reach zero.  See the sample
+program `samples/circular.cpp' for an example.
+
+
+File: nb++.info,  Node: Exceptions,  Prev: Memory Management,  Up: Design
+
+3.3 Exceptions
+==============
+
+nb++ uses its own hierarchy of exceptions, derived from a base class
+called `Exception'; they are all defined in the file `Exception.hpp'.
+Any `Exception' can produce a string representation of itself, which
+includes its fully-qualified class name and a detail message.  Whenever
+possible, detail messages are the ones provided by the operating system.
+
+   Most functions does not have any exception specifications, as nb++
+had before.  This is the normal pracis used by C++, and it seem like a
+nice idear to stick to this, exept for some few function and most for
+the destructors.
+
+   A class called `ExceptionGuard' is provided to prevent unexpected
+exceptions from terminating the program.  If you instantiate an
+`ExceptionGuard' at the beginning of `main()', any unexpected
+exceptions will be rethrown as `UnexpectedException', which is derived
+from `AssertException'.
+
+
+File: nb++.info,  Node: Overview,  Next: Class Index,  Prev: Design,  Up: Top
+
+4 Overview
+**********
+
+This chapter provides a quick overview of the tools provided in nb++,
+and some tips on their use.  For more details, see the API
+documentation.
+
+* Menu:
+
+* Events::                  Synchronous messaging.
+* Threads::                 Writing multi-threaded programs.
+* Locks::                   Different kinds of locks.
+* Multi-threaded Design::   Giving tasks to threads.
+* Threading Strategies::    Selecting your program's threading strategy at run-time.
+* Sockets::                 Client and server sockets.
+* Daemons::                 A framework for writing daemons.
+* URL::                     URL handler classes.
+* HTTPServer::              A small and handy web server.
+* Collections::             Deprecated collections
+* Text Searches::           Regular expressions and other string manipulation.
+* Configuration::           Configuration files and command-line options.
+* Log::                     A log file system.
+
+
+File: nb++.info,  Node: Events,  Next: Threads,  Prev: Overview,  Up: Overview
+
+4.1 Events
+==========
+
+`EventMulticaster' dispatches messages ("events") to objects that are
+registered as being interested in them ("listeners").  Since
+`EventMulticaster' is a template, the listeners and event objects don't
+have to be of any particular type; `EventMulticaster::sendEvent()'
+takes a pointer to method, and calls that method on each listener,
+passing it the event object provided.  See `samples/eventtest.cpp' for
+sample code.
+
+   `SignalManager' uses an `EventMulticaster' to allow objects to
+receive operating-system signals synchronously.  A signal-handler object
+needs to implement the `SignalHandler' interface, so it can receive
+`SignalEvent' objects.  `SignalManager' collects signals as they are
+received; when you call its `deliver()' method, it delivers them to the
+registered handler objects.  See the source code for the classes
+`DaemonBase' and `Daemon' for an example.
+
+
+File: nb++.info,  Node: Threads,  Next: Locks,  Prev: Events,  Up: Overview
+
+4.2 Threads
+===========
+
+To start a new thread, you need two objects: a `Thread' and a
+`Runnable'.  `Runnable' is an interface that contains one pure virtual
+method, `void run() throw()'.  For each thread, you need to provide an
+object derived from `Runnable' to the constructor of a `Thread'.  When
+`Thread::start()' is started, `Runnable::run()' is called in the new
+thread; when `Runnable::run()' returns, the thread can no longer be
+used.
+
+   Often, it's convenient for the `Runnable' to encapsulate the
+`Thread'.  For example:
+
+     ..
+
+     class MyThread : public Runnable
+     {
+     public:
+         void run() throw() { /* .. do some hairy stuf . */ }
+     };
+
+     Thread thread( new MyThread());
+
+     thread.start();
+
+   Low-level thread cancellation is not provided, because destructors
+cannot be called when a thread is cancelled.  To stop a thread safely,
+you can set a boolean variable that it checks from time to time.
+
+   The Runnable is refcounted, so the thread will not stop even if the
+Thread object that startet the runnable object is destroyed. This makes
+it possible to start a thread without keeping account of its doing and
+donts.
+
+
+File: nb++.info,  Node: Locks,  Next: Multi-threaded Design,  Prev: Threads,  Up: Overview
+
+4.3 Locks
+=========
+
+nb++ provides several ways to synchronise threads.  The simplest
+approach is to use a `Mutex'.  Typically, an object will have a `Mutex'
+as a private member variable.  You cannot lock or unlock a `Mutex'
+directly; you must use a `Lock' object as an automatic variable.  For
+example:
+
+     ...
+
+     class Foo
+     {
+     public:
+         void bar() throw(AssertException, exception)
+         {
+             Lock lock(mutex);
+             baz();
+         }
+
+         void baz() throw(AssertException, exception)
+         {
+             // ...
+         }
+
+     private:
+         Mutex mutex;
+     };
+     ...
+
+   The reason for this is that if `baz()' throws an exception, the
+destructor of the `Lock' will unlock the `Mutex'.
+
+   A `Mutex' cannot be used in a recursive method.  Nor can it be used
+in class `Foo' if `baz()' also acquires the lock.  In these situations,
+you must use a `RecursiveMutex'.
+
+   In many situations, it's desirable to allow multiple threads to read
+an object at the same time for maximum efficiency, but to give exclusive
+access to any thread that needs to modify the object.  You can do this
+with an `RWLocker', which is locked and unlocked using `ReadLock' and
+`WriteLock' objects.  See `samples/threadtest.cpp' for an example.  For
+recursive methods or multiple successive locks, you must use a
+`RecursiveRWLocker'.
+
+
+File: nb++.info,  Node: Multi-threaded Design,  Next: Threading Strategies,  Prev: Locks,  Up: Overview
+
+4.4 Multi-threaded Design
+=========================
+
+Often, a thread needs to give tasks to one or more other threads on a
+regular basis.  This can be accomplished by encapsulating a task in an
+object, using the Command design pattern.  A `Command' has one public
+method, `execute()'.  For ideas on how to use this pattern, see `Design
+Patterns', by Gamma et al.  The `Command' class in nb++ is a
+reference-counted proxy for a `CommandImpl'; to make your own
+`Command', derive a class from `CommandImpl', and pass it to the
+constructor of `Command'.  One implementation is provided:
+`OneArgCommandImpl', a template whose `execute()' method calls a
+pointer to method on some other object, passing it one argument.
+
+   Usually, `Command' objects are queued until some thread gets around
+to executing them.  This can be done with a `CommandQueue' object,
+which provides blocking and nonblocking methods for getting a `Command'
+from the queue.
+
+   If you need a thread that does nothing but check a `CommandQueue'
+repeatedly and execute any commands that it finds, you can use a
+`CommandThread'.  `CommandThread' reports periodically on its current
+state (idle, waiting, working, or finished); you'll need to provide an
+object that implements `ThreadObserver' so the `CommandThread' can do
+this.
+
+   To maintain a pool of threads that all read commands from the same
+queue, you can use a `ThreadPool'.  It maintains the threads and the
+queue, and can add or remove threads as needed, so that the number of
+idle threads stays within limits you specify.
+
+
+File: nb++.info,  Node: Threading Strategies,  Next: Sockets,  Prev: Multi-threaded Design,  Up: Overview
+
+4.5 Threading Strategies
+========================
+
+Sometimes it's difficult to know what sort of threading model will be
+best for your program.  You may wish to start with a single-threaded
+model, and perhaps try a different model later on.  The `Threader'
+class allows you to select a threading strategy at run time.  Its
+`queue()' method queues a `Command' for execution according to the
+strategy of the type of `Threader' you've chosen.  There are several
+varieties:
+
+   * `SingleThreader' executes the command immediately, in the same
+     thread.  
+
+   * `ForkThreader' spawns a child process to execute the command. (be
+     aware the common data is no longer shared) 
+
+   * `ThreadPerCommand' executes each command in a new thread.  
+
+   * `MultiThreader' delegates commands to a `ThreadPool'.  
+
+   Since these are reference-counted proxies, they're not actually
+subclasses of `Threader' (the generic object), but for most purposes,
+they behave as if they are; you can instantiate a `MultiThreader' and
+convert it implicitly to a `Threader', and it will still act as a
+`MultiThreader'.
+
+
+File: nb++.info,  Node: Sockets,  Next: Daemons,  Prev: Threading Strategies,  Up: Overview
+
+4.6 Sockets
+===========
+
+nb++ includes classes that represent Berkeley stream sockets and
+network addresses.
+
+   Addresses are represented by `NetworkAddress' and its subtypes,
+`InetAddress' and `UnixAddress'.  Again, these are not really derived
+classes, but they behave as if they are.
+
+   To connect to a socket as a client, use a `Socket'.  This class
+provides input and output streams.  When receiving input or sending
+output, you should call `Socket::waitForInput()' or
+`Socket::waitToSend()' from time to time; these methods will throw a
+`SocketException' if the connection is lost.  See
+`samples/socktest.cpp' for an example.
+
+   To bind a server to a socket and wait for connections, use a
+`ServerSocket'; each connection is returned as a `Socket'.  See
+`samples/serversocktest.cpp' for an example.  However, you don't need
+to write your server from scratch; nb++ provides a framework for
+daemons, described in the next section.
+
+
+File: nb++.info,  Node: Daemons,  Next: URL,  Prev: Sockets,  Up: Overview
+
+4.7 Daemons
+===========
+
+The `DaemonBase' class provides a simple framework for daemons.  It
+takes care of detaching the daemon process from the controlling
+terminal, then calls a pure virtual method, `run()'.
+
+   If your daemon runs in an infinite loop, and handles SIGHUP, SIGTERM,
+and SIGINT in the usual way, you can derive it from `Daemon'.  You just
+need to implement the pure virtual methods `mainLoop()', which is
+called repeatedly until SIGTERM is received, and `reload()', which is
+called when SIGHUP is received. `Daemon' uses `SignalManager' to handle
+signals synchronously.
+
+   Daemons that listen for connections on a socket can be derived from
+`NetworkDaemon'.  In this case, your main task is to implement
+`handleConnection()', which is called when a connection is received.
+The constructor of `NetworkDaemon' takes a `Threader', allowing you to
+select its threading model at run time.  It can be run either as a
+stand-alone program, or by `inetd'; if it's run by inetd, it detects
+this automatically and handles only one connection, without using the
+Threader.  See `samples/daemontest.cpp' for an example.
+
+
+File: nb++.info,  Node: URL,  Next: HTTPServer,  Prev: Daemons,  Up: Overview
+
+4.8 URL
+=======
+
+It is possible to make a client connection using the URL class that
+understand and uses normal URL strings. This can be used to gain a
+flexible connection to any internet service or file, using a URL.
+
+   If we need a connection to a webserver, and get the content of the
+site we could do something like this :
+
+     ...
+         URL url( "http://www.sunsite.dk" );
+
+         URLConnectionHndl conn = url.getConnection();
+
+         conn->setOutputStream( cout );
+         conn->perform();
+
+     ...
+
+   This is basicly it, first we make an URL class and the syntax will
+be checks and if any error occure an `URLException'. Then we ask the
+URL for a `URLConnection' anf if the url scheme is known to nb++ it
+will return a connection.
+
+   The connection will only make one request if the function `perform'
+is called, and to make sure the output is send to our `cout' stream, we
+set it as the current output stream.
+
+   Vola, if the network is working and the danish sunsite.dk site is
+up, we will get the content of there top `index.html'.
+
+   Most of the abilities of the URL connections, will come from a nb++
+curl wrapper, that will take care of http, shttp and ftp.
+
+   It is also possible to make a new custom scheme and register this
+along the existing ones, but this is not within the scope of this
+docement.
+
+
+File: nb++.info,  Node: HTTPServer,  Next: Collections,  Prev: URL,  Up: Overview
+
+4.9 HTTPServer
+==============
+
+This is a special Inet Daemon that takes care of simple HTTP 0.9 and 1.0
+communication. This is not an alternertive to Apache or others, but a
+nice tool to build in a simple protocol for easy data access, remode
+config or others things like this.
+
+   The basic idea is to define one or several handlers, and register
+these to the HTTPServer, together with a filter telling the server when
+to call this handler.
+
+   This example shows how to make a handler that takes care of all
+request for files in `/files' on the server, using only the `html'
+extension.
+
+     ...
+
+     HTTPServer server( "testserver" );
+     HTTPFilter filter;
+
+     filter.addPath( "/files" );
+     filter.addExt( "html" );
+
+     server.addHandler( filter, new MyHandler());
+     server.run();
+
+     ...
+
+   The handler object need to enherit from the `HTTPRequestHandler', but
+it only need to impliment the `handle' member function. The handler is
+reference counted, and may only be heap allocated.
+
+   The `handle' function are only given one argument, and thats a
+HTTPRequest instance. This contains all the parsed mime header elements
+(if any) and, like the `Socket' class it has both an input and output
+stream. It is only possible to read as many bytes as defined in the
+http header, and hereafter will the input stream be set into `eof' mode.
+
+   If what is send to the server is url-encoded (se mime type), there
+is a `FieldStorage' class that will be able to encode the format, to
+make it possible to work with its content as a dictionary of normal C++
+strings.
+
+   It is possible to put normal text data back to the requesting
+client, or a file.
+
+   To see a live example, please look in `samples/httpsvr.cpp'.
+
+
+File: nb++.info,  Node: Collections,  Next: Text Searches,  Prev: HTTPServer,  Up: Overview
+
+4.10 Collections
+================
+
+nb++ no longer includes reference-counted wrappers for some of the STL
+collections classes.
+
+
+File: nb++.info,  Node: Text Searches,  Next: Configuration,  Prev: Collections,  Up: Overview
+
+4.11 Text Searches
+==================
+
+`Regex' provides an interface to POSIX regular expressions.  For
+examples, see `samples/regextest.cpp' and the source code for
+`ConfigFile'.  Once a `Regex' is compiled, it can be used
+simultaneously by multiple threads.
+
+   A `split()' function is provided for splitting a string of text into
+substrings on its delimiters.  The delimiters can be matched using a
+`Regex'.  See `samples/splittest.cpp' for an example.
+
+
+File: nb++.info,  Node: Configuration,  Next: Log,  Prev: Text Searches,  Up: Overview
+
+4.12 Configuration
+==================
+
+`ConfigFile' reads and writes config files in a simple format of
+key-value pairs, divided into sections.  It does some basic
+syntax-checking on files when it reads them.  It's derived from
+`multimap', and provides some additional functions to make it easy to
+navigate the contents of a file.  See `samples/configtest.cpp' for
+sample code.
+
+   `CommandLineOptions' parses command-line options.  It understands
+short forms as well as GNU-style long forms, and can print a usage
+summary based on your specifications.  See `samples/optiontest.cpp' for
+an example.
+
+
+File: nb++.info,  Node: Log,  Prev: Configuration,  Up: Overview
+
+4.13 Log
+========
+
+The log system in nb++ is both a C++ wrapper for global logging, and it
+is an atempt to make language independend logging.
+
+   The base idea if this is to log only relevant data (timestamps, pid,
+parameter names etc.) and then merge these data with the log text only
+on the request of the user (see `tl') utility.
+
+   The do this nb++ have both a log text converter a log translater,
+and some basic classes for the internal use.
+
+
+File: nb++.info,  Node: Class Index,  Next: Function Index,  Prev: Overview,  Up: Top
+
+Class Index
+***********
+
+ [index ]
+* Menu:
+
+* AssertException <1>:                   Exceptions.           (line 23)
+* AssertException:                       Memory Management.    (line 41)
+* Command:                               Multi-threaded Design.
+                                                               (line 17)
+* CommandImpl:                           Multi-threaded Design.
+                                                               (line 17)
+* CommandLineOptions:                    Configuration.        (line 18)
+* CommandQueue:                          Multi-threaded Design.
+                                                               (line 22)
+* CommandThread:                         Multi-threaded Design.
+                                                               (line 29)
+* ConfigFile <1>:                        Configuration.        (line 13)
+* ConfigFile:                            Text Searches.        (line 11)
+* curl:                                  URL.                  (line 35)
+* DaemonBase:                            Daemons.              (line 10)
+* EventMulticaster:                      Events.               (line 14)
+* Exception:                             Exceptions.           (line 12)
+* ExceptionGuard:                        Exceptions.           (line 23)
+* FieldStorage:                          HTTPServer.           (line 42)
+* ForkThreader:                          Threading Strategies. (line 18)
+* Handle:                                Memory Management.    (line 48)
+* HTTPRequest:                           HTTPServer.           (line 36)
+* HTTPRequestHandler:                    HTTPServer.           (line 32)
+* InetAddress:                           Sockets.              (line 13)
+* Lock:                                  Locks.                (line 12)
+* MultiThreader:                         Threading Strategies. (line 22)
+* Mutex:                                 Locks.                (line 12)
+* NetworkAddress:                        Sockets.              (line 13)
+* NetworkDaemon:                         Daemons.              (line 26)
+* OneArgCommandImpl:                     Multi-threaded Design.
+                                                               (line 17)
+* ReadLock:                              Locks.                (line 48)
+* RecursiveMutex:                        Locks.                (line 40)
+* RecursiveRWLocker:                     Locks.                (line 48)
+* Regex:                                 Text Searches.        (line 11)
+* Runnable:                              Threads.              (line 14)
+* RWLocker:                              Locks.                (line 48)
+* ServerSocket:                          Sockets.              (line 20)
+* SignalEvent:                           Events.               (line 22)
+* SignalHandler:                         Events.               (line 22)
+* SignalManager <1>:                     Daemons.              (line 17)
+* SignalManager:                         Events.               (line 22)
+* SingleThreader:                        Threading Strategies. (line 15)
+* Socket:                                Sockets.              (line 20)
+* SocketException:                       Sockets.              (line 20)
+* Thread:                                Threads.              (line 14)
+* Threader <1>:                          Daemons.              (line 26)
+* Threader:                              Threading Strategies. (line 14)
+* ThreadObserver:                        Multi-threaded Design.
+                                                               (line 29)
+* ThreadPerCommand:                      Threading Strategies. (line 20)
+* ThreadPool:                            Multi-threaded Design.
+                                                               (line 34)
+* UnexpectedException:                   Exceptions.           (line 23)
+* UnixAddress:                           Sockets.              (line 13)
+* WriteLock:                             Locks.                (line 48)
+
+
+File: nb++.info,  Node: Function Index,  Next: Concept Index,  Prev: Class Index,  Up: Top
+
+Function Index
+**************
+
+ [index ]
+* Menu:
+
+* Assert:                                Memory Management.    (line 27)
+* split:                                 Text Searches.        (line 15)
+
+
+File: nb++.info,  Node: Concept Index,  Prev: Function Index,  Up: Top
+
+Concept Index
+*************
+
+ [index ]
+* Menu:
+
+* Addresses:                             Sockets.              (line 13)
+* Assertions:                            Memory Management.    (line 27)
+* Collections:                           Collections.          (line  6)
+* Command design pattern:                Multi-threaded Design.
+                                                               (line 17)
+* Command-line options:                  Configuration.        (line 18)
+* Configuration:                         Configuration.        (line  6)
+* Configuration files:                   Configuration.        (line 13)
+* Daemons:                               Daemons.              (line  6)
+* Event listeners:                       Events.               (line 14)
+* Events:                                Events.               (line  6)
+* Exceptions:                            Exceptions.           (line  6)
+* HTTPServer:                            HTTPServer.           (line  6)
+* inetd:                                 Daemons.              (line 26)
+* Listeners:                             Events.               (line 14)
+* Locks:                                 Locks.                (line  6)
+* Log:                                   Log.                  (line  6)
+* Memory management:                     Memory Management.    (line  6)
+* Multi-threaded design:                 Multi-threaded Design.
+                                                               (line  6)
+* Namespaces:                            Namespace.            (line  6)
+* Network addresses:                     Sockets.              (line 13)
+* Null objects:                          Memory Management.    (line 27)
+* Proxies:                               Memory Management.    (line 60)
+* Proxies and conversions:               Threading Strategies. (line 30)
+* Reference counting:                    Memory Management.    (line 17)
+* Regular expressions:                   Text Searches.        (line 11)
+* Searching text:                        Text Searches.        (line  6)
+* Signals <1>:                           Daemons.              (line 17)
+* Signals:                               Events.               (line 22)
+* Sockets:                               Sockets.              (line  6)
+* Text searches:                         Text Searches.        (line  6)
+* Thread cancellation:                   Threads.              (line 38)
+* Thread synchronisation:                Locks.                (line  6)
+* Threading strategies:                  Threading Strategies. (line  6)
+* Threads:                               Threads.              (line  6)
+* Unexpected exceptions:                 Exceptions.           (line 23)
+* URL:                                   URL.                  (line  6)
+
+
+
+Tag Table:
+Node: Top1103
+Node: Introduction2509
+Node: Copying3302
+Node: Design3730
+Node: Namespace4048
+Node: Memory Management4382
+Node: Exceptions6605
+Node: Overview7587
+Node: Events8624
+Node: Threads9607
+Node: Locks10846
+Node: Multi-threaded Design12307
+Node: Threading Strategies13963
+Node: Sockets15167
+Node: Daemons16201
+Node: URL17404
+Node: HTTPServer18818
+Node: Collections20628
+Node: Text Searches20851
+Node: Configuration21406
+Node: Log22096
+Node: Class Index22613
+Node: Function Index26774
+Node: Concept Index27067
+
+End Tag Table
