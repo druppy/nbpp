@@ -15,7 +15,7 @@
 #define NBPP_HAVE_GETOPT_H
 
 /* Define to 1 if you have the `getopt_long' function. */
-/* #undef NBPP_HAVE_GETOPT_LONG */
+#define NBPP_HAVE_GETOPT_LONG
 
 /* Define to 1 if you have the `getrlimit' function. */
 #define NBPP_HAVE_GETRLIMIT

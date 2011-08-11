@@ -168,5 +168,5 @@ template<class T> class RefHandle : protected BaseRefHandle {
 	
 	operator bool( void ) const {return m_pRef;}
 };
-};
+}
 #endif

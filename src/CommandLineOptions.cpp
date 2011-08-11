@@ -19,14 +19,16 @@
 
 extern "C"
 {
-#ifdef NBPP_HAVE_GETOPT_H
-#ifdef NBPP_HAVE_GETOPT_LONG
 #include <getopt.h>
+
+#ifdef NBPP_HAVE_GETOPT_H
+#  ifdef NBPP_HAVE_GETOPT_LONG
+#    include <getopt.h>
+#  else
+#    include "os/getopt_long.h"
+#  endif
 #else
-#include "os/getopt_long.h"
-#endif
-#else
-#include "os/getopt_long.h"
+#  include "os/getopt_long.h"
 #endif
 }
 

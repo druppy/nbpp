@@ -4,6 +4,7 @@
 #include <nb++/UnixAddressImpl.hpp>
 #include <nb++/Assert.hpp>
 #include <nb++/Exception.hpp>
+#include <cstddef>
 
 namespace nbpp
 {
