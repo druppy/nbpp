@@ -40,7 +40,8 @@ ADD_LIBRARY( nbpp SHARED
              osdep.cpp Log.cpp 
              HTTPServer.cpp Url.cpp 
              CurlScheme.cpp
-             SmtpClient.cpp )
+             SmtpClient.cpp
+             Multipart.cpp )
 
 SET_TARGET_PROPERTIES( nbpp PROPERTIES VERSION ${NBPP_VERSION} SOVERSION ${NBPP_VERSION_MAJOR} )
 TARGET_LINK_LIBRARIES( nbpp -lpthread ${CURL_LDFLAGS} )
