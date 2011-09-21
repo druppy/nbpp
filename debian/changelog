@@ -1,3 +1,9 @@
+nbpp (0.7.6-2) unstable; urgency=low
+
+  * Multipart deadloop fix
+
+ -- Bo Lorentsen <bl@lue.dk>  Wed, 21 Sep 2011 20:24:00 +0100
+ 
 nbpp (0.7.6-1) unstable; urgency=low
 
   * Add Multipart upload handler
