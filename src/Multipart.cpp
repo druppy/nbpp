@@ -130,9 +130,9 @@ bool Multipart::parse( istream &is )
     size_t boundary_pos = 0;
     const char *boundary = fullboundary.c_str();
     while( !the_end ) {
-        char ch = is.get();
+        int ch = is.get();
 
-        if( is.eof())
+        if( !is && ch != -1 )
             break;
 
         if( ch == boundary[ boundary_pos ] ) {
@@ -141,9 +141,9 @@ bool Multipart::parse( istream &is )
 
                 do {
                     ch = is.get();
-                } while( isspace( ch ) && !is.eof());
+                } while( isspace( ch ) && ch != -1 && is );
 
-                if( is.eof())
+                if( !is )
                     break;
 
                 if( part )
@@ -151,7 +151,8 @@ bool Multipart::parse( istream &is )
 
                 if( '-' == ch ) {
                     ch = is.get();
-                    if( is.eof())
+                    
+                    if( ch == -1 || !is )
                         break;
 
                     if( '-' == ch ) {
@@ -160,7 +161,7 @@ bool Multipart::parse( istream &is )
                         // Consume leftover whitespace
                         do {
                             ch = is.get();
-                        } while( isspace( ch ) && !is.eof());
+                        } while( isspace( ch ) && ch != -1 && is);
                         clog << "---- end of multipart ---" << endl;
 
                         break;
