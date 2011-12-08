@@ -47,8 +47,8 @@ namespace nbpp
         RWLocker(const RWLocker&);
         RWLocker& operator=(const RWLocker&);
 
-        unsigned int readerCount; // a count of the number of readers
-        Mutex* mutex;
+        mutable unsigned int readerCount; // a count of the number of readers
+        mutable Mutex* mutex;
 
         friend class ReadLock;
         friend class WriteLock;
@@ -138,8 +138,8 @@ namespace nbpp
         ReadLock(const ReadLock&);
         ReadLock& operator=(ReadLock&);
 
-        RWLocker& rwLocker;
-        bool locked;
+        mutable RWLocker& rwLocker;
+        mutable bool locked;
     };
 
 
@@ -159,11 +159,11 @@ namespace nbpp
      *         WriteLock writeLock(rwLocker);
      *         // do some stuff that could throw exceptions...
      *     }
-     * 
+     *
      * private:
      *     RWLocker rwLocker;
      * };
-     * </pre> 
+     * </pre>
      *
      * This class is not reference-counted; each instance is intended to be
      * encapsulated by one method, as a local variable.
@@ -201,9 +201,9 @@ namespace nbpp
         WriteLock(const WriteLock&);
         WriteLock& operator=(WriteLock&);
 
-        RWLocker& rwLocker;
-        Lock lock;
-        bool locked;
+        mutable RWLocker& rwLocker;
+        mutable Lock lock;
+        mutable bool locked;
     };
 }
 
