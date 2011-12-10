@@ -48,7 +48,7 @@ namespace nbpp
         RWLocker& operator=(const RWLocker&);
 
         mutable unsigned int readerCount; // a count of the number of readers
-        mutable Mutex* mutex;
+        Mutex* mutex;
 
         friend class ReadLock;
         friend class WriteLock;
@@ -138,7 +138,7 @@ namespace nbpp
         ReadLock(const ReadLock&);
         ReadLock& operator=(ReadLock&);
 
-        mutable RWLocker& rwLocker;
+        RWLocker& rwLocker;
         mutable bool locked;
     };
 
@@ -201,8 +201,8 @@ namespace nbpp
         WriteLock(const WriteLock&);
         WriteLock& operator=(WriteLock&);
 
-        mutable RWLocker& rwLocker;
-        mutable Lock lock;
+        RWLocker& rwLocker;
+        Lock lock;
         mutable bool locked;
     };
 }

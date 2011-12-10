@@ -23,6 +23,9 @@
 #include <typeinfo>
 #include <stdexcept>
 
+#include <vector>
+#include <map>
+
 namespace nbpp {
     using namespace std;
 
@@ -30,50 +33,17 @@ namespace nbpp {
     public:
         Variant() : _data( NULL ) {}
         
-        Variant( const Variant &var ) {
-            if( var._data != NULL ) {
-                _data = var._data;
-                _data->_ref++;
-            }
-        }
-
-        Variant( Variant && other ) : _data( NULL ) {
-            *this = std::move( other );
-        }
+        Variant( const Variant &var );
+        Variant( Variant && other );
         
         template <typename T> Variant( T v ) : _data( new Value<T>( v )) {
             _data->_ref++;
         }
 
-        ~Variant() {
-            if( _data )
-                if(--_data->_ref == 0)
-                    delete _data;
-        }
+        ~Variant();
 
-        Variant &operator=( const Variant &var ) {
-            if( var._data )
-                var._data->_ref++;
-                
-            if( _data )
-                if( --_data->_ref == 0 )
-                    delete _data;
-
-            _data = var._data;
-            return *this;
-        }
-
-        Variant &operator=( Variant &&other ) {
-            if( this != &other ) {
-                if( _data )
-                    if( --_data->_ref == 0 )
-                        delete _data;
-
-                _data = other._data;
-                other._data = NULL;
-            }
-            return *this;
-        }
+        Variant &operator=( const Variant &var );
+        Variant &operator=( Variant &&other );
 
         template <typename T> const T & get() const {
             Value<T> *tmp = dynamic_cast<Value<T> *>( _data );
@@ -98,10 +68,7 @@ namespace nbpp {
             return typeid(*_data) == typeid(Value<T>);
         }
 
-        void out( ostream &os ) const {
-            if( _data )
-                _data->out( os );
-        }
+        void out( ostream &os ) const;
     private:
         class Base {
         public:
@@ -127,12 +94,16 @@ namespace nbpp {
     };
 
     // specialized for const char * -> string 
-    template<> Variant::Variant<const char *>( const char *str ) : _data( new Value<string>( str )) {
+    template<> inline Variant::Variant<const char *>( const char *str ) : _data( new Value<string>( str )) {
         _data->_ref++;
     }
+
+    typedef vector<Variant> cvector;
+    typedef map<string, Variant> cmap;
 }
 
 // Make stream simple to use 
-std::ostream &operator << ( std::ostream &os, const nbpp::Variant &v ) {v.out( os ); return os;}
-
+inline std::ostream &operator << ( std::ostream &os, const nbpp::Variant &v ) {v.out( os ); return os;}
+std::ostream &operator << ( std::ostream &os, const nbpp::cvector &v );
+std::ostream &operator << ( std::ostream &os, const nbpp::cmap &v );
 #endif
