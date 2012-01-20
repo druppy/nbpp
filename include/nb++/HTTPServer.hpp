@@ -127,6 +127,8 @@ namespace nbpp {
 		 */
 		ostream &getOutputStream();
 
+                size_t getOutStreamSize() const { return m_os.str().size(); }
+
 		enum Method {
 			UNKNOWN,
 			GET,

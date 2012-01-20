@@ -68,11 +68,11 @@ HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket )
     // Read the request line
     string sMethod, sUrl, sLine;
     getline( is, sLine );
-    //  clog << "Request line : " << sLine << endl;
+    // clog << "Request line : " << sLine << endl;
     m_nVersion = split_request( sLine, sMethod, sUrl );
 
     if( sMethod == "GET" )
-	m_method = GET;
+        m_method = GET;
     else if( sMethod == "PUT" )
         m_method = PUT;
     else if( sMethod == "POST" )
@@ -389,7 +389,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                     if( i == m_handlers.end())
                         res = HTTPRequestHandler::HTTP_NOT_FOUND;
 
-                    if( res > 300 )
+                    if( res > 300 && req.getOutStreamSize() == 0 )
                         sendHttpError( req, res );
 
                 } catch( const exception &ex ) {

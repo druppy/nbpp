@@ -63,9 +63,9 @@ private:
 		}
 	}
 
-	int m_nNbppRefCount;
+	mutable int m_nNbppRefCount;
 	Mutex m_mutex;
-	bool m_bDestroying;
+	mutable bool m_bDestroying;
 };
 
 	inline RefCounted::~RefCounted() {}
