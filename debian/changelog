@@ -1,8 +1,15 @@
-nbpp (0.7.6-3) unstable; urgency=low
+nbpp (0.7.6-4) unstable; urgency=low
 
   * support for partial http file handling
+  
+   -- Bo Lorentsen <bl@moch.dk>  Mon, 12 Mar 2012 11:48:55 +0100
+   
+nbpp (0.7.6-3) unstable; urgency=low
 
- -- Bo Lorentsen <bl@moch.dk>  Mon, 12 Mar 2012 11:48:55 +0100
+  * mutable ref counter
+  * exclude error body if provided by user
+
+ -- Bo Lorentsen <bl@lue.dk>  Fri, 20 Jan 2012 15:48:50 +0100
 
 nbpp (0.7.6-2) unstable; urgency=low
 
