@@ -127,7 +127,7 @@ namespace nbpp {
 		 */
 		ostream &getOutputStream();
 
-                size_t getOutStreamSize() const { return m_os.str().size(); }
+        size_t getOutStreamSize() const { return m_os.str().size(); }
 
 		enum Method {
 			UNKNOWN,
@@ -219,9 +219,13 @@ namespace nbpp {
 		   The file must be a file system file, that have a known and static size !
 
 		   @param sFname The name of the file
+           @param offset offset of file to send in partial file transfer
+           @param length the length of the file chunck to send (0 = all)
 		   @return true if send, else false if the file does not exist
 		 */
-		bool sendFile( const string &sFname );
+		bool sendFile( const string &sFname, size_t offset, size_t length = 0 );
+
+        bool sendFile( const string &sFname);
 	private:
 		float m_nVersion;
 

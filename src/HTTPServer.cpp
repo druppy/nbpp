@@ -116,7 +116,7 @@ HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket )
 	// cout << "Request accepted" << endl;
 
 	if( hasA( "Content-Length" ))
-		m_socket.setMaxBytes( atoi((*this)[ "Content-Length" ].c_str()));
+		m_socket.setMaxBytes( atoll((*this)[ "Content-Length" ].c_str()));
 }
 
 HTTPRequest::~HTTPRequest()
@@ -205,50 +205,117 @@ void HTTPRequest::sendHTTPHeaders( HTTPRequestHandler::Result res )
 	if( m_nVersion > 0.9 && !m_bHeaderSend ) {
 		ostream &os = m_socket.getOutputStream();
 
-        values_t::const_iterator hi = find( m_header_out.begin(), m_header_out.end(), "Content-Length" );
-        if( !m_os.str().empty() && hi == m_header_out.end())
-			set( "Content-Length", m_os.str().length() );
+        if( m_method != HEAD ) {
+            values_t::const_iterator hi = find( m_header_out.begin(), m_header_out.end(), "Content-Length" );
+
+            if( !m_os.str().empty() && hi == m_header_out.end())
+                set( "Content-Length", m_os.str().length() );
+        }
 
 		// Make status line
-		os << "HTTP/" << (m_nVersion < 1.1 ? "1.0 " : "1.1 ") << res << " " << getHttpError( res ) << "\r\n";
+        if( os.good() ) {
+            os << "HTTP/" << (m_nVersion < 1.1 ? "1.0 " : "1.1 ") << res << " " << getHttpError( res ) << "\r\n";
 
-		// send header fields
-		values_t::const_iterator i;
-		for( i = m_header_out.begin(); i != m_header_out.end(); i++ )
-			os << i->sName << ": " << i->sValue << "\r\n";
+            // send header fields
+            values_t::const_iterator i;
+            for( i = m_header_out.begin(); i != m_header_out.end(); i++ ) {
+                if( os.good() )
+                    os << i->sName << ": " << i->sValue << "\r\n";
+            }
 
-		// Make ready for user content
-		os << "\r\n";
-		os.flush();
+            // Make ready for user content
+            os << "\r\n";
+            os.flush();
+        }
+        m_bHeaderSend = true;
 	}
-	m_bHeaderSend = true;
 }
 
 bool HTTPRequest::sendFile( const string &sFname )
 {
+    struct stat stat_buf;
+    if( 0 == stat( sFname.c_str(), &stat_buf )) {
+            char szSize[ 40 ];
+
+        if( m_method == HEAD ) {
+            set( "Content-Length", stat_buf.st_size );
+
+            sendHTTPHeaders();
+        } else {
+            set( "Content-Length", stat_buf.st_size );
+
+            // Copy the file directly to the stream
+            ifstream is( sFname.c_str());
+            ostream &os = m_socket.getOutputStream();
+
+            sendHTTPHeaders();
+
+            while( !is.eof() && os.good() && stat_buf.st_size ) {
+                    char szBuffer[ 1024 ];
+                    int nChunk = sizeof( szBuffer );
+
+                    if( stat_buf.st_size < (off_t)sizeof( szBuffer ))
+                        nChunk = stat_buf.st_size;
+
+                    is.read( szBuffer, nChunk );
+                    os.write( szBuffer, nChunk );
+                    stat_buf.st_size -= nChunk;
+            }
+        }
+            return true;
+    }
+    return false;
+}
+
+bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
+{
 	struct stat stat_buf;
+
 	if( 0 == stat( sFname.c_str(), &stat_buf )) {
 		char szSize[ 40 ];
 
-		set( "Content-Length", stat_buf.st_size );
+        if( m_method == HEAD ) {
+            set( "Content-Length", stat_buf.st_size );
 
-		// Copy the file directly to the stream
-		ifstream is( sFname.c_str());
-		ostream &os = m_socket.getOutputStream();
+            sendHTTPHeaders( HTTPRequestHandler::HTTP_OK );
+        } else {
+            if( length == 0 || length > stat_buf.st_size - offset )
+               length = stat_buf.st_size - offset;
 
-		sendHTTPHeaders();
+            set( "Content-Length", length );
 
-		while( !is.eof() && stat_buf.st_size ) {
-			char szBuffer[ 1024 ];
-			int nChunk = sizeof( szBuffer );
+            if( length == stat_buf.st_size ) {
+                sendHTTPHeaders(HTTPRequestHandler::HTTP_OK);
+            } else {
+                stringstream ros;
 
-			if( stat_buf.st_size < (off_t)sizeof( szBuffer ))
-				nChunk = stat_buf.st_size;
+                ros << "bytes " << offset << "-" << (offset + length - 1) << "/" << stat_buf.st_size;
+                set( "Content-Range", ros.str());
 
-			is.read( szBuffer, nChunk );
-			os.write( szBuffer, nChunk );
-			stat_buf.st_size -= nChunk;
-		}
+                sendHTTPHeaders( HTTPRequestHandler::HTTP_PARTIAL_CONTENT );
+            }
+
+            // Copy the file directly to the stream
+            ifstream is( sFname.c_str());
+            ostream &os = m_socket.getOutputStream();
+
+            if( offset != 0 )
+                is.seekg( offset, ios::beg );
+
+            while( !is.eof() && os.good() && length ) {
+                char szBuffer[ 1024 ];
+                int nChunk = sizeof( szBuffer );
+
+                if( length < (size_t)sizeof( szBuffer ))
+                    nChunk = length;
+
+                is.read( szBuffer, nChunk );
+                if( is )
+                    os.write( szBuffer, nChunk );
+
+                length -= nChunk;
+            }
+        }
 		return true;
 	}
 	return false;
@@ -280,22 +347,44 @@ struct HttpError {
 	const char *pszError;
 	const char *pszDesc;
 } http_errors[] = {
-	{HTTPRequestHandler::HTTP_OK,                    "OK", "OK"},
-	{HTTPRequestHandler::HTTP_CREATED,               "Created", "Created"},
-	{HTTPRequestHandler::HTTP_ACCEPTED,              "Accepted", "Accepted"},
-	{HTTPRequestHandler::HTTP_NO_CONTENT,            "No Content", "No Content"},
-	{HTTPRequestHandler::HTTP_MOVED_PERMANENTLY,     "Moved Permanently", "Moved Permanently"},
-	{HTTPRequestHandler::HTTP_MOVED_TEMPORARILY,     "Moved Temporarily", "Moved Temporarily"},
-	{HTTPRequestHandler::HTTP_NOT_MODIFIED,          "Not Modified", "Not Modified"},
-	{HTTPRequestHandler::HTTP_BAD_REQUEST,           "Bad Request", "Bad Request"},
-	{HTTPRequestHandler::HTTP_UNAUTHORIZED,          "Unauthorized", "Unauthorized"},
-	{HTTPRequestHandler::HTTP_FORBIDDEN,             "Forbidden",    "Forbidden"},
-	{HTTPRequestHandler::HTTP_NOT_FOUND,             "Not Found",    "Service or document is not found"},
-	{HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR, "Internal Server Error", "Internal Server Error"},
-	{HTTPRequestHandler::HTTP_NOT_IMPLEMENTED,       "Not Implemented", "Not Implemented"},
-	{HTTPRequestHandler::HTTP_BAD_GATEWAY,           "Bad Gateway", "Bad Gateway"},
-	{HTTPRequestHandler::HTTP_SERVICE_UNAVAILABLE,   "Service Unavailable", "Service Unavailable"}
+    {HTTPRequestHandler::HTTP_CONTINUE,                 "Continue","Continue"},
+    {HTTPRequestHandler::HTTP_SWITCHING_PROTOCOLS,      "Switching Protocols","Switching Protocols"},
+	{HTTPRequestHandler::HTTP_OK,                       "OK", "OK"},
+	{HTTPRequestHandler::HTTP_CREATED,                  "Created", "Created"},
+	{HTTPRequestHandler::HTTP_ACCEPTED,                 "Accepted", "Accepted"},
+	{HTTPRequestHandler::HTTP_NO_CONTENT,               "No Content", "No Content"},
+	{HTTPRequestHandler::HTTP_MOVED_PERMANENTLY,        "Moved Permanently", "Moved Permanently"},
+	{HTTPRequestHandler::HTTP_MOVED_TEMPORARILY,        "Moved Temporarily", "Moved Temporarily"},
+	{HTTPRequestHandler::HTTP_NOT_MODIFIED,             "Not Modified", "Not Modified"},
+	{HTTPRequestHandler::HTTP_BAD_REQUEST,              "Bad Request", "Bad Request"},
+	{HTTPRequestHandler::HTTP_UNAUTHORIZED,             "Unauthorized", "Unauthorized"},
+	{HTTPRequestHandler::HTTP_FORBIDDEN,                "Forbidden",    "Forbidden"},
+	{HTTPRequestHandler::HTTP_NOT_FOUND,                "Not Found",    "Service or document is not found"},
+	{HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR,    "Internal Server Error", "Internal Server Error"},
+	{HTTPRequestHandler::HTTP_NOT_IMPLEMENTED,          "Not Implemented", "Not Implemented"},
+	{HTTPRequestHandler::HTTP_BAD_GATEWAY,              "Bad Gateway", "Bad Gateway"},
+	{HTTPRequestHandler::HTTP_SERVICE_UNAVAILABLE,      "Service Unavailable", "Service Unavailable"},
+    {HTTPRequestHandler::HTTP_RESET_CONTENT,            "Reset Content","Reset Content"},
+    {HTTPRequestHandler::HTTP_PARTIAL_CONTENT,          "Partial Content","Partial Content"},
+    {HTTPRequestHandler::HTTP_USE_PROXY,                "Use Proxy","Use Proxy"},
+    {HTTPRequestHandler::HTTP_TEMPORARY_REDIRECT,       "Temporary Redirect","Temporary Redirect"},
+    {HTTPRequestHandler::HTTP_METHOD_NOT_ALLOWED,       "Method Not Allowed","Method Not Allowed"},
+    {HTTPRequestHandler::HTTP_NOT_ACCEPTABLE,           "Not Acceptable","Not Acceptable"},
+    {HTTPRequestHandler::HTTP_PROXY_AUTHENTICATION_REQUIRED,"Proxy Authentication Required","Proxy Authentication Required"},
+    {HTTPRequestHandler::HTTP_REQUEST_TIMEOUT,          "Request Timeout","Request Timeout"},
+    {HTTPRequestHandler::HTTP_CONFLICT,                 "Conflict","Conflict"},
+    {HTTPRequestHandler::HTTP_GONE,                     "Gone","Gone"},
+    {HTTPRequestHandler::HTTP_LENGTH_REQUIRED,          "Length Required","Length Required"},
+    {HTTPRequestHandler::HTTP_PRECONDITION_FAILED,      "Precondition Failed","Precondition Failed"},
+    {HTTPRequestHandler::HTTP_REQUEST_ENTITY_TOO_LARGE, "Request Entity Too Large","Request Entity Too Large"},
+    {HTTPRequestHandler::HTTP_REQUEST_URI_TOO_LONG,     "Request Uri Too Long","Request Uri Too Long"},
+    {HTTPRequestHandler::HTTP_UNSUPPORTED_MEDIA_TYPE,   "Unsupported Media Type","Unsupported Media Type"},
+    {HTTPRequestHandler::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE,"Requested Range Not Satisfiable","Requested Range Not Satisfiable"},
+    {HTTPRequestHandler::HTTP_EXPECTATION_FAILED,       "Expectation Failed","Expectation Failed"},
+    {HTTPRequestHandler::HTTP_GATEWAY_TIMEOUT,          "Gateway Timeout","Gateway Timeout"},
+    {HTTPRequestHandler::HTTP_VERSION_NOT_SUPPORTED,    "Version Not Supported","Version Not Supported"}
 };
+
 #define HTTP_ERROR_SIZE (sizeof( http_errors ) / sizeof( HttpError ))
 
 const char *getHttpError( HTTPRequestHandler::Result res, const char **desc )
