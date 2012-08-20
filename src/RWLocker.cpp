@@ -8,35 +8,35 @@
 namespace nbpp
 {
     RWLocker::RWLocker() throw(AssertException, exception) :
-        readerCount(0), mutex(new Mutex) { }
+        _readerCount(0), _mutex(new Mutex) { }
     
     RWLocker::RWLocker(Mutex* arg_mutex) throw(AssertException, exception) :
-        readerCount(0), mutex(arg_mutex) { }
+        _readerCount(0), _mutex(arg_mutex) { }
 
     RWLocker::~RWLocker() throw()
     {
-        delete mutex;
+        delete _mutex;
     }
 
     void RWLocker::getReadLock() throw(AssertException, exception)
     {
         // Lock the mutex.
-        Lock lock(*mutex);
+        Lock lock(*_mutex);
 
         // Increment the number of readers.
-        ++readerCount;
+        ++_readerCount;
     }
 
     void RWLocker::releaseReadLock() throw(AssertException, exception)
     {
         // Lock the mutex.
-        Lock lock(*mutex);
+        Lock lock(*_mutex);
 
         // Decrement the number of readers.
-        DEBUG(Assert (readerCount != 0,
+        DEBUG(Assert (_readerCount != 0,
                       AssertException ("nbpp::RWLocker::releaseReadLock(): "
                                        "RWLocker already unlocked")));
-        --readerCount;
+        --_readerCount;
 
         // Notify other threads waiting for this mutex.
         lock.notifyAll();
@@ -48,7 +48,7 @@ namespace nbpp
         lock.get();
 
         // Wait until there are no more readers.
-        while (readerCount > 0)
+        while (_readerCount > 0)
             lock.wait();
     }
 
@@ -64,69 +64,61 @@ namespace nbpp
 
     ReadLock::ReadLock(RWLocker& arg_rwLocker, bool autoLock)
         throw(AssertException, exception) :
-        rwLocker(arg_rwLocker), locked(false)
+        _rwLocker(arg_rwLocker), _locked(false)
     {
         if (autoLock) get();
     }
 
     ReadLock::~ReadLock() throw()
     {
-        try
-        {
+        try {
             release();
-        }
-        catch (...) { }
+        } catch (...) { }
     }
 
     void ReadLock::get() throw(AssertException, exception)
     {
-        if (!locked)
-        {
-            rwLocker.getReadLock();
-            locked = true;
+        if (!_locked) {
+            _rwLocker.getReadLock();
+            _locked = true;
         }
     }
 
     void ReadLock::release() throw(AssertException, exception)
     {
-        if (locked)
-        {
-            rwLocker.releaseReadLock();
-            locked = false;
+        if (_locked) {
+            _rwLocker.releaseReadLock();
+            _locked = false;
         }
     }
 
     WriteLock::WriteLock(RWLocker& arg_rwLocker, bool autoLock)
         throw(AssertException, exception) :
-        rwLocker(arg_rwLocker), lock(*rwLocker.mutex, false), locked(false)
+        _rwLocker(arg_rwLocker), _lock(*_rwLocker._mutex, false), _locked(false)
     {
         if (autoLock) get();
     }
 
     WriteLock::~WriteLock() throw()
     {
-        try
-        {
+        try {
             release();
-        }
-        catch (...) { }
+        } catch (...) { }
     }
 
     void WriteLock::get() throw(AssertException, exception)
     {
-        if (!locked)
-        {
-            rwLocker.getWriteLock(lock);
-            locked = true;
+        if (!_locked) {
+            _rwLocker.getWriteLock(_lock);
+            _locked = true;
         }
     }
 
     void WriteLock::release() throw(AssertException, exception)
     {
-        if (locked)
-        {
-            rwLocker.releaseWriteLock(lock);
-            locked = false;
+        if (_locked) {
+            _rwLocker.releaseWriteLock(_lock);
+            //~ _locked = false;
         }
     }
 }

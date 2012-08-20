@@ -53,10 +53,10 @@ namespace nbpp
         void notify() throw(AssertException, exception);
         void notifyAll() throw(AssertException, exception);
 
-        pthread_mutex_t m_mutex;
-        pthread_mutexattr_t m_mutexAttr;
-        pthread_cond_t m_cond;
-        pthread_condattr_t m_condAttr;
+        pthread_mutex_t _mutex;
+        pthread_mutexattr_t _mutexAttr;
+        pthread_cond_t _cond;
+        pthread_condattr_t _condAttr;
 
         friend class Lock;
     };
@@ -99,8 +99,8 @@ namespace nbpp
         RecursiveMutex(const RecursiveMutex&);
         RecursiveMutex& operator=(const RecursiveMutex&);
 
-        unsigned int m_lockCount;
-        pthread_t m_owner;
+        mutable unsigned int _lockCount;
+        pthread_t _owner;
     };
 
 
@@ -215,8 +215,8 @@ namespace nbpp
         Lock(const Lock&);
         Lock& operator=(Lock&);
 
-        Mutex& m_mutex;
-        bool m_locked;
+        Mutex& _mutex;
+        mutable bool _locked;
     };
 }
 

@@ -3,11 +3,12 @@
 // 1 2 3 testing
 
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 using namespace nbpp;
 
-int main( )
+void test( )
 {
     stringstream os;
 
@@ -25,4 +26,18 @@ int main( )
     cout << "parsed : " << res << endl;
     
     cout << "json serialized : "; json_serialize( cout, res ) << endl; 
+}
+
+int main( int argc, char *argv[] ) 
+{
+    Variant res;
+    
+    if( argc > 1 ) {
+        ifstream os( argv[ 1 ] );
+        
+        res = json_parse( os );
+    } else
+        res = json_parse( cin );
+    
+    json_serialize( cout, res ) << endl;
 }

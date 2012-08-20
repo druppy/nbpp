@@ -454,7 +454,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
             HTTPRequest req( connection.sock );
             if( req.getVersion() < 1.1 )
                 persist = false;
-
+    
             if( req.hasA( "Connection" ) && req[ "Connection" ] == "close" )
                 persist = false;
 

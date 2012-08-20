@@ -1,3 +1,10 @@
+nbpp (0.7.6-5) unstable; urgency=low
+
+  * make Lock boolean mutable !
+  * better pthread error handling
+  
+ -- Bo Lorentsen <bl@lue.dk>  Mon, 20 Aug 2012 23:04:00 +0100
+ 
 nbpp (0.7.6-4) unstable; urgency=low
 
   * support for partial http file handling
