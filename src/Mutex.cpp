@@ -6,6 +6,7 @@
 #include <nb++/Mutex.hpp>
 
 #include <assert.h>
+#include <errno.h>
 
 #include <list>
 #include <algorithm>
@@ -14,12 +15,12 @@ namespace nbpp
 {
 	using namespace std;
 	/*
-	  This is an internal class that maintail a list of all allocated mutexes
-	  to keep track of them, if a fork or popen function will be called to 
+	  This is an internal class that maintain a list of all allocated mutexes
+	  to keep track of them, if a fork or popen function will be called to
 	  make it possible to lock and unlock all at ones, for the fock process to
 	  succed.
 
-	  Im still not sure this is the way to do this, and I really like to eliminate 
+	  Im still not sure this is the way to do this, and I really like to eliminate
 	  the use of fork anyware in nb++, but just in case :-)
 	 */
 	class MutexManager {
@@ -34,7 +35,7 @@ namespace nbpp
 			pthread_mutexattr_init( &_mutexAttr );
 			pthread_mutex_init( &_mutex, &_mutexAttr );
 		}
-		
+
 		~MutexManager() {
 			pthread_mutex_destroy( &_mutex );
 			pthread_mutexattr_destroy( &_mutexAttr );
@@ -66,7 +67,7 @@ namespace nbpp
 
 			pthread_mutex_unlock( &_mutex );
 		}
-		
+
 		void initAll( void ) {
 			pthread_mutex_lock( &_mutex );
 
@@ -114,7 +115,7 @@ namespace nbpp
 
 	MutexManager *MutexManager::_pManager = NULL;
 
-	void MutexManager::reg_funcs( void ) 
+	void MutexManager::reg_funcs( void )
 	{
 		int res = ::pthread_atfork( mutex_init_prepare, mutex_init_parent, mutex_init_child );
 
@@ -128,9 +129,9 @@ namespace nbpp
     {
         pthread_mutexattr_init( &_mutexAttr );
         pthread_mutex_init( &_mutex, &_mutexAttr );
-        pthread_condattr_init( &_condAttr ); 
+        pthread_condattr_init( &_condAttr );
         pthread_cond_init( &_cond, &_condAttr );
-		
+
 		// MutexManager::getInst().add( _mutex );
     }
 
@@ -140,35 +141,49 @@ namespace nbpp
 
 		pthread_mutexattr_destroy( &_mutexAttr );
         pthread_mutex_destroy( &_mutex );
-		pthread_condattr_destroy( &_condAttr );		
+		pthread_condattr_destroy( &_condAttr );
         pthread_cond_destroy( &_cond );
     }
 
     void Mutex::lock() throw(AssertException, exception)
     {
-        if( pthread_mutex_lock( &_mutex ) != 0 )
+        int ret;
+        if( ret = pthread_mutex_lock( &_mutex ))
             throw AssertException( "nbpp::Mutex::lock() error" );
     }
 
     void Mutex::unlock() throw(AssertException, exception)
     {
-        if( pthread_mutex_unlock( &_mutex ) != 0 )
+        int ret;
+        if( ret = pthread_mutex_unlock( &_mutex ))
             throw AssertException( "nbpp::Mutex::unlock() error" );
     }
 
     void Mutex::wait() throw(AssertException, exception)
     {
-        if( pthread_cond_wait( &_cond, &_mutex ) != 0)
-            throw AssertException( "nbpp::Mutex::wait() error" );
+        int ret;
+
+        if( ret = pthread_cond_wait( &_cond, &_mutex )) {
+            if( ret != ETIMEDOUT ) {
+                string err = strerror( ret );
+                throw AssertException( "nbpp::Mutex::wait() error : " + err );
+            }
+        }
     }
 
     void Mutex::wait(unsigned int sec) throw(AssertException, exception)
     {
+        int ret;
         timespec now;
+
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += sec;
-        if( pthread_cond_timedwait(&_cond, &_mutex, &now) != 0)
-            throw AssertException( "nbpp::Mutex::wait(unsigned int) error" );
+        if( ret = pthread_cond_timedwait(&_cond, &_mutex, &now)) {
+            if( ret != ETIMEDOUT ) {
+                string err = strerror( ret );
+                throw AssertException( "nbpp::Mutex::wait(unsigend int) error : " + err );
+            }
+        }
     }
 
     void Mutex::notify() throw(AssertException, exception)
@@ -234,7 +249,7 @@ namespace nbpp
     Lock::Lock(Mutex& arg_mutex, bool autoLock) throw(AssertException, exception) :
         _mutex(arg_mutex), _locked(false)
     {
-        if ( autoLock ) 
+        if ( autoLock )
 			get();
     }
 

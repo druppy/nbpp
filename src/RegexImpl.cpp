@@ -38,7 +38,7 @@ namespace nbpp
     {
         Assert(offset >= 0 && offset <= text.size(),
                AssertException("Regex::match: String index out of range"));
-    
+
         return match(text.c_str() + offset, flags);
     }
 
@@ -56,11 +56,12 @@ namespace nbpp
             return RegexResult( false, numSubs, regMatches);
 
         default:
+            delete [] regMatches;
             throw RegexException(getErrMsg(result));
         }
     }
 
-    int RegexImpl::getSubExprCount() const 
+    int RegexImpl::getSubExprCount() const
     {
         return reg.re_nsub;
     }
