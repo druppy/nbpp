@@ -27,7 +27,8 @@ ADD_LIBRARY( nbpp SHARED
              UnixAddress.cpp UnixAddressImpl.cpp 
              SocketBaseImpl.cpp 
              Socket.cpp SocketImpl.cpp 
-             ServerSocket.cpp ServerSocketImpl.cpp 
+             ServerSocket.cpp ServerSocketImpl.cpp
+             RefCount.cpp 
              Regex.cpp RegexImpl.cpp 
              RegexResult.cpp RegexResultImpl.cpp 
              RegexSubResult.cpp String.cpp 

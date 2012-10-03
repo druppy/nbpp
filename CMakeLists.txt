@@ -5,11 +5,14 @@ INCLUDE (CheckIncludeFiles)
 INCLUDE (CheckFunctionExists)
 INCLUDE (CheckLibraryExists)
 INCLUDE( FindDoxygen )
+INCLUDE( CheckCSourceCompiles )
+
+CHECK_C_SOURCE_COMPILES("int main() {int x = 0; __sync_fetch_and_add(&x, 1);__sync_sub_and_fetch( &x, 1 );} " NBPP_HAVE_ATOMIC )
 
 # Set the library version
 SET( NBPP_VERSION_MAJOR 0 )
 SET( NBPP_VERSION_MINOR 7 )
-SET( NBPP_VERSION_REV 6 )
+SET( NBPP_VERSION_REV 7 )
 SET( NBPP_VERSION ${NBPP_VERSION_MAJOR}.${NBPP_VERSION_MINOR}.${NBPP_VERSION_REV} )
 
 SET( CMAKE_CXX_FLAGS "-std=c++98 -pthread" )

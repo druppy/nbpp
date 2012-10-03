@@ -31,82 +31,39 @@ class BaseRefHandle;
    @see RefHandle
 */
 class RefCounted {
-friend class BaseRefHandle;
+    friend class BaseRefHandle;
+    mutable int _refcount;
+	mutable bool _destroying;
+#ifndef NBPP_HAVE_ATOMIC
+    Mutex _mutex;
+#endif
 protected:
 	virtual ~RefCounted() = 0;
 
 public:
-	explicit RefCounted( void ) : m_nNbppRefCount( 0 ), m_bDestroying( false ) {}
-	RefCounted( const RefCounted & ) : m_nNbppRefCount( 0 ), m_bDestroying( false ) {}
+	explicit RefCounted( void );
+	RefCounted( const RefCounted & );
 
 	/// Peek the ref count value, not really thread safe !
-	int peekRefCount( void ) const {return m_nNbppRefCount;}
+	int peekRefCount( void ) const {return _refcount;}
 
 	// RefCounted &operator=( const RefCounted & ) {return *this;}
 private:
-	void lock( void ) {
-		Lock sync( m_mutex );
-
-		if( m_bDestroying )
-			throw RefCountException( "Can't lock a destructed data object." ); 
-
-		m_nNbppRefCount++;
-	}
-
-	void release( void ) {
-		Lock sync( m_mutex );
-
-		if( --m_nNbppRefCount == 0 ) {
-			m_bDestroying = true;
-			sync.release();
-			delete this;    // Are we in danger here, or does'nt out refcounter help us out ?
-		}
-	}
-
-	mutable int m_nNbppRefCount;
-	Mutex m_mutex;
-	mutable bool m_bDestroying;
+	void lock( void );
+	void release( void );
 };
 
 	inline RefCounted::~RefCounted() {}
 
 class BaseRefHandle {
 public:
-	BaseRefHandle( RefCounted *pRef ) : m_pRef( pRef ) {
-		if( m_pRef ) {
-			m_pRef->lock();
-		}
-	}
-
-	virtual ~BaseRefHandle() {
-		if( m_pRef  )
-			m_pRef->release();
-	}
-	
-	BaseRefHandle( const BaseRefHandle &refHndl ) {
-		m_pRef = refHndl.m_pRef;
-
-		if( m_pRef )
-		  	m_pRef->lock();
-	}
-
-	BaseRefHandle &operator=( const BaseRefHandle &refHndl ) {
-		if( m_pRef != refHndl.m_pRef ) {
-			RefCounted *pOld = m_pRef;
-			
-			m_pRef = refHndl.m_pRef;
-
-			if( m_pRef )
-				m_pRef->lock();
-
-			if( pOld )
-				pOld->release();			
-		}
-		return *this;
-	}
-	
+	BaseRefHandle( RefCounted *ref );
+	virtual ~BaseRefHandle();
+    
+	BaseRefHandle( const BaseRefHandle &refHndl );
+	BaseRefHandle &operator=( const BaseRefHandle &refHndl );
 protected:
-	RefCounted *m_pRef;
+	RefCounted *_ref;
 };
 
 /**
@@ -126,7 +83,7 @@ template<class T> class RefHandle : protected BaseRefHandle {
 
 	   @param pRef
 	 */
-	RefHandle( T *pRef = NULL ) : BaseRefHandle( pRef ) {}
+	RefHandle( T *ref = NULL ) : BaseRefHandle( ref ) {}
 
 	/**
 	   Make a new handle and a referende to the data pointed to by hndl.
@@ -154,19 +111,19 @@ template<class T> class RefHandle : protected BaseRefHandle {
 	/**
 	   Does the same as operator ->, as it get a pointer to the refered handler.
 	 */
-	T *get( void ) const throw() { return (T *)m_pRef;}
+	T *get( void ) const throw() { return (T *)_ref;}
 
 	/**
 	   Return refered data as reference.
 	 */
-	T &operator *() const {return *((T *)m_pRef);}
+	T &operator *() const {return *((T *)_ref);}
 
 	/**
 	   Return refered data as a pointer.
 	 */
-	T *operator ->() const throw() {return (T *)m_pRef;}
+	T *operator ->() const throw() {return (T *)_ref;}
 	
-	operator bool( void ) const {return m_pRef;}
+	operator bool( void ) const {return _ref;}
 };
 }
 #endif

@@ -77,6 +77,9 @@
 /* Define to 1 if you have the `socket' function. */
 #define NBPP_HAVE_SOCKET
 
+/* Define to one if the compiler supports atomic operations */
+#define NBPP_HAVE_ATOMIC
+
 /* Define to 1 if you have the <stdint.h> header file. */
 /* #undef NBPP_HAVE_STDINT_H */
 

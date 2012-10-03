@@ -1,3 +1,9 @@
+nbpp (0.7.7-0) unstable; urgency=low
+
+  * rewrite refcount to use atomic opereations 
+  
+ -- Bo Lorentsen <bl@lue.dk>  Mon, 3 Oct 2012 18:48:00 +0100
+
 nbpp (0.7.6-5) unstable; urgency=low
 
   * make Lock boolean mutable !
