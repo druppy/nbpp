@@ -454,7 +454,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
             HTTPRequest req( connection.sock );
             if( req.getVersion() < 1.1 )
                 persist = false;
-    
+
             if( req.hasA( "Connection" ) && req[ "Connection" ] == "close" )
                 persist = false;
 
@@ -471,6 +471,10 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                     for( ; i != m_handlers.end(); i++ ) {
                         if( i->filter.match( req.getUrl() ) ) {
                             res = i->hndl->handle( req );
+
+                            if( i->hndl->_conn_takeover )
+                                return;
+
                             break;
                         }
                     }
