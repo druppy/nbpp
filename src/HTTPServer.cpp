@@ -60,7 +60,7 @@ static const char *getHttpError( HTTPRequestHandler::Result res, const char **de
 /////////////////////////
 // Impl. of HTTPRequest
 
-HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket )
+HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket ), _takeover( false )
 {
     m_bHeaderSend = false;
     istream &is = m_socket.getInputStream();
@@ -472,7 +472,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                         if( i->filter.match( req.getUrl() ) ) {
                             res = i->hndl->handle( req );
 
-                            if( i->hndl->_conn_takeover )
+                            if( req.has_takeover() ) // Ok, the handler has taken over from here !
                                 return;
 
                             break;

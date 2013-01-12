@@ -26,7 +26,7 @@ namespace nbpp {
     public:
         Deferred() : _fired( false ) {}
 
-        void then( std::function<Ret (Args...)> func ) {
+        void then( function<Ret (Args...)> func ) {
             if( !_fired )
                 _callee.push_back( func );
             else

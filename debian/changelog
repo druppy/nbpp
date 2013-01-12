@@ -1,3 +1,9 @@
+nbpp (0.7.7-1) unstable; urgency=low
+
+  * connection takeover added to HTTP Request
+
+ -- Bo Lorentsen <bl@lue.dk>  Sun, 13 Jan 2013 00:13:01 +0100
+ 
 nbpp (0.7.7-0) unstable; urgency=low
 
   * rewrite refcount to use atomic opereations 

@@ -43,8 +43,7 @@ namespace nbpp {
 	public:
         // If true the http server will leave the socket to this handler in order to finish it
         // This is useful for long polls or even web sockets, default is false
-        bool _conn_takeover;
-
+        
 		enum Result {
             HTTP_CONTINUE = 100,
             HTTP_SWITCHING_PROTOCOLS = 101,
@@ -84,7 +83,7 @@ namespace nbpp {
             HTTP_VERSION_NOT_SUPPORTED = 505
 		};
 
-        HTTPRequestHandler() : _conn_takeover( false ) {}
+        HTTPRequestHandler() {}
 
 		virtual Result handle( HTTPRequest &req ) = 0;
 	};
@@ -232,6 +231,9 @@ namespace nbpp {
 		bool sendFile( const string &sFname, size_t offset, size_t length = 0 );
 
         bool sendFile( const string &sFname);
+
+        void takeover() {_takeover = true;}
+        bool has_takeover() const {return _takeover;}
 	private:
 		float m_nVersion;
 
@@ -242,6 +244,7 @@ namespace nbpp {
 		Socket m_socket;
 		ostringstream m_os;
 		Method m_method;
+        bool _takeover;   // Tell the http handler to drop handling this request
 	};
 
 	/**
