@@ -1,28 +1,34 @@
+nbpp (0.7.7-2) unstable; urgency=low
+
+  * file upload error handling fix
+
+ -- Bo Lorentsen <bl@moch.dk>  Mon, 21 Oct 2013 10:47:27 +0200
+
 nbpp (0.7.7-1) unstable; urgency=low
 
   * connection takeover added to HTTP Request
 
  -- Bo Lorentsen <bl@lue.dk>  Sun, 13 Jan 2013 00:13:01 +0100
- 
+
 nbpp (0.7.7-0) unstable; urgency=low
 
-  * rewrite refcount to use atomic opereations 
-  
+  * rewrite refcount to use atomic opereations
+
  -- Bo Lorentsen <bl@lue.dk>  Mon, 3 Oct 2012 18:48:00 +0100
 
 nbpp (0.7.6-5) unstable; urgency=low
 
   * make Lock boolean mutable !
   * better pthread error handling
-  
+
  -- Bo Lorentsen <bl@lue.dk>  Mon, 20 Aug 2012 23:04:00 +0100
- 
+
 nbpp (0.7.6-4) unstable; urgency=low
 
   * support for partial http file handling
-  
+
  -- Bo Lorentsen <bl@moch.dk>  Mon, 12 Mar 2012 11:48:55 +0100
-   
+
 nbpp (0.7.6-3) unstable; urgency=low
 
   * mutable ref counter
