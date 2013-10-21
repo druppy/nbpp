@@ -194,9 +194,9 @@ namespace nbpp {
 		   If the header id is already set it will be overwritten by this
 		   call. This can be suppressed by setting replace parameter to false
 
-		   @param sName is the name of the header element.
-		   @param sValue is the value of the ellement.
-                   @param sReplace should the new header replace existing with same name
+            @param sName is the name of the header element.
+            @param sValue is the value of the ellement.
+            @param sReplace should the new header replace existing with same name
 		 */
 		void set( const string &sName, const string &sValue, bool sReplace = true );
 

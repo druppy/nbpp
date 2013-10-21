@@ -62,8 +62,12 @@ void FilePart::eof()
 
 bool FilePart::put( char ch )
 {
-    ++_size;
-    return( EOF != fputc( ch, _file ));
+    if( EOF != fputc( ch, _file )) {
+        ++_size;
+        return true;
+    }
+
+    return false;
 }
 
 size_t FilePart::out( ostream &os )
@@ -151,7 +155,7 @@ bool Multipart::parse( istream &is )
 
                 if( '-' == ch ) {
                     ch = is.get();
-                    
+
                     if( ch == -1 || !is )
                         break;
 
@@ -199,14 +203,16 @@ bool Multipart::parse( istream &is )
             if( boundary_pos > 0 ) {
                 if( part )
                     for( size_t n = 0; n != boundary_pos; n++ )
-                        part->put( boundary[ n ] );
+                        if( !part->put( boundary[ n ] ))
+                            break;
 
                 boundary_pos = 0;
             }
         }
 
         if( part )
-            part->put( ch );
+            if( !part->put( ch ))
+                the_end = true;
     }
 
     return true;

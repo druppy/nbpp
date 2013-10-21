@@ -70,7 +70,7 @@ namespace nbpp
         public:
             /**
 			   Constructs a NetworkDaemon.  Detects whether inetd is being used.
-             
+
 			   @param arg_threader a Threader for assigning incoming connections to
 			   threads or processes.
              */
@@ -92,7 +92,7 @@ namespace nbpp
 			   If inetd is being used, calls setSignals() and handleConnection().  Otherwise,
 			   calls initServerSocket(), then Daemon::run().  If an Exception is caught, it is
 			   passed to handleException().
-			   
+
 			   @return 0 if called from inetd and the connection is handled successfully, 1 if
 			   handleException() is called (regardless of its return value), otherwise the
 			   return value of Daemon::run().
@@ -100,7 +100,7 @@ namespace nbpp
             virtual int run() throw() {
                 try {
                     if (fromInetd) {
-                        NetworkConnection<AddressType> conn; 
+                        NetworkConnection<AddressType> conn;
                         socklen_t sa_addrlen = conn.address.getNativeFormMaxSize();
                         unsigned char *sa_addr = (unsigned char *)alloca( sa_addrlen + 1 );
                         ::getsockname(0, reinterpret_cast<sockaddr*>(sa_addr),
@@ -108,9 +108,9 @@ namespace nbpp
                         conn.address.assignFromNativeForm
                             (reinterpret_cast<sockaddr*>(sa_addr),
                              sa_addrlen);
-                        
+
                         setSignals();
-                        
+
                         conn.sock = Socket(0, conn.address);
                         handleConnection(conn);
                         return 0;
@@ -134,12 +134,12 @@ namespace nbpp
             /**
 			   If this is a standalone daemon, calls DaemonBase::detach().  If inetd is being
 			   used, returns 0.
-			   
+
 			   @return the return value of DaemonBase::detach() (if this is a standalone
 			   daemon), or 0 (if inetd is being used).
              */
-            virtual pid_t detach( int fdout = -1, int fderr = -1, int fdin = -1, 
-                                  bool fd_close = true) 
+            virtual pid_t detach( int fdout = -1, int fderr = -1, int fdin = -1,
+                                  bool fd_close = true)
 				throw(ThreadControlException, AssertException, exception)
             {
                 return fromInetd ? 0 : DaemonBase::detach( fdout, fderr, fdin, fd_close );
@@ -170,7 +170,7 @@ namespace nbpp
 
             /**
 			   Changes the Threader.
-			   
+
 			   @return the previous Threader.
              */
             Threader setThreader(Threader arg_threader) throw(AssertException, exception) {
@@ -192,10 +192,10 @@ namespace nbpp
 			   The Threader determines when handleConnection is actually called.
              */
             virtual bool mainLoop() throw(Exception, exception) {
-				NetworkConnection<AddressType> conn; 
+				NetworkConnection<AddressType> conn;
 				try {
 					conn.sock = serverSock.accept(conn.address);
-					
+
 					if( conn.sock ) {
 						threader.queue(Command
 									   (new OneArgCommandImpl<NetworkConnection<AddressType>,
@@ -208,7 +208,7 @@ namespace nbpp
 				} catch( const exception &ex ) {
 					nbpp::log.put( "Ignoring exception : %s", ex.what());
 				}
-				
+
 				return true;
 			}
 
@@ -224,7 +224,7 @@ namespace nbpp
 			   method should call SignalManager::deliver() to cause the daemon to be
 			   notified synchronously of pending signals.  An Exception thrown by this method
 			   will be caught and passed to handleException().
-             
+
 			   @param connection a NetworkConnection<AddressType> containing both the socket
 			   and the address from which the connection was received.
              */
