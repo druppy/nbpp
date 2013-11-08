@@ -136,7 +136,7 @@ bool Multipart::parse( istream &is )
     while( !the_end ) {
         int ch = is.get();
 
-        if( !is || ch != -1 )
+        if( !is || ch == -1 )
             break;
 
         if( ch == boundary[ boundary_pos ] ) {
