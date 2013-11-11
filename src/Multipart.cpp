@@ -127,16 +127,15 @@ Multipart::~Multipart()
 bool Multipart::parse( istream &is )
 {
     string line, fullboundary = "--" + _boundary;
-    bool the_end = false;
+    bool valid = false;
 
     Part *part = NULL;
 
     size_t boundary_pos = 0;
     const char *boundary = fullboundary.c_str();
-    while( !the_end ) {
+    while( is.good() ) {
         int ch = is.get();
-
-        if( !is || ch == -1 )
+        if( !is.good() )
             break;
 
         if( ch == boundary[ boundary_pos ] ) {
@@ -160,14 +159,12 @@ bool Multipart::parse( istream &is )
                         break;
 
                     if( '-' == ch ) {
-                        the_end = true;
-
                         // Consume leftover whitespace
                         do {
                             ch = is.get();
-                        } while( isspace( ch ) && ch != -1 && is);
+                        } while( isspace( ch ) && is.good());
                         clog << "---- end of multipart ---" << endl;
-
+                        valid = true;
                         break;
                     } else
                         is.unget();
@@ -212,8 +209,8 @@ bool Multipart::parse( istream &is )
 
         if( part )
             if( !part->put( ch ))
-                the_end = true;
+                break;
     }
 
-    return true;
+    return valid;
 }
