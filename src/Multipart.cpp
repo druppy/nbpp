@@ -129,15 +129,15 @@ bool Multipart::parse( istream &is )
     string line, fullboundary = "--" + _boundary;
 
     Part *part = NULL;
-    bool valid = false;
+    bool stop = false, valid = false;
 
     size_t boundary_pos = 0;
     const char *boundary = fullboundary.c_str();
-    while( is ) {
+    while( !stop ) {
         int ch = is.get();
 
-        if( !is || ch == -1 )
-            break;
+        if( !is || ch == EOF )
+            stop = true;
 
         if( ch == boundary[ boundary_pos ] ) {
             if( boundary[ ++boundary_pos ] == 0 ) {
@@ -145,9 +145,9 @@ bool Multipart::parse( istream &is )
 
                 do {
                     ch = is.get();
-                } while( isspace( ch ) && is.good() );
+                } while( isspace( ch ) && is );
 
-                if( !is.good() )
+                if( !is )
                     break;
 
                 if( part )
@@ -156,15 +156,15 @@ bool Multipart::parse( istream &is )
                 if( '-' == ch ) {
                     ch = is.get();
 
-                    if( !is.good() )
+                    if( !is )
                         break;
 
                     if( '-' == ch ) {
                         // Consume leftover whitespace
                         do {
                             ch = is.get();
-                        } while( isspace( ch ) && is.good());
-                        clog << "---- end of multipart ---" << endl;
+                        } while( isspace( ch ) && is );
+                        clog << "--- end of multipart ---" << endl;
                         valid = true;
                         break;
                     } else
@@ -175,7 +175,9 @@ bool Multipart::parse( istream &is )
                 part = new MemPart();
 
                 // Read headers
-                while( is.good()) {
+
+               // Read headers
+                while( is ) {
                     getline( is, line );
 
                     line = trim( line );
@@ -195,22 +197,28 @@ bool Multipart::parse( istream &is )
                 }
 
                 _parts.push_back( part );
+                clog << "--- multipart add new part : " << part->filename_get() << endl;
             }
             continue;
         } else {
             if( boundary_pos > 0 ) {
                 if( part )
                     for( size_t n = 0; n != boundary_pos; n++ )
-                        if( !part->put( boundary[ n ] ))
+                        if( !part->put( boundary[ n ] )) {
+                            stop = true;
                             break;
+                        }
 
                 boundary_pos = 0;
             }
         }
 
-        if( part )
-            if( !part->put( ch ))
+        if( part ) {
+            if( !part->put( ch )) {
+                stop = true;
                 break;
+            }
+        }
     }
 
     return valid;
