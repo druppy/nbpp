@@ -134,7 +134,7 @@ bool Multipart::parse( istream &is )
     size_t boundary_pos = 0;
     const char *boundary = fullboundary.c_str();
     while( is.good() ) {
-        int ch = is.get();
+        char ch = is.get();
         if( !is.good() )
             break;
 
@@ -144,9 +144,9 @@ bool Multipart::parse( istream &is )
 
                 do {
                     ch = is.get();
-                } while( isspace( ch ) && ch != -1 && is );
+                } while( isspace( ch ) && is.good() );
 
-                if( !is )
+                if( !is.good() )
                     break;
 
                 if( part )
@@ -155,7 +155,7 @@ bool Multipart::parse( istream &is )
                 if( '-' == ch ) {
                     ch = is.get();
 
-                    if( ch == -1 || !is )
+                    if( !is.good() )
                         break;
 
                     if( '-' == ch ) {
@@ -174,7 +174,7 @@ bool Multipart::parse( istream &is )
                 part = new MemPart();
 
                 // Read headers
-                while( !is.eof()) {
+                while( is.good()) {
                     getline( is, line );
 
                     line = trim( line );
