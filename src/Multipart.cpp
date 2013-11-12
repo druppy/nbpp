@@ -2,7 +2,7 @@
 #include <nb++/String.hpp>
 #include <iostream>
 #include <cstdlib>
-
+#include <cstring>
 
 using namespace nbpp;
 
@@ -132,7 +132,10 @@ bool Multipart::parse( istream &is )
     bool stop = false, valid = false;
 
     size_t boundary_pos = 0;
-    const char *boundary = fullboundary.c_str();
+
+    char *boundary = new char[ fullboundary.length() + 1 ];
+    strcpy( boundary, fullboundary.c_str()); // dont optimize away
+
     while( !stop ) {
         int ch = is.get();
 
@@ -221,5 +224,6 @@ bool Multipart::parse( istream &is )
         }
     }
 
+    delete boundary;
     return valid;
 }
