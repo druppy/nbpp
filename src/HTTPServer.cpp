@@ -401,19 +401,21 @@ const char *getHttpError( HTTPRequestHandler::Result res, const char **desc )
 
 void sendHttpError( HTTPRequest &req, HTTPRequestHandler::Result res )
 {
-    const char *pszErrorDesc = NULL;
-	const char *pszError = getHttpError( res, &pszErrorDesc );
+    if( !req.header_send()) {
+        const char *pszErrorDesc = NULL;
+        const char *pszError = getHttpError( res, &pszErrorDesc );
 
-	ostream &os = req.getOutputStream();
+        req.set( "Content-Type", "text/html" );
 
-	os << "<HTML><HEAD>";
-	os << "<TITLE>" << pszError << "</TITLE>";
-	os << "<HEAD><BODY>";
-	os << "<H1>" << pszError << "</H1>";
-	os << "<P>" << pszErrorDesc << "</P>";
-	os << "</BODY></HTML>";
+        ostream &os = req.getOutputStream();
 
-	req.set( "Content-Type", "text/html" );
+        os << "<HTML><HEAD>";
+        os << "<TITLE>" << pszError << "</TITLE>";
+        os << "<HEAD><BODY>";
+        os << "<H1>" << pszError << "</H1>";
+        os << "<P>" << pszErrorDesc << "</P>";
+        os << "</BODY></HTML>";
+    }
 }
 
 HTTPServer::HTTPServer( const string &sPrgName ) : NetworkDaemon<InetAddress>( sPrgName ),
@@ -482,7 +484,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                     if( i == m_handlers.end())
                         res = HTTPRequestHandler::HTTP_NOT_FOUND;
 
-                    if( res > 300 && req.getOutStreamSize() == 0 )
+                    if( res >= 400 && req.getOutStreamSize() == 0)
                         sendHttpError( req, res );
 
                 } catch( const exception &ex ) {

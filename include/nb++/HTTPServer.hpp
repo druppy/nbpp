@@ -43,7 +43,7 @@ namespace nbpp {
 	public:
         // If true the http server will leave the socket to this handler in order to finish it
         // This is useful for long polls or even web sockets, default is false
-        
+
 		enum Result {
             HTTP_CONTINUE = 100,
             HTTP_SWITCHING_PROTOCOLS = 101,
@@ -234,6 +234,8 @@ namespace nbpp {
 
         void takeover() {_takeover = true;}
         bool has_takeover() const {return _takeover;}
+
+        bool header_send() const {return m_bHeaderSend;}
 	private:
 		float m_nVersion;
 
