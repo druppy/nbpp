@@ -111,6 +111,7 @@ namespace nbpp {
 			string sValue;
 		};
 		typedef vector<NameValue> values_t;
+        typedef list<pair<float, string> > http_langs; // quality / language
 
 		HTTPRequest( Socket &socket );
 		~HTTPRequest();
@@ -217,6 +218,12 @@ namespace nbpp {
 		 */
 		void sendHTTPHeaders( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK );
 
+        http_langs http_accept_language_list() const;
+        float http_accept_language( const string &locale ) const;
+
+        // Check if mimetype are accepted and the quality level (see rfc2616)
+        float http_accept_mimetype( const string &mime_type ) const;
+
 		/**
 		   To send large files, please use this function to reduce the amount of memory
 		   used for this action.
@@ -236,6 +243,9 @@ namespace nbpp {
         bool has_takeover() const {return _takeover;}
 
         bool header_send() const {return m_bHeaderSend;}
+
+        // For debugging and tracing
+        ostream &dump( ostream &os ) const ;
 	private:
 		float m_nVersion;
 
@@ -379,5 +389,7 @@ namespace nbpp {
 		vpdata_t m_fields;
 	};
 };
+
+inline std::ostream &operator<<( std::ostream &os, const nbpp::HTTPRequest &req ) {return req.dump( os );}
 
 #endif /* _HTTPSERVER_HPP */

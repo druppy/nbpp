@@ -3,6 +3,7 @@
 */
 
 #include <nb++/HTTPServer.hpp>
+#include <nb++/String.hpp>
 
 #include <sstream>
 #include <iostream>
@@ -231,6 +232,112 @@ void HTTPRequest::sendHTTPHeaders( HTTPRequestHandler::Result res )
 	}
 }
 
+HTTPRequest::http_langs HTTPRequest::http_accept_language_list() const
+{
+    http_langs langs;
+
+    if( hasA( "Accept-Language" )) {
+        string accept = (*this)[ "Accept-Language" ];
+
+        Strings parts = split( accept, "," );
+
+        for( Strings::iterator i = parts.begin(); i != parts.end(); i++ ) {
+            float quality = 1;
+            Strings elms = split( *i, ";" );
+
+            // Find quality parameter
+            if( elms.size() > 1 ) {
+                Strings::iterator pi = elms.begin();
+                pi++;
+                for( ; pi != elms.end(); pi++ ) {
+                    Strings p = split( *pi, "=" );
+
+                    if( p.size() == 2 ) {
+                        if( p[0] == "q" )
+                            quality = atof( p[1].c_str() );
+                    }
+                }
+            }
+
+            if( elms.size() > 0 )
+                langs.push_back( make_pair(quality, trim(elms[ 0 ])));
+        }
+    }
+
+    return langs;
+}
+
+float HTTPRequest::http_accept_language( const string &locale ) const
+{
+    http_langs langs = http_accept_language_list();
+
+    for( http_langs::iterator i = langs.begin(); i != langs.end(); i++ )
+        if( i->second == locale )
+            return i->first;
+
+    return 0;
+}
+
+float HTTPRequest::http_accept_mimetype( const string &mime_type ) const
+{
+    bool ok = false;
+    float quality = 1;
+
+    Strings rtypes = split( mime_type, "/" );
+
+    if( hasA( "Accept" ) && rtypes.size() == 2) {
+        string rtype = trim( rtypes[ 0 ] );
+        string rsubtype = trim( rtypes[ 1 ] );
+        string accept = (*this)[ "Accept" ];
+
+        Strings parts = split( accept, "," );
+
+        for( Strings::iterator i = parts.begin(); i != parts.end(); i++ ) {
+            Strings elms = split( *i, ";" );
+
+            // Compare types and suptypes
+            if( elms.size() > 0 ) {
+                Strings types = split( elms[ 0 ], "/" );
+
+                string type = trim(types[ 0 ]), subtype = trim( types[ 1 ] );
+
+                if( type == rtype ) {
+                    if( subtype == rsubtype ) {     // type/subtype
+                        ok = true;
+                    } else if( subtype == "*" )     // type/*
+                        ok = true;
+                } else if( type == "*" )            // */*
+                    ok = true;
+            }
+
+            // Find quality parameter
+            if( elms.size() > 1 ) {
+                Strings::iterator pi = elms.begin();
+                pi++;
+                while( pi != elms.end()) {
+                    if( !(*pi).empty()) {
+                        Strings p = split( *pi, "=" );
+                        if( p.size() == 2 ) {
+                            if( p[0] == "q" )
+                                quality = atof( p[1].c_str() );
+                        }
+                    }
+                    pi++;
+                }
+            }
+        }
+
+        // XXX, remove when we are sure this works as expected
+        /*clog << "INFO: request mime '" << mime_type << "' in '" << req[ "Accept" ] << "'";
+        if( ok )
+            clog << " has quality " << quality << " and is accepted " << endl;
+        else
+            clog << " is rejected" << endl;*/
+    }
+
+    return ok ? quality : 0;
+}
+
 bool HTTPRequest::sendFile( const string &sFname )
 {
     struct stat stat_buf;
@@ -319,6 +426,41 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
 		return true;
 	}
 	return false;
+}
+
+ostream &HTTPRequest::dump( ostream &os ) const
+{
+    os << "Request method ";
+    switch( m_method ) {
+        case PUT:
+            os << "PUT";
+            break;
+        case GET:
+            os << "GET";
+            break;
+        case POST:
+            os << "POST";
+            break;
+        case HEAD:
+            os << "HEAD";
+            break;
+        case DELETE:
+            os << "DELETE";
+            break;
+    };
+    os << ", version " << m_nVersion << endl;
+    os << "URI: " << m_url.toString() << endl;
+    os << "header in : " << endl;
+
+    values_t::const_iterator i;
+    for( i = m_header_in.begin(); i != m_header_in.end(); i++ )
+        os << " " << i->sName << ": " << i->sValue << endl;
+
+    os << "header out : " << endl;
+    for( i = m_header_out.begin(); i != m_header_out.end(); i++ )
+        os << " " << i->sName << ": " << i->sValue << endl;
+
+    return os;
 }
 
 /////////////////////////////
