@@ -232,9 +232,9 @@ void HTTPRequest::sendHTTPHeaders( HTTPRequestHandler::Result res )
 	}
 }
 
-HTTPRequest::http_langs HTTPRequest::http_accept_language_list() const
+HTTPRequest::langs_t HTTPRequest::accept_language_list() const
 {
-    http_langs langs;
+    langs_t langs;
 
     if( hasA( "Accept-Language" )) {
         string accept = (*this)[ "Accept-Language" ];
@@ -267,18 +267,18 @@ HTTPRequest::http_langs HTTPRequest::http_accept_language_list() const
     return langs;
 }
 
-float HTTPRequest::http_accept_language( const string &locale ) const
+float HTTPRequest::accept_language( const string &locale ) const
 {
-    http_langs langs = http_accept_language_list();
+    langs_t langs = accept_language_list();
 
-    for( http_langs::iterator i = langs.begin(); i != langs.end(); i++ )
+    for( langs_t::iterator i = langs.begin(); i != langs.end(); i++ )
         if( i->second == locale )
             return i->first;
 
     return 0;
 }
 
-float HTTPRequest::http_accept_mimetype( const string &mime_type ) const
+float HTTPRequest::accept_mimetype( const string &mime_type ) const
 {
     bool ok = false;
     float quality = 1;
@@ -338,11 +338,35 @@ float HTTPRequest::http_accept_mimetype( const string &mime_type ) const
     return ok ? quality : 0;
 }
 
+static string make_etag( struct stat &stat )
+{
+    stringstream etag;
+
+    etag << hex << "\"" << stat.st_ino << "-" << stat.st_mtime << "-" << stat.st_size << "\"";
+
+    // return md5( etag.str() );
+    return etag.str();
+}
+
+
 bool HTTPRequest::sendFile( const string &sFname )
 {
     struct stat stat_buf;
     if( 0 == stat( sFname.c_str(), &stat_buf )) {
-            char szSize[ 40 ];
+        char szSize[ 40 ];
+
+        // Calculate etag, set it and test if it match user provided
+        string etag = make_etag( stat_buf );
+        set( "ETag", etag );
+        if( hasA( "If-None-Match" )) {
+            if( etag == (*this)[ "If-None-Match" ] || "*" == (*this)[ "If-None-Match" ] ) {
+                sendHTTPHeaders( HTTPRequestHandler::HTTP_NOT_MODIFIED );
+                return true;
+            }
+
+            sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
+            return false;
+        }
 
         if( m_method == HEAD ) {
             set( "Content-Length", stat_buf.st_size );
@@ -380,6 +404,19 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
 
 	if( 0 == stat( sFname.c_str(), &stat_buf )) {
 		char szSize[ 40 ];
+
+        // Calculate etag, set it and test if it match user provided
+        string etag = make_etag( stat_buf );
+        set( "ETag", etag );
+        if( hasA( "If-None-Match" )) {
+            if( etag == (*this)[ "If-None-Match" ] || "*" == (*this)[ "If-None-Match" ] ) {
+                sendHTTPHeaders( HTTPRequestHandler::HTTP_NOT_MODIFIED );
+                return true;
+            }
+
+            sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
+            return false;
+        }
 
         if( m_method == HEAD ) {
             set( "Content-Length", stat_buf.st_size );

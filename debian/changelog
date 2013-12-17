@@ -1,3 +1,10 @@
+nbpp (0.7.7-4) unstable; urgency=low
+
+  * add ETag's
+  * add language and mime type helper functions
+
+ -- Bo Lorentsen <bl@moch.dk>  Tue, 17 Dec 2013 11:38:46 +0100
+
 nbpp (0.7.7-3) unstable; urgency=low
 
   * http responce fix
