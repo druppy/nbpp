@@ -8,7 +8,7 @@ extern "C"
 {
 #include <unistd.h>
 #include <errno.h>
-#include <cstdlib>
+#include <stdlib.h>
 }
 
 namespace nbpp

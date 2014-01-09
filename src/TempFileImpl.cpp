@@ -19,7 +19,7 @@ extern "C"
 #include <sys/types.h>
 #include <limits.h>
 #include <errno.h>
-#include <cstdlib>
+#include <stdlib.h>
 }
 
 namespace nbpp
@@ -56,7 +56,7 @@ namespace nbpp
         // Give up.
         throw IOException("Couldn't find writable directory for temporary file");
     }
-    
+
     TempFileImpl::TempFileImpl(const string& dir, const string& prefix,
                                const string& suffix)
         throw(IOException, AssertException, exception)
@@ -66,7 +66,7 @@ namespace nbpp
             throw IOException("Can't write temporary file in " + dir);
         }
     }
-    
+
     TempFileImpl::~TempFileImpl() throw()
     {
         if (!path.empty())
@@ -74,7 +74,7 @@ namespace nbpp
             unlink(path.c_str());
         }
     }
-    
+
     string TempFileImpl::getPath() throw(AssertException, exception)
     {
         return path;
