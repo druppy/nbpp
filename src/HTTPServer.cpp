@@ -364,8 +364,8 @@ bool HTTPRequest::sendFile( const string &sFname )
                 return true;
             }
 
-            sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
-            return false;
+            /*sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
+            return false;*/
         }
 
         if( m_method == HEAD ) {
@@ -414,8 +414,8 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
                 return true;
             }
 
-            sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
-            return false;
+            /*sendHTTPHeaders( HTTPRequestHandler::HTTP_PRECONDITION_FAILED );
+            return false;*/
         }
 
         if( m_method == HEAD ) {

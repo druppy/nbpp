@@ -1,3 +1,9 @@
+nbpp (0.7.7-5) unstable; urgency=low
+
+  * drop PRECONDITION_FAILED in file upload until we unserstand it
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 20 Feb 2014 11:24:26 +0100
+
 nbpp (0.7.7-4) unstable; urgency=low
 
   * add ETag's
