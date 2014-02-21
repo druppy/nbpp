@@ -113,7 +113,7 @@ HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket ), _takeover( fals
 
 	// get ready for content reading ... well we are !
 	set( "Location", m_url.toString() );
-	set( "Content-Type", "text/plain" );
+	// set( "Content-Type", "text/plain" );
 	// cout << "Request accepted" << endl;
 
 	if( hasA( "Content-Length" ))
@@ -665,6 +665,10 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
 
                     if( res >= 400 && req.getOutStreamSize() == 0)
                         sendHttpError( req, res );
+
+                    // IE need this in a none persistent connection, so we stop here !
+                    if( res == 301 )
+                        persist = false;
 
                 } catch( const exception &ex ) {
                     res = HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR;
