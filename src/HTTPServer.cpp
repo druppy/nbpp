@@ -669,7 +669,6 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                     // IE need this in a none persistent connection, so we stop here !
                     if( res == 301 )
                         persist = false;
-
                 } catch( const exception &ex ) {
                     res = HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR;
                     sendHttpError( req, res );

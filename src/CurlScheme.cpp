@@ -13,10 +13,10 @@
 using namespace nbpp;
 
 /**
-   The basic class for all Curl connection, that takes care of propper 
+   The basic class for all Curl connection, that takes care of propper
    class init and some internal stream setup.
 */
-class CurlConnection : public URLConnection 
+class CurlConnection : public URLConnection
 {
 	CURL *m_curl;
 	curl_slist *m_pHeader;
@@ -39,7 +39,7 @@ public:
 	void setTimeout( unsigned nUsec );
 	ostream &getOutputStream( void );
 	void setOutputStream( ostream &os );
-}; 
+};
 
 /**
    The pure http version of the curl connection scheme. Its basicly just
@@ -63,15 +63,15 @@ public:
 	CurlHttpsConnection( const URL &url );
 
 	// void perform( istream *pInputStream, long nLen );
-}; 
+};
 
-class CurlFtpConnection : public CurlConnection 
+class CurlFtpConnection : public CurlConnection
 {
 public:
 	CurlFtpConnection( const URL &url );
 
 	// void perform( istream *pInputStream, long nLen );
-}; 
+};
 
 /////////////////////////////////
 // Impl. of some common C funcs.
@@ -121,7 +121,7 @@ size_t header_writer( void *ptr, size_t size, size_t nmemb, void *data )
 	string sTmp((char *)ptr, size * nmemb );
 
 	string::size_type pos = sTmp.find( ':' );
-	
+
 	string sName = string_tolower( sTmp.substr( 0, pos ));
 
 	pOptions->push_back( make_pair( sName, sTmp.substr( pos + 2, string::npos )));
@@ -132,7 +132,7 @@ size_t header_writer( void *ptr, size_t size, size_t nmemb, void *data )
 ////////////////////////////
 // Impl. of CurlConnection
 
-void CurlConnection::setopt( CURLoption curl_option, void *curl_data ) 
+void CurlConnection::setopt( CURLoption curl_option, void *curl_data )
 {
  	CURLcode code;
 	code = curl_easy_setopt( m_curl, curl_option, curl_data );
@@ -145,12 +145,12 @@ void CurlConnection::setopt( CURLoption curl_option, long curl_data )
 {
 	CURLcode code;
 	code = curl_easy_setopt( m_curl, curl_option, curl_data);
-	
+
 	if( code != CURLE_OK )
 		throw invalid_argument( m_szError );
 }
 
-CurlConnection::CurlConnection( const URL &url ) : URLConnection( url ) 
+CurlConnection::CurlConnection( const URL &url ) : URLConnection( url )
 {
 	memset( m_szError, 0, sizeof( m_szError ));
 	memset( m_margin,  0, sizeof( m_margin ));
@@ -166,12 +166,12 @@ CurlConnection::CurlConnection( const URL &url ) : URLConnection( url )
 	setopt( CURLOPT_WRITEFUNCTION, (void *)stream_writer );
 	setopt( CURLOPT_HEADERFUNCTION, (void *)header_writer );
 	setopt( CURLOPT_READFUNCTION, (void *)stream_reader );
-	
+
 	// setopt( CURLOPT_DNS_CACHE_TIMEOUT, (long)0 );     // Disable dns cacheing
 	setopt( CURLOPT_DNS_USE_GLOBAL_CACHE, (long)0 );  // This is not thread safe
 	setopt( CURLOPT_FAILONERROR, 1 );
 	setopt( CURLOPT_SSL_VERIFYPEER, (long)0 );  // Don't verify SSL
-	setopt( CURLOPT_SSL_VERIFYHOST, (long)1 );  // Its OK not to dif. host name
+	//setopt( CURLOPT_SSL_VERIFYHOST, (long)1 );  // Its OK not to dif. host name
 	setopt( CURLOPT_NOPROGRESS, 1 );
 	setopt( CURLOPT_NOSIGNAL, 1 );
 	setopt( CURLOPT_FOLLOWLOCATION, 1 );        // Follow locations if given
@@ -204,7 +204,7 @@ ostream &CurlConnection::getOutputStream( void )
 {
 	return *m_pOutputStream;
 }
- 
+
 void CurlConnection::setOutputStream( ostream &os )
 {
 	m_pOutputStream = &os;
@@ -231,17 +231,17 @@ void CurlConnection::perform( const string &sPostData )
 
 	// Need to post data ?
 	if( !sPostData.empty() ) {
-		setopt( CURLOPT_POSTFIELDS, (void *)sPostData.c_str() ); 
+		setopt( CURLOPT_POSTFIELDS, (void *)sPostData.c_str() );
 		setopt( CURLOPT_POSTFIELDSIZE, sPostData.length() );
 		setopt( CURLOPT_POST, 1 );
 	}
-	
+
 	// Well, data are to be found on the url
 	if( m_pHeader )
 		setopt( CURLOPT_HTTPHEADER, (void *)m_pHeader );
 
 	// Where to put the result !
-	
+
  	CURLcode res = curl_easy_perform( m_curl );
 
 	m_pOutputStream = &m_result; // Reset the custom output stream
@@ -256,7 +256,7 @@ void CurlConnection::perform( const string &sPostData )
 			ostr << "HTTP error : " << res;
 			throw ConnectException( ostr.str());
 		}
-		
+
 		throw ConnectException( m_szError );
 	}
 }
