@@ -184,3 +184,9 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
     }
     Request::send_out_header();
 }
+
+ostream &SCGIRequest::dump( ostream &os ) const
+{
+    os << "SCGI" << endl;
+    return Request::dump( os );
+}

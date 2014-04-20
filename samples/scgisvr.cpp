@@ -16,13 +16,15 @@ public:
         
         cout << "hello world request added" << endl;
         
+        cout << req << endl;
+        
         return HTTP_OK;
     }
 };
 
 int main( int argc, char *argv[] )
 {
-	ExceptionGuard exceptionGuard;
+	// ExceptionGuard exceptionGuard;
 
 	try {
 		SCGIServer svr( "test_scgi" );

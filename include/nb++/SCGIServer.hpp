@@ -18,6 +18,8 @@ namespace nbpp {
         SCGIRequest( Socket &sock );
         
         void send_out_header(HTTPRequestHandler::Result res );
+        
+        ostream &dump( ostream &os ) const;
     };
 
     /**

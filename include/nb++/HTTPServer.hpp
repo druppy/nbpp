@@ -166,6 +166,9 @@ namespace nbpp {
 		bool sendFile( const string &fname, size_t offset, size_t length = 0 );
 
         bool sendFile( const string &fname);
+
+        // For debugging and tracing
+        virtual ostream &dump( ostream &os ) const;
         
         // syntactic súgar
         string operator[]( const string &name ) const {return get( name );}
@@ -213,8 +216,8 @@ namespace nbpp {
 		 */
         void send_out_header( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK);
 
-        // For debugging and tracing
-        ostream &dump( ostream &os ) const ;
+
+        ostream &dump( ostream &os ) const;
 	protected:
 		float _nVersion;
 	};
@@ -259,6 +262,8 @@ namespace nbpp {
 		   Do something about it.
 		 */
 		Result handle( Request &req );
+        
+        ostream &dump( ostream &os ) const ;
 	private:
 		string getMime( const string &sExt ) const;
 
@@ -353,6 +358,6 @@ namespace nbpp {
 	};
 };
 
-inline std::ostream &operator<<( std::ostream &os, const nbpp::HTTPRequest &req ) {return req.dump( os );}
+inline std::ostream &operator<<( std::ostream &os, const nbpp::Request &req ) {return req.dump( os );}
 
 #endif /* _HTTPSERVER_HPP */

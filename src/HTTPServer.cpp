@@ -333,6 +333,43 @@ bool Request::sendFile( const string &sFname, size_t offset, size_t length )
 	return false;
 }
 
+
+ostream &Request::dump( ostream &os ) const
+{
+    os << "Request method ";
+    switch( _method ) {
+        case PUT:
+            os << "PUT";
+            break;
+        case GET:
+            os << "GET";
+            break;
+        case POST:
+            os << "POST";
+            break;
+        case HEAD:
+            os << "HEAD";
+            break;
+        case DELETE:
+            os << "DELETE";
+            break;
+    };
+    
+    os << endl << "URI: " << _url.toString() << endl;
+    
+    os << "header in : " << endl;
+    values_t::const_iterator i;
+    for( i = _header_in.begin(); i != _header_in.end(); i++ )
+        os << " " << i->first << ": " << i->second << endl;
+
+    if( _header_out.size() > 0) {
+        os << "header out : " << endl;
+        for( i = _header_out.begin(); i != _header_out.end(); i++ )
+            os << " " << i->first << ": " << i->second << endl;
+    }
+    return os;
+}
+
 /////////////////////////
 // Impl. of HTTPRequest
 
@@ -423,37 +460,8 @@ void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
 
 ostream &HTTPRequest::dump( ostream &os ) const
 {
-    os << "Request method ";
-    switch( _method ) {
-        case PUT:
-            os << "PUT";
-            break;
-        case GET:
-            os << "GET";
-            break;
-        case POST:
-            os << "POST";
-            break;
-        case HEAD:
-            os << "HEAD";
-            break;
-        case DELETE:
-            os << "DELETE";
-            break;
-    };
-    os << ", version " << _nVersion << endl;
-    os << "URI: " << _url.toString() << endl;
-    os << "header in : " << endl;
-
-    values_t::const_iterator i;
-    for( i = _header_in.begin(); i != _header_in.end(); i++ )
-        os << " " << i->first << ": " << i->second << endl;
-
-    os << "header out : " << endl;
-    for( i = _header_out.begin(); i != _header_out.end(); i++ )
-        os << " " << i->first << ": " << i->second << endl;
-
-    return os;
+    os << "HTTP version " << _nVersion << endl;
+    return Request::dump( os );
 }
 
 /////////////////////////////
