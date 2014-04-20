@@ -26,7 +26,7 @@ namespace nbpp {
 
 	using namespace std;
 
-	class HTTPRequest;
+	class Request;
 
 	/**
 	   To handle a HTTP request this class must be implimented, and added to a
@@ -84,44 +84,55 @@ namespace nbpp {
 		};
 
         HTTPRequestHandler() {}
-
-		virtual Result handle( HTTPRequest &req ) = 0;
+        
+		virtual Result handle( Request &req ) = 0;
 	};
 
-	/**
-	   This request class will be send to the handler every time there arives
-	   a nev HTTP request.
+    const char *getHttpError( HTTPRequestHandler::Result res, const char **desc = NULL );
 
-	   This class handle the flow of the HTTP protecol, by parsing the incomming
-	   header, and the parse over the content (via the istream). The responce the
-	   the other end is send as the header and the ostream.
-
-	   There is no content parsing in this class
-	 */
-	class HTTPRequest {
-	public:
-		struct NameValue{
-			NameValue( const string &name, const string &value ) :
-				sName( name ), sValue( value ) {}
-
-			bool operator==( const string &name ) const {return sName == name;}
-			bool operator!=( const string &name ) const {return sName != name;}
-
-			string sName;
-			string sValue;
-		};
-		typedef vector<NameValue> values_t;
+    class Request {
+    public:
         typedef list<pair<float, string> > langs_t; // quality / language
 
-		HTTPRequest( Socket &socket );
-		~HTTPRequest();
+        Request( Socket &sock );
+        ~Request();
+        
+		enum Method {
+			UNKNOWN,
+			GET,
+			HEAD,
+            PUT,
+			POST,
+            DELETE
+		};
+        
+		Socket& getSocket( void ) {return _sock;}
 
-		/**
+        Method getMethod( void ) const {return _method;}
+
+        void takeover() {_takeover = true;}
+        bool has_takeover() const {return _takeover;}
+        
+        const URL &getUrl() const {return _url;}
+        
+        bool has_a( const string &name ) const;
+        string get( const string &name ) const;
+        void append( const string &name, const string &data );
+        template<typename T> void append( const string &name, const T &t ) {
+            stringstream os;
+            os << t;
+            append( name, os.str());
+        }
+        
+        bool header_send() const {return _header_send;}
+        virtual void send_out_header( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK );
+         
+        /**
 		   Get a stream to read the body of the request, if needed.
 
 		   @return istream the input stream.
 		 */
-		istream &getInputStream();
+		istream &getInputStream() {return _sock.getInputStream();}
 
 		/**
 		   Get the output stream, for the responce for this request. When this
@@ -133,90 +144,7 @@ namespace nbpp {
 		 */
 		ostream &getOutputStream();
 
-        size_t getOutStreamSize() const { return m_os.str().size(); }
-
-		enum Method {
-			UNKNOWN,
-			GET,
-			HEAD,
-            PUT,
-			POST,
-            DELETE
-		};
-
-		/**
-		   Get the client socket
-		 */
-		Socket& getSocket( void );
-
-		/**
-		   That is the request method.
-		 */
-		Method getMethod( void ) const;
-
-		/**
-		   Get the full URL as the client requested it.
-		 */
-		const URL &getUrl( void ) const;
-
-		/**
-		   Get the HTTP version number as a float.
-
-		   @return the float value 0.9, 1.0 or 1.1 as for now.
-		 */
-		float getVersion( void ) const {return m_nVersion;}
-
-		/**
-		   Check if a header field is presend.
-
-		   @param sName the name of the field
-		   @return true if found else false.
-		 */
-		bool hasA( const string &sName ) const;
-
-		/**
-		   Return a input header ellement, by a given name.
-
-		   @exception invalid_argument if name is not found.
-		 */
-		string operator[]( const string &sName ) const;
-
-        /**
-            Get a list of all input headers
-        */
-        values_t headers_in() {return m_header_in;}
-
-		/**
-		   Set a HTTP header ellement, for the responce for this element.
-
-		   This can only be done before calling the sendHttpHeaders or the
-		   getOutputStream. If called after that an exeption is rised.
-
-		   If the header id is already set it will be overwritten by this
-		   call. This can be suppressed by setting replace parameter to false
-
-            @param sName is the name of the header element.
-            @param sValue is the value of the ellement.
-            @param sReplace should the new header replace existing with same name
-		 */
-		void set( const string &sName, const string &sValue, bool sReplace = true );
-
-        /**
-           Set header elemenet, but convert it from a from a integer.
-
-           @see set
-        */
-        void set( const string &name, size_t val, bool replace = true );
-
-		/**
-		   This will send all headers to the HTTP client, and make the request
-		   ready for input data via the cout stream.
-
-		   This will be done implicit by the first use of the HTTPOutStream.
-
-		   This can only be done ones, in a request.
-		 */
-		void sendHTTPHeaders( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK );
+        size_t getOutStreamSize() const { return _os.str().size(); }
 
         langs_t accept_language_list() const;
         float accept_language( const string &locale ) const;
@@ -235,28 +163,60 @@ namespace nbpp {
            @param length the length of the file chunck to send (0 = all)
 		   @return true if send, else false if the file does not exist
 		 */
-		bool sendFile( const string &sFname, size_t offset, size_t length = 0 );
+		bool sendFile( const string &fname, size_t offset, size_t length = 0 );
 
-        bool sendFile( const string &sFname);
+        bool sendFile( const string &fname);
+        
+        // syntactic súgar
+        string operator[]( const string &name ) const {return get( name );}
+    protected:
+        typedef map<string, string> values_t;
+        
+        Socket _sock;
+        Method _method;
+        values_t _header_in,
+			_header_out;
+        URL _url;
+        bool _takeover;
+		ostringstream _os;
+        bool _header_send;
+    };
+    
+	/**
+	   This request class will be send to the handler every time there arives
+	   a nev HTTP request.
 
-        void takeover() {_takeover = true;}
-        bool has_takeover() const {return _takeover;}
+	   This class handle the flow of the HTTP protecol, by parsing the incomming
+	   header, and the parse over the content (via the istream). The responce the
+	   the other end is send as the header and the ostream.
 
-        bool header_send() const {return m_bHeaderSend;}
+	   There is no content parsing in this class
+	 */
+	class HTTPRequest : public Request {
+	public:
+		HTTPRequest( Socket &socket );
+		
+		/**
+		   Get the HTTP version number as a float.
+
+		   @return the float value 0.9, 1.0 or 1.1 as for now.
+		 */
+		float getVersion( void ) const {return _nVersion;}
+
+		/**
+		   This will send all headers to the HTTP client, and make the request
+		   ready for input data via the cout stream.
+
+		   This will be done implicit by the first use of the HTTPOutStream.
+
+		   This can only be done ones, in a request.
+		 */
+        void send_out_header( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK);
 
         // For debugging and tracing
         ostream &dump( ostream &os ) const ;
-	private:
-		float m_nVersion;
-
-		URL m_url;
-		values_t m_header_in,
-			m_header_out;
-		bool m_bHeaderSend;
-		Socket m_socket;
-		ostringstream m_os;
-		Method m_method;
-        bool _takeover;   // Tell the http handler to drop handling this request
+	protected:
+		float _nVersion;
 	};
 
 	/**
@@ -298,7 +258,7 @@ namespace nbpp {
 		/**
 		   Do something about it.
 		 */
-		Result handle( HTTPRequest &req );
+		Result handle( Request &req );
 	private:
 		string getMime( const string &sExt ) const;
 
@@ -341,9 +301,12 @@ namespace nbpp {
 			HTTPFilter filter;
 			RefHandle<HTTPRequestHandler> hndl;
 		};
+        InetAddress m_inetAddr;   // The server inet address
+        
+    protected:
 		typedef vector<Handler> handlers_t;
 		handlers_t m_handlers;
-		InetAddress m_inetAddr;   // The server inet address
+		
 	public:
 		HTTPServer( const string &sPrgName );
 		~HTTPServer() throw() {}

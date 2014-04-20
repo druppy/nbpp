@@ -56,188 +56,67 @@ static bool split_head( const string &sLine, string &sName, string &sValue )
 	return true;
 }
 
-static const char *getHttpError( HTTPRequestHandler::Result res, const char **desc = NULL );
-
-/////////////////////////
-// Impl. of HTTPRequest
-
-HTTPRequest::HTTPRequest( Socket &socket ) : m_socket( socket ), _takeover( false )
+static string make_etag( struct stat &stat )
 {
-    m_bHeaderSend = false;
-    istream &is = m_socket.getInputStream();
+    stringstream etag;
 
-    // Read the request line
-    string sMethod, sUrl, sLine;
-    getline( is, sLine );
-    // clog << "Request line : " << sLine << endl;
-    m_nVersion = split_request( sLine, sMethod, sUrl );
+    etag << hex << "\"" << stat.st_ino << "-" << stat.st_mtime << "-" << stat.st_size << "\"";
 
-    if( sMethod == "GET" )
-        m_method = GET;
-    else if( sMethod == "PUT" )
-        m_method = PUT;
-    else if( sMethod == "POST" )
-        m_method = POST;
-    else if( sMethod == "HEAD" )
-        m_method = HEAD;
-    else if( sMethod == "DELETE" )
-        m_method = DELETE;
-    else
-        clog << "Unknown HTTP method " << sMethod << endl;
-
-	m_url.set( sUrl );
-	// cout << "URI " << m_url.getUri() << endl;
-
-	// m_socket.waitForInput();
-
-	// Get the header elements if needed
-	if( m_nVersion > 0.9 )
-		do {
-			sLine.erase();
-
-			if( !is.eof()) {
-				string sName, sValue;
-
-				getline( is, sLine );
-				if( *sLine.rbegin() == '\r' )
-					sLine.resize( sLine.length() - 1 );
-
-				if( split_head( sLine, sName, sValue )) {
-					sName = string_tolower( sName );
-					m_header_in.push_back( NameValue( sName, sValue ));
-					// clog << sName << ": " << sValue << endl;
-					// m_socket.waitForInput();
-				}
-			}
-		} while( !sLine.empty());
-
-	// get ready for content reading ... well we are !
-	set( "Location", m_url.toString() );
-	// set( "Content-Type", "text/plain" );
-	// cout << "Request accepted" << endl;
-
-	if( hasA( "Content-Length" ))
-		m_socket.setMaxBytes( atoll((*this)[ "Content-Length" ].c_str()));
+    // return md5( etag.str() );
+    return etag.str();
 }
 
-HTTPRequest::~HTTPRequest()
-{
-	if( !m_bHeaderSend )
-		sendHTTPHeaders();
+Request::Request( Socket &sock ) : _sock( sock ), _method( UNKNOWN ), _takeover( false ), _header_send( false ) {}
 
-	ostream &os = m_socket.getOutputStream();
-	if( !m_os.str().empty())
-		os << m_os.str();
+Request::~Request()
+{
+    if( !_header_send )
+		send_out_header();
+
+	ostream &os = _sock.getOutputStream();
+	if( !_os.str().empty())
+		os << _os.str();
 
 	os.flush();
-    m_socket.waitToSend();
+    _sock.waitToSend();
 }
 
-istream &HTTPRequest::getInputStream()
+ostream &Request::getOutputStream()
 {
-    return m_socket.getInputStream();
+    return _os;
 }
 
-ostream &HTTPRequest::getOutputStream()
+bool Request::has_a( const string &name ) const
 {
-	return m_os;
+    return _header_in.count( string_tolower( name )) > 0;
 }
 
-Socket& HTTPRequest::getSocket( void )
+string Request::get( const string &name ) const
 {
-	return m_socket;
+    values_t::const_iterator i = _header_in.find( string_tolower( name ));
+    
+    if( i != _header_in.end())
+        return i->second;
+        
+    throw invalid_argument( "unknown header value '" + name + "' in request" );
 }
 
-HTTPRequest::Method HTTPRequest::getMethod( void ) const
+void Request::append( const string &name, const string &data )
 {
-	return m_method;
+    _header_out[ name ] = data;
 }
-
-const URL &HTTPRequest::getUrl( void ) const
+        
+void Request::send_out_header( HTTPRequestHandler::Result res )
 {
-	return m_url;
+    _header_send = true;
 }
 
-bool HTTPRequest::hasA( const string &sName ) const
-{
-	values_t::const_iterator i = find( m_header_in.begin(), m_header_in.end(), string_tolower(sName ));
-
-	return i == m_header_in.end() ? false : true;
-}
-
-string HTTPRequest::operator[]( const string &sName ) const
-{
-	values_t::const_iterator i = find( m_header_in.begin(), m_header_in.end(), string_tolower( sName ));
-
-	if( i != m_header_in.end())
-		return i->sValue;
-
-	throw invalid_argument( sName + " is not a http header field in this request" );
-}
-
-void HTTPRequest::set( const string &sName, const string &sValue, bool sReplace )
-{
-    if (!sReplace) {
-        m_header_out.push_back( NameValue( sName, sValue ));
-        return;
-    }
-
-    // Erase all element with the given name
-    values_t::iterator i = m_header_out.begin();
-    while( i != m_header_out.end() ) {
-        if( i->sName == sName )
-            i = m_header_out.erase(i);
-        else
-            i++;
-    }
-
-    m_header_out.push_back( NameValue( sName, sValue ));
-}
-
-void HTTPRequest::set( const string &name, size_t val, bool replace )
-{
-    char buf[ 20 ];
-    sprintf( buf, "%lu", val );
-    set( name, buf, replace );
-}
-
-void HTTPRequest::sendHTTPHeaders( HTTPRequestHandler::Result res )
-{
-	if( m_nVersion > 0.9 && !m_bHeaderSend ) {
-		ostream &os = m_socket.getOutputStream();
-
-        if( m_method != HEAD ) {
-            values_t::const_iterator hi = find( m_header_out.begin(), m_header_out.end(), "Content-Length" );
-
-            if( !m_os.str().empty() && hi == m_header_out.end())
-                set( "Content-Length", m_os.str().length() );
-        }
-
-		// Make status line
-        if( os.good() ) {
-            os << "HTTP/" << (m_nVersion < 1.1 ? "1.0 " : "1.1 ") << res << " " << getHttpError( res ) << "\r\n";
-
-            // send header fields
-            values_t::const_iterator i;
-            for( i = m_header_out.begin(); i != m_header_out.end(); i++ ) {
-                if( os.good() )
-                    os << i->sName << ": " << i->sValue << "\r\n";
-            }
-
-            // Make ready for user content
-            os << "\r\n";
-            os.flush();
-        }
-        m_bHeaderSend = true;
-	}
-}
-
-HTTPRequest::langs_t HTTPRequest::accept_language_list() const
+Request::langs_t Request::accept_language_list() const
 {
     langs_t langs;
 
-    if( hasA( "Accept-Language" )) {
-        string accept = (*this)[ "Accept-Language" ];
+    if( has_a( "Accept-Language" )) {
+        string accept = get( "Accept-Language" );
 
         Strings parts = split( accept, "," );
 
@@ -267,7 +146,7 @@ HTTPRequest::langs_t HTTPRequest::accept_language_list() const
     return langs;
 }
 
-float HTTPRequest::accept_language( const string &locale ) const
+float Request::accept_language( const string &locale ) const
 {
     langs_t langs = accept_language_list();
 
@@ -278,17 +157,17 @@ float HTTPRequest::accept_language( const string &locale ) const
     return 0;
 }
 
-float HTTPRequest::accept_mimetype( const string &mime_type ) const
+float Request::accept_mimetype( const string &mime_type ) const
 {
     bool ok = false;
     float quality = 1;
 
     Strings rtypes = split( mime_type, "/" );
 
-    if( hasA( "Accept" ) && rtypes.size() == 2) {
+    if( has_a( "Accept" ) && rtypes.size() == 2) {
         string rtype = trim( rtypes[ 0 ] );
         string rsubtype = trim( rtypes[ 1 ] );
-        string accept = (*this)[ "Accept" ];
+        string accept = get( "Accept" );
 
         Strings parts = split( accept, "," );
 
@@ -338,18 +217,7 @@ float HTTPRequest::accept_mimetype( const string &mime_type ) const
     return ok ? quality : 0;
 }
 
-static string make_etag( struct stat &stat )
-{
-    stringstream etag;
-
-    etag << hex << "\"" << stat.st_ino << "-" << stat.st_mtime << "-" << stat.st_size << "\"";
-
-    // return md5( etag.str() );
-    return etag.str();
-}
-
-
-bool HTTPRequest::sendFile( const string &sFname )
+bool Request::sendFile( const string &sFname )
 {
     struct stat stat_buf;
     if( 0 == stat( sFname.c_str(), &stat_buf )) {
@@ -357,10 +225,10 @@ bool HTTPRequest::sendFile( const string &sFname )
 
         // Calculate etag, set it and test if it match user provided
         string etag = make_etag( stat_buf );
-        set( "ETag", etag );
-        if( hasA( "If-None-Match" )) {
-            if( etag == (*this)[ "If-None-Match" ] || "*" == (*this)[ "If-None-Match" ] ) {
-                sendHTTPHeaders( HTTPRequestHandler::HTTP_NOT_MODIFIED );
+        append( "ETag", etag );
+        if( has_a( "If-None-Match" )) {
+            if( etag == get( "If-None-Match" ) || "*" == get( "If-None-Match" ) ) {
+                send_out_header( HTTPRequestHandler::HTTP_NOT_MODIFIED );
                 return true;
             }
 
@@ -368,18 +236,18 @@ bool HTTPRequest::sendFile( const string &sFname )
             return false;*/
         }
 
-        if( m_method == HEAD ) {
-            set( "Content-Length", stat_buf.st_size );
+        if( _method == HEAD ) {
+            append( "Content-Length", stat_buf.st_size );
 
-            sendHTTPHeaders();
+            send_out_header();
         } else {
-            set( "Content-Length", stat_buf.st_size );
+            append( "Content-Length", stat_buf.st_size );
 
             // Copy the file directly to the stream
             ifstream is( sFname.c_str());
-            ostream &os = m_socket.getOutputStream();
+            ostream &os = _sock.getOutputStream();
 
-            sendHTTPHeaders();
+            send_out_header();
 
             while( !is.eof() && os.good() && stat_buf.st_size ) {
                     char szBuffer[ 1024 ];
@@ -398,7 +266,7 @@ bool HTTPRequest::sendFile( const string &sFname )
     return false;
 }
 
-bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
+bool Request::sendFile( const string &sFname, size_t offset, size_t length )
 {
 	struct stat stat_buf;
 
@@ -407,10 +275,10 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
 
         // Calculate etag, set it and test if it match user provided
         string etag = make_etag( stat_buf );
-        set( "ETag", etag );
-        if( hasA( "If-None-Match" )) {
+        append( "ETag", etag );
+        if( has_a( "If-None-Match" )) {
             if( etag == (*this)[ "If-None-Match" ] || "*" == (*this)[ "If-None-Match" ] ) {
-                sendHTTPHeaders( HTTPRequestHandler::HTTP_NOT_MODIFIED );
+                send_out_header( HTTPRequestHandler::HTTP_NOT_MODIFIED );
                 return true;
             }
 
@@ -418,30 +286,30 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
             return false;*/
         }
 
-        if( m_method == HEAD ) {
-            set( "Content-Length", stat_buf.st_size );
+        if( _method == HEAD ) {
+            append( "Content-Length", stat_buf.st_size );
 
-            sendHTTPHeaders( HTTPRequestHandler::HTTP_OK );
+            send_out_header( HTTPRequestHandler::HTTP_OK );
         } else {
             if( length == 0 || length > stat_buf.st_size - offset )
                length = stat_buf.st_size - offset;
 
-            set( "Content-Length", length );
+            append( "Content-Length", length );
 
             if( length == stat_buf.st_size ) {
-                sendHTTPHeaders(HTTPRequestHandler::HTTP_OK);
+                send_out_header(HTTPRequestHandler::HTTP_OK);
             } else {
                 stringstream ros;
 
                 ros << "bytes " << offset << "-" << (offset + length - 1) << "/" << stat_buf.st_size;
-                set( "Content-Range", ros.str());
+                append( "Content-Range", ros.str());
 
-                sendHTTPHeaders( HTTPRequestHandler::HTTP_PARTIAL_CONTENT );
+                send_out_header( HTTPRequestHandler::HTTP_PARTIAL_CONTENT );
             }
 
             // Copy the file directly to the stream
             ifstream is( sFname.c_str());
-            ostream &os = m_socket.getOutputStream();
+            ostream &os = _sock.getOutputStream();
 
             if( offset != 0 )
                 is.seekg( offset, ios::beg );
@@ -465,10 +333,98 @@ bool HTTPRequest::sendFile( const string &sFname, size_t offset, size_t length )
 	return false;
 }
 
+/////////////////////////
+// Impl. of HTTPRequest
+
+HTTPRequest::HTTPRequest( Socket &socket ) : Request( socket )
+{
+    istream &is = _sock.getInputStream();
+
+    // Read the request line
+    string sMethod, sUrl, sLine;
+    getline( is, sLine );
+    // clog << "Request line : " << sLine << endl;
+    _nVersion = split_request( sLine, sMethod, sUrl );
+
+    if( sMethod == "GET" )
+        _method = GET;
+    else if( sMethod == "PUT" )
+        _method = PUT;
+    else if( sMethod == "POST" )
+        _method = POST;
+    else if( sMethod == "HEAD" )
+        _method = HEAD;
+    else if( sMethod == "DELETE" )
+        _method = DELETE;
+    else
+        clog << "Unknown HTTP method " << sMethod << endl;
+
+	_url.set( sUrl );
+	// cout << "URI " << m_url.getUri() << endl;
+
+	// m_socket.waitForInput();
+
+	// Get the header elements if needed
+	if( _nVersion > 0.9 )
+		do {
+			sLine.erase();
+
+			if( !is.eof()) {
+				string name, value;
+
+				getline( is, sLine );
+				if( *sLine.rbegin() == '\r' )
+					sLine.resize( sLine.length() - 1 );
+
+				if( split_head( sLine, name, value ))
+					_header_in[ string_tolower( name ) ] = value;
+			}
+		} while( !sLine.empty());
+
+	// get ready for content reading ... well we are !
+	append( "Location", _url.toString() );
+	// set( "Content-Type", "text/plain" );
+	// cout << "Request accepted" << endl;
+
+	if( has_a( "Content-Length" ))
+		_sock.setMaxBytes( atoll((*this)[ "Content-Length" ].c_str()));
+}
+
+void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
+{
+	if( _nVersion > 0.9 && !_header_send ) {
+		ostream &os = _sock.getOutputStream();
+
+        if( _method != HEAD ) {
+            values_t::const_iterator hi = _header_out.find( "Content-Length" );
+
+            if( !_os.str().empty() && hi == _header_out.end())
+                append( "Content-Length", _os.str().length() );
+        }
+
+		// Make status line
+        if( os.good() ) {
+            os << "HTTP/" << (_nVersion < 1.1 ? "1.0 " : "1.1 ") << res << " " << getHttpError( res ) << "\r\n";
+
+            // send header fields
+            values_t::const_iterator i;
+            for( i = _header_out.begin(); i != _header_out.end(); i++ ) {
+                if( os.good() )
+                    os << i->first << ": " << i->second << "\r\n";
+            }
+
+            // Make ready for user content
+            os << "\r\n";
+            os.flush();
+        }
+        Request::send_out_header();
+	}
+}
+
 ostream &HTTPRequest::dump( ostream &os ) const
 {
     os << "Request method ";
-    switch( m_method ) {
+    switch( _method ) {
         case PUT:
             os << "PUT";
             break;
@@ -485,17 +441,17 @@ ostream &HTTPRequest::dump( ostream &os ) const
             os << "DELETE";
             break;
     };
-    os << ", version " << m_nVersion << endl;
-    os << "URI: " << m_url.toString() << endl;
+    os << ", version " << _nVersion << endl;
+    os << "URI: " << _url.toString() << endl;
     os << "header in : " << endl;
 
     values_t::const_iterator i;
-    for( i = m_header_in.begin(); i != m_header_in.end(); i++ )
-        os << " " << i->sName << ": " << i->sValue << endl;
+    for( i = _header_in.begin(); i != _header_in.end(); i++ )
+        os << " " << i->first << ": " << i->second << endl;
 
     os << "header out : " << endl;
-    for( i = m_header_out.begin(); i != m_header_out.end(); i++ )
-        os << " " << i->sName << ": " << i->sValue << endl;
+    for( i = _header_out.begin(); i != _header_out.end(); i++ )
+        os << " " << i->first << ": " << i->second << endl;
 
     return os;
 }
@@ -566,7 +522,7 @@ struct HttpError {
 
 #define HTTP_ERROR_SIZE (sizeof( http_errors ) / sizeof( HttpError ))
 
-const char *getHttpError( HTTPRequestHandler::Result res, const char **desc )
+const char *nbpp::getHttpError( HTTPRequestHandler::Result res, const char **desc )
 {
 	for( int i = 0; i != HTTP_ERROR_SIZE; i++ ) {
 		if( http_errors[ i ].res == res ) {
@@ -584,7 +540,7 @@ void sendHttpError( HTTPRequest &req, HTTPRequestHandler::Result res )
         const char *pszErrorDesc = NULL;
         const char *pszError = getHttpError( res, &pszErrorDesc );
 
-        req.set( "Content-Type", "text/html" );
+        req.append( "Content-Type", "text/html" );
 
         ostream &os = req.getOutputStream();
 
@@ -636,14 +592,14 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
             if( req.getVersion() < 1.1 )
                 persist = false;
 
-            if( req.hasA( "Connection" ) && req[ "Connection" ] == "close" )
+            if( req.has_a( "Connection" ) && req[ "Connection" ] == "close" )
                 persist = false;
 
             handlers_t::iterator i = m_handlers.begin();
 
             // cout << "Reg request .. " << endl;
 
-            if( req.getMethod() == HTTPRequest::POST && !req.hasA( "Content-Length" )) {
+            if( req.getMethod() == Request::POST && !req.has_a( "Content-Length" )) {
                 res = HTTPRequestHandler::HTTP_BAD_REQUEST;
                 persist = false;
             } else {
@@ -676,9 +632,9 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
             }
 
             if( !persist && req.getVersion() <= 1.1 )
-                req.set( "Connection", "close" );
+                req.append( "Connection", "close" );
 
-            req.sendHTTPHeaders( res );
+            req.send_out_header( res );
         }
 	} catch( const Exception &ex ) {
 		cerr << ex.toString() << endl;
@@ -915,7 +871,7 @@ void HTTPFileHandler::addMime( const string &sExt, const string &sMime )
 		m_exts.push_back( make_pair( sExt, sMime ));
 }
 
-HTTPRequestHandler::Result HTTPFileHandler::handle( HTTPRequest &req )
+HTTPRequestHandler::Result HTTPFileHandler::handle( Request &req )
 {
 	URL url = req.getUrl();
 	string sPath = url.getPath();
@@ -940,7 +896,7 @@ HTTPRequestHandler::Result HTTPFileHandler::handle( HTTPRequest &req )
 		// cout << "Looking for file : " << sPath << endl;
 
 		if( !sExt.empty())
-			req.set( "Content-Type", getMime( sExt ));
+			req.append( "Content-Type", getMime( sExt ));
 
 		if( req.sendFile( sPath ))
 			return HTTP_OK;

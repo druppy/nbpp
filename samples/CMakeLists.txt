@@ -25,6 +25,7 @@ ADD_EXECUTABLE( daemontest daemontest.cpp )
 ADD_EXECUTABLE( optiontest optiontest.cpp )
 ADD_EXECUTABLE( linecount linecount.cpp )
 ADD_EXECUTABLE( httpsvr httpsvr.cpp )
+ADD_EXECUTABLE( scgisvr scgisvr.cpp )
 ADD_EXECUTABLE( ThreaderTest ThreaderTest.cpp )
 ADD_EXECUTABLE( nburl nburl.cpp )
 

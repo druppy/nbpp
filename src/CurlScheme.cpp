@@ -171,7 +171,7 @@ CurlConnection::CurlConnection( const URL &url ) : URLConnection( url )
 	setopt( CURLOPT_DNS_USE_GLOBAL_CACHE, (long)0 );  // This is not thread safe
 	setopt( CURLOPT_FAILONERROR, 1 );
 	setopt( CURLOPT_SSL_VERIFYPEER, (long)0 );  // Don't verify SSL
-	//setopt( CURLOPT_SSL_VERIFYHOST, (long)1 );  // Its OK not to dif. host name
+	setopt( CURLOPT_SSL_VERIFYHOST, (long)2 );  // Its OK not to dif. host name
 	setopt( CURLOPT_NOPROGRESS, 1 );
 	setopt( CURLOPT_NOSIGNAL, 1 );
 	setopt( CURLOPT_FOLLOWLOCATION, 1 );        // Follow locations if given

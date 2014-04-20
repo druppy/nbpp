@@ -39,7 +39,7 @@ ADD_LIBRARY( nbpp SHARED
              CommandLineOptions.cpp 
              ExceptionGuard.cpp 
              osdep.cpp Log.cpp 
-             HTTPServer.cpp Url.cpp 
+             HTTPServer.cpp SCGIServer.cpp Url.cpp 
              CurlScheme.cpp
              SmtpClient.cpp
              Multipart.cpp )
