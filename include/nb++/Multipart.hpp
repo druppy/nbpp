@@ -111,7 +111,7 @@ class Multipart {
 
     bool parse( istream &is );
 public:
-    Multipart( HTTPRequest &req );
+    Multipart( Request &req );
     Multipart( istream &is, const string &boundary );
 
     ~Multipart();

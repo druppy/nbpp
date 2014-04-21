@@ -3,7 +3,7 @@
 #define _NBPP_CONFIG
 
 /* Define to 1 if you have the <curl/curl.h> header file. */
-/* #undef NBPP_HAVE_CURL_CURL_H */
+#define NBPP_HAVE_CURL_CURL_H
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef NBPP_HAVE_DLFCN_H */

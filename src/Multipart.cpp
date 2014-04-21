@@ -92,7 +92,7 @@ size_t FilePart::out( ostream &os )
 ///////////////////
 // Multipart
 
-Multipart::Multipart( nbpp::HTTPRequest &req )
+Multipart::Multipart( nbpp::Request &req )
 {
     istream &is = req.getInputStream();
 
