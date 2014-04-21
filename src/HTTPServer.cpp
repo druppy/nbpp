@@ -94,10 +94,10 @@ bool Request::has_a( const string &name ) const
 string Request::get( const string &name ) const
 {
     values_t::const_iterator i = _header_in.find( string_tolower( name ));
-    
+
     if( i != _header_in.end())
         return i->second;
-        
+
     throw invalid_argument( "unknown header value '" + name + "' in request" );
 }
 
@@ -105,7 +105,7 @@ void Request::append( const string &name, const string &data )
 {
     _header_out[ name ] = data;
 }
-        
+
 void Request::send_out_header( HTTPRequestHandler::Result res )
 {
     _header_send = true;
@@ -354,9 +354,9 @@ ostream &Request::dump( ostream &os ) const
             os << "DELETE";
             break;
     };
-    
+
     os << endl << "URI: " << _url.toString() << endl;
-    
+
     os << "header in : " << endl;
     values_t::const_iterator i;
     for( i = _header_in.begin(); i != _header_in.end(); i++ )
@@ -413,8 +413,14 @@ HTTPRequest::HTTPRequest( Socket &socket ) : Request( socket )
 				if( *sLine.rbegin() == '\r' )
 					sLine.resize( sLine.length() - 1 );
 
-				if( split_head( sLine, name, value ))
-					_header_in[ string_tolower( name ) ] = value;
+				if( split_head( sLine, name, value )) {
+                    string n = string_tolower( name );
+
+                    if( _header_in.count( n ) == 0 )
+                        _header_in[ n ] = value;
+                    else
+                        _header_in[ n ] += "; " + value;
+                }
 			}
 		} while( !sLine.empty());
 
