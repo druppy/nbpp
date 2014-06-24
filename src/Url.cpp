@@ -36,14 +36,18 @@ public:
         m_sReserved = sReserved;
     }
 
-    Type next( void ) {
+    Type next( const string &scope_reserved = "" ) {
         if( m_iter == m_str.end()) {
             m_type = tEof;
             m_sToken = "";
             return m_type;
         }
 
-        if( strchr( m_sReserved.c_str(), *m_iter )) {
+        string reserved = scope_reserved;
+        if( scope_reserved.empty())
+            reserved = m_sReserved;
+
+        if( strchr( reserved.c_str(), *m_iter )) {
             m_sToken = *m_iter++;
             return m_type = tReserved;
         }
@@ -241,7 +245,7 @@ void URL::set( const string &sUrl )
             sOptionValue.clear();
 
             if( lex.next() == UrlLex::tReserved && lex.getToken() == "=" ) {
-                if( lex.next() == UrlLex::tSymbol ) {
+                if( lex.next( "=&#" ) == UrlLex::tSymbol ) {
                     sOptionValue = lex.getToken();
                     lex.next();
                 }
