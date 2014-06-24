@@ -75,7 +75,7 @@ public:
                     ++m_iter;
                 }
 
-            } while( m_iter != m_str.end() && !strchr( m_sReserved.c_str(), *m_iter ));
+            } while( m_iter != m_str.end() && !strchr( reserved.c_str(), *m_iter ));
             m_sToken = sRes;
             return m_type = tSymbol;
         }
