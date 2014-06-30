@@ -853,8 +853,6 @@ void FieldStorage::out( ostream &os ) const
 
 		os << iter->first << "=" << conv_data( iter->second );
 	}
-
-	os << endl;
 }
 
 ///////////////////////////////
