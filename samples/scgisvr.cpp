@@ -31,7 +31,7 @@ int main( int argc, char *argv[] )
 
 		HTTPFilter flt; // Not used really !
 
-        flt.addPath( "/scgi" );
+        flt.addPath( "/service_scgi" );
         
 		svr.addHandler( flt, new hello_handler() );
 
