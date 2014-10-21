@@ -11,7 +11,6 @@ static void sendSCGIError( Request &req, HTTPRequestHandler::Result res )
         const char *pszErrorDesc = NULL;
         const char *pszError = getHttpError( res, &pszErrorDesc );
 
-        req.append( "Status", pszError );
         req.append( "Content-Type", "text/plain" );
 
         ostream &os = req.getOutputStream();
@@ -65,6 +64,8 @@ void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) 
 	} catch( const exception &ex ) {
 		clog << ex.what() << endl;
 	}
+    // Make sure to send all data before closing conn
+    connection.sock.waitToSend();
 }
 
 static string netstring( istream &is )
@@ -75,19 +76,17 @@ static string netstring( istream &is )
     while( !is.eof() ) {
         char ch = is.get();
 
-        if( len != 0 && str.length() < len ) {
+        if( len != 0 && str.length() < len )
             str += ch;
-        } else if( len != 0 && str.length() == len ) {
+        else if( len != 0 && str.length() == len ) {
             if( ch == ',' )
                 break;
             else
                 throw invalid_argument( "bad netstring termination" );
         } else if( isdigit( ch ))
             length += ch;
-        else if( ch == ':' ) {
+        else if( ch == ':' )
             len = atoi( length.c_str());
-            clog << "read " << len << " bytes of netstring data" << endl;
-        }
     }
 
     return str;
@@ -166,7 +165,8 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
         const char *pszErrorDesc = NULL;
         const char *pszError = getHttpError( res, &pszErrorDesc );
 
-        append( "Status", pszError );
+        // Must come first !
+        os << "Status: " << res << " " << pszError << "\r\n";
 
         values_t::const_iterator i;
         for( i = _header_out.begin(); i != _header_out.end(); i++ ) {
@@ -178,6 +178,7 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
         os << "\r\n";
         os.flush();
     }
+
     Request::send_out_header();
 }
 

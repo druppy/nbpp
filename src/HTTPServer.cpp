@@ -542,6 +542,7 @@ const char *nbpp::getHttpError( HTTPRequestHandler::Result res, const char **des
 		if( http_errors[ i ].res == res ) {
             if( desc != NULL )
                 *desc = http_errors[ i ].pszDesc;
+
 			return http_errors[ i ].pszError;
 		}
 	}

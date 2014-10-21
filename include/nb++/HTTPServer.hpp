@@ -84,7 +84,7 @@ namespace nbpp {
 		};
 
         HTTPRequestHandler() {}
-        
+
 		virtual Result handle( Request &req ) = 0;
 	};
 
@@ -96,7 +96,7 @@ namespace nbpp {
 
         Request( Socket &sock );
         ~Request();
-        
+
 		enum Method {
 			UNKNOWN,
 			GET,
@@ -105,16 +105,16 @@ namespace nbpp {
 			POST,
             DELETE
 		};
-        
+
 		Socket& getSocket( void ) {return _sock;}
 
         Method getMethod( void ) const {return _method;}
 
         void takeover() {_takeover = true;}
         bool has_takeover() const {return _takeover;}
-        
+
         const URL &getUrl() const {return _url;}
-        
+
         bool has_a( const string &name ) const;
         string get( const string &name ) const;
         void append( const string &name, const string &data );
@@ -123,10 +123,10 @@ namespace nbpp {
             os << t;
             append( name, os.str());
         }
-        
+
         bool header_send() const {return _header_send;}
         virtual void send_out_header( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK );
-         
+
         /**
 		   Get a stream to read the body of the request, if needed.
 
@@ -169,12 +169,12 @@ namespace nbpp {
 
         // For debugging and tracing
         virtual ostream &dump( ostream &os ) const;
-        
+
         // syntactic súgar
         string operator[]( const string &name ) const {return get( name );}
     protected:
         typedef map<string, string> values_t;
-        
+
         Socket _sock;
         Method _method;
         values_t _header_in,
@@ -184,7 +184,7 @@ namespace nbpp {
 		ostringstream _os;
         bool _header_send;
     };
-    
+
 	/**
 	   This request class will be send to the handler every time there arives
 	   a nev HTTP request.
@@ -198,7 +198,7 @@ namespace nbpp {
 	class HTTPRequest : public Request {
 	public:
 		HTTPRequest( Socket &socket );
-		
+
 		/**
 		   Get the HTTP version number as a float.
 
@@ -215,7 +215,6 @@ namespace nbpp {
 		   This can only be done ones, in a request.
 		 */
         void send_out_header( HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK);
-
 
         ostream &dump( ostream &os ) const;
 	protected:
@@ -262,7 +261,7 @@ namespace nbpp {
 		   Do something about it.
 		 */
 		Result handle( Request &req );
-        
+
         ostream &dump( ostream &os ) const ;
 	private:
 		string getMime( const string &sExt ) const;
@@ -307,11 +306,11 @@ namespace nbpp {
 			RefHandle<HTTPRequestHandler> hndl;
 		};
         InetAddress m_inetAddr;   // The server inet address
-        
+
     protected:
 		typedef vector<Handler> handlers_t;
 		handlers_t m_handlers;
-		
+
 	public:
 		HTTPServer( const string &sPrgName );
 		~HTTPServer() throw() {}

@@ -13,11 +13,11 @@ class hello_handler : public HTTPRequestHandler
 public:
     Result handle( Request &req ) {
         req.getOutputStream() << "Hello, world";
-        
+
         cout << "hello world request added" << endl;
-        
+
         cout << req << endl;
-        
+
         return HTTP_OK;
     }
 };
@@ -31,8 +31,8 @@ int main( int argc, char *argv[] )
 
 		HTTPFilter flt; // Not used really !
 
-        flt.addPath( "/service_scgi" );
-        
+        flt.addPath( "/scgi" );
+
 		svr.addHandler( flt, new hello_handler() );
 
         svr.setThreader( MultiThreader() );
