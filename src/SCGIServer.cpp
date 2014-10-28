@@ -1,6 +1,7 @@
 #include <nb++/SCGIServer.hpp>
 #include <cstdlib>
 #include <stdexcept>
+#include <memory>
 
 using namespace std;
 using namespace nbpp;
@@ -29,11 +30,14 @@ void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) 
 
         SCGIRequest req( connection.sock );
 
-        if( req.getMethod() == Request::POST && !req.has_a( "CONTENT_LENGHT" )) {
+        if( req.getMethod() == Request::POST && !req.has_a( "content_length" )) {
             res = HTTPRequestHandler::HTTP_BAD_REQUEST;
+
+            sendSCGIError( req, res );
+
+            req.send_out_header( res );
         } else {
             try {
-                // dispatch logic
                 handlers_t::iterator i = m_handlers.begin();
 
                 for( ; i != m_handlers.end(); i++ ) {
@@ -64,8 +68,6 @@ void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) 
 	} catch( const exception &ex ) {
 		clog << ex.what() << endl;
 	}
-    // Make sure to send all data before closing conn
-    connection.sock.waitToSend();
 }
 
 static string netstring( istream &is )
@@ -95,6 +97,7 @@ static string netstring( istream &is )
 SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
 {
     // Parse the SCGI headers !!!
+    _max_bytes = -1;
     string raw_head = netstring( sock.getInputStream());
 
     string::const_iterator s = raw_head.begin();
@@ -129,8 +132,6 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
 
     // validate headers and update values
     if( has_a( "content_length" ) ) {
-        _sock.setMaxBytes( atoll(get( "content_length" ).c_str()));
-
         if( has_a( "scgi" ) && get( "scgi" ) == "1" ) {
             if( has_a( "request_method" )) {
                 string m = get( "request_method" );
@@ -149,12 +150,31 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
                     throw invalid_argument( "unknown SCGI request method " + m );
             }
 
+            _max_bytes = atoll(get( "content_length" ).c_str());
+            _sock.setMaxBytes( _max_bytes );
+
             if( has_a( "request_uri" ))
                 _url.set( get( "request_uri" ));
         } else
             throw invalid_argument( "missing SCGI value in request" );
     } else
         throw invalid_argument( "missing CONTENT_LENGTH in SCGI request" );
+}
+
+// read all data from socket
+string SCGIRequest::read_all()
+{
+    if( _max_bytes > -1 ) {
+        istream &is = getInputStream();
+
+        auto_ptr<char> buffer( new char[ _max_bytes ] );
+
+        is.read( buffer.get(), _max_bytes );
+
+        return string( buffer.get(), _max_bytes );
+    }
+
+    return "";
 }
 
 void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
@@ -168,6 +188,14 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
         // Must come first !
         os << "Status: " << res << " " << pszError << "\r\n";
 
+        // Make sure the Content length are presend and valid
+        if( _method != HEAD ) {
+            values_t::const_iterator hi = _header_out.find( "Content-Length" );
+
+            if( !_os.str().empty() && hi == _header_out.end())
+                append( "Content-Length", _os.str().length() );
+        }
+
         values_t::const_iterator i;
         for( i = _header_out.begin(); i != _header_out.end(); i++ ) {
             if( os.good() )
@@ -177,9 +205,9 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
         // Make ready for user content
         os << "\r\n";
         os.flush();
+    
+        Request::send_out_header();
     }
-
-    Request::send_out_header();
 }
 
 ostream &SCGIRequest::dump( ostream &os ) const

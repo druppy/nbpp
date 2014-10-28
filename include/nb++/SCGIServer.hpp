@@ -14,12 +14,15 @@ namespace nbpp {
 	using namespace std;
 
     class SCGIRequest : public Request {
+        long _max_bytes;
     public:
         SCGIRequest( Socket &sock );
         
         void send_out_header(HTTPRequestHandler::Result res );
         
         ostream &dump( ostream &os ) const;
+
+        string read_all();
     };
 
     /**

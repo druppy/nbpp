@@ -460,6 +460,7 @@ void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
             os << "\r\n";
             os.flush();
         }
+
         Request::send_out_header();
 	}
 }
@@ -483,7 +484,6 @@ bool HTTPFilter::match( const URL &url ) const
 		if( *iter == sPath )
 			return true;
 	}
-
 	return false;
 }
 
@@ -691,7 +691,7 @@ FieldStorage::FieldStorage( istream &is, bool bKeepBlanks )
 
 			sName = sValue = "";
 			bFetchValue = false;
-			continue;
+            continue;
 		}
 
 		if( ch == '=' ) {
@@ -797,28 +797,32 @@ string FieldStorage::conv_data( const string &str ) const
 
 	while( i != str.end()) {
 		switch( *i ) {
-		case '&':
-		case '@':
-		case '/':
-		case '\'':
-		case '\"':
-		case '=':
-		case '?':
-        case '\n':
-        case '\r':
-        case '\t':
-		case '+': {
-			char szLine[ 10 ];
+    		case '&':
+    		case '@':
+    		case '/':
+    		case '\'':
+    		case '\"':
+            case '%':
+            case '\\':
+    		case '=':
+    		case '?':
+            case '\n':
+            case '\r':
+            case '\t':
+    		case '+': {
+    			char szLine[ 10 ];
 
-			sprintf( szLine, "%%%02X", (unsigned)*i );
-			sResult += szLine;
-			break;
-		}
-		case ' ':
-			sResult += '+';
-			break;
-		default:
-			sResult += *i;
+    			sprintf( szLine, "%%%02X", (unsigned)*i );
+    			sResult += szLine;
+    			break;
+    		}
+
+    		case ' ':
+    			sResult += '+';
+    			break;
+
+    		default:
+    			sResult += *i;
 		}
 		i++;
 	}
@@ -826,9 +830,9 @@ string FieldStorage::conv_data( const string &str ) const
 }
 
 /**
-   Convert the storage to a raw URL encoded string
+    Convert the storage to a raw URL encoded string
 
-   @return a new string containing the URL encoding
+    @return a new string containing the URL encoding
 */
 string FieldStorage::toString( void ) const
 {

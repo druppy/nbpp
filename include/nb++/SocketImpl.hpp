@@ -36,7 +36,7 @@ namespace nbpp
 
         void waitForInput() throw(IOException, AssertException, exception);
 
-		void setMaxBytes( int nMaxBytes ); // Total amount from current
+	void setMaxBytes( int nMaxBytes ); // Total amount from current
 
         istream& getInputStream() const throw(AssertException, exception);
 
