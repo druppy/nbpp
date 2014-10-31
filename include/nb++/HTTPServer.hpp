@@ -337,7 +337,8 @@ namespace nbpp {
 	class FieldStorage {
 	public:
 		FieldStorage( void ) {}
-		FieldStorage( istream &is, bool bKeepBlanks = false );
+        FieldStorage( Request &req, bool keepBlanks = false );
+		FieldStorage( istream &is, bool keepBlanks = false );
 
 		void append( const string &sName, const string &sData );
 		void append( const string &sName, long nData );
@@ -350,6 +351,7 @@ namespace nbpp {
 
 		string toString( void ) const;
 		void out( ostream &os ) const;
+        void parse( istream &is, bool keepBlanks = false );
 	private:
 		typedef vector<pair<string, string> > vpdata_t;
 		string conv_data( const string &str ) const;

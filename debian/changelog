@@ -1,10 +1,17 @@
+nbpp (0.7.8-1) unstable; urgency=low
+
+  * set istream to 0 when no Content-Length is given in HTTP
+  * make FieldStorage switch between multipart or normal url encoding
+
+ -- Bo Lorentsen <bl@moch.dk>  Fri, 31 Oct 2014 17:13:26 +0100
+
 nbpp (0.7.8-0) unstable; urgency=low
 
   * redesign of http request and server
   * adding SCGI server
-  
+
  -- Bo Lorentsen <bl@lue.dk>  Sat, 20 Apr 2014 08:46:23 +0100
- 
+
 nbpp (0.7.7-5) unstable; urgency=low
 
   * drop PRECONDITION_FAILED in file upload until we unserstand it

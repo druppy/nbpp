@@ -4,6 +4,7 @@
 
 #include <nb++/HTTPServer.hpp>
 #include <nb++/String.hpp>
+#include <nb++/Multipart.hpp>
 
 #include <sstream>
 #include <iostream>
@@ -431,6 +432,8 @@ HTTPRequest::HTTPRequest( Socket &socket ) : Request( socket )
 
 	if( has_a( "Content-Length" ))
 		_sock.setMaxBytes( atoll((*this)[ "Content-Length" ].c_str()));
+    else
+        _sock.setMaxBytes( 0 );
 }
 
 void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
@@ -666,7 +669,6 @@ void HTTPServer::addHandler( HTTPFilter &filter, HTTPRequestHandler *pHndl )
 ////////////////////////////
 // Impl. of FieldStorage
 
-
 /**
    Construct a FieldStorage from an input stream. Reads stream until end
    of stream. The input must be raw url encoded data, and the storage has the
@@ -675,62 +677,36 @@ void HTTPServer::addHandler( HTTPFilter &filter, HTTPRequestHandler *pHndl )
    @param is the stream to the raw URL encoded string.
    @param bKeepBlanks tell the class to keep any empty or blank value
  */
-FieldStorage::FieldStorage( istream &is, bool bKeepBlanks )
+FieldStorage::FieldStorage( istream &is, bool keepBlanks )
 {
-	string sName, sValue;
-	bool bFetchValue = false;
+    parse( is, keepBlanks );
+}
 
-	while(!is.eof()) {
-		int ch;
-		if((ch = is.get()) == -1 || ch == '\n' )
-			break;
+FieldStorage::FieldStorage( Request &req, bool keepBlanks )
+{
 
-		if( ch == '&' ) { // add values
-			if( bKeepBlanks || !sValue.empty())
-				m_fields.push_back( pair<string,string>( sName, sValue ));
+    if( req.has_a( "Content-Type" )) {
+        if( req[ "Content-Type" ] == "multipart/form-data" ) {
+            Multipart mp( req );
 
-			sName = sValue = "";
-			bFetchValue = false;
-            continue;
-		}
+            for( int i = 0; mp.size() > i; i++ ) { 
+                string val = dynamic_cast<MemPart &>( mp[ i ] ).str();
 
-		if( ch == '=' ) {
-			bFetchValue = true;
-			continue;
-		}
+                if( keepBlanks || !val.empty())
+                    m_fields.push_back( make_pair( mp[ i ].name_get(), val ));
+            }
 
-		if( bFetchValue ) {
-			switch( ch ) {
-			case '%': { // Sorry about the mess, but gcc don't do it right
-				char szBuf[ 3 ];
+            return;
+        } else if( req[ "Content-Type"] == "application/x-www-form-urlencoded" ) {
+           istream &is = req.getInputStream();
 
-				szBuf[ 0 ] = (char)is.get();
-				szBuf[ 1 ] = (char)is.get();
-				szBuf[ 2 ] = 0;
+            parse( is, keepBlanks );
 
-				sValue += (char)strtol( szBuf, NULL, 16 );
-				break;
-			}
-			case '+':
-				sValue += ' ';
-				break;
+            return;
+        }
+    }
 
-			default:
-				sValue += ch;
-			}
-		}
-		else
-			sName += ch;
-	}
-
-	if( !sName.empty() )
-		if( bKeepBlanks || !sValue.empty()) {
-			// cerr << "url : " << sName << " + " << sValue << endl;
-			m_fields.push_back( pair<string, string>( sName, sValue ));
-		}
-
-	if(m_fields.empty())
-		throw invalid_argument( "Stream does'nt contain any valid data" );
+    throw invalid_argument( "request is not a valid form type" );
 }
 
 /**
@@ -858,6 +834,63 @@ void FieldStorage::out( ostream &os ) const
 
 		os << iter->first << "=" << conv_data( iter->second );
 	}
+}
+
+void FieldStorage::parse( istream &is, bool keepBlanks )
+{
+    string sName, sValue;
+    bool bFetchValue = false;
+
+    while(!is.eof()) {
+        int ch;
+        if((ch = is.get()) == -1 || ch == '\n' )
+            break;
+
+        if( ch == '&' ) { // add values
+            if( keepBlanks || !sValue.empty())
+                m_fields.push_back( make_pair( sName, sValue ));
+
+            sName = sValue = "";
+            bFetchValue = false;
+            continue;
+        }
+
+        if( ch == '=' ) {
+            bFetchValue = true;
+            continue;
+        }
+
+        if( bFetchValue ) {
+            switch( ch ) {
+            case '%': { // Sorry about the mess, but gcc don't do it right
+                char szBuf[ 3 ];
+
+                szBuf[ 0 ] = (char)is.get();
+                szBuf[ 1 ] = (char)is.get();
+                szBuf[ 2 ] = 0;
+
+                sValue += (char)strtol( szBuf, NULL, 16 );
+                break;
+            }
+            case '+':
+                sValue += ' ';
+                break;
+
+            default:
+                sValue += ch;
+            }
+        }
+        else
+            sName += ch;
+    }
+
+    if( !sName.empty() )
+        if( keepBlanks || !sValue.empty())
+            m_fields.push_back( make_pair( sName, sValue ));
+        
+
+    if(m_fields.empty())
+        throw invalid_argument( "parser error in FieldStoreage" );    
 }
 
 ///////////////////////////////
