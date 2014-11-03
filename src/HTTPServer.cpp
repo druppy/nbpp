@@ -3,7 +3,6 @@
 */
 
 #include <nb++/HTTPServer.hpp>
-#include <nb++/String.hpp>
 #include <nb++/Multipart.hpp>
 
 #include <sstream>
@@ -732,6 +731,15 @@ void FieldStorage::append( const string &sName, long nData )
 
 	sprintf( szBuf, "%ld", nData );
 	append( sName, szBuf );
+}
+
+Strings FieldStorage::fields() const {
+    Strings res;
+
+    for( vpdata_t::const_iterator i = m_fields.begin(); i != m_fields.end(); i++ )
+        res.push_back( i->first );
+
+    return res;
 }
 
 /**

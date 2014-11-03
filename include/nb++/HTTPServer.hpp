@@ -21,7 +21,8 @@
 #include <nb++/NetworkDaemon.hpp>
 #include <nb++/InetAddress.hpp>
 #include <nb++/ServerSocket.hpp>
-
+#include <nb++/String.hpp>
+   
 namespace nbpp {
 
 	using namespace std;
@@ -342,6 +343,8 @@ namespace nbpp {
 
 		void append( const string &sName, const string &sData );
 		void append( const string &sName, long nData );
+
+        Strings fields() const;
 
 		bool hasA( const string &sName ) const;
 		string operator [](const string &sName) const;
