@@ -685,7 +685,9 @@ FieldStorage::FieldStorage( Request &req, bool keepBlanks )
 {
 
     if( req.has_a( "Content-Type" )) {
-        if( req[ "Content-Type" ] == "multipart/form-data" ) {
+        string t( req[ "Content-Type" ] ); 
+
+        if( t.substr( 0, 19 ) == "multipart/form-data" ) {
             Multipart mp( req );
 
             for( int i = 0; mp.size() > i; i++ ) { 
@@ -696,7 +698,7 @@ FieldStorage::FieldStorage( Request &req, bool keepBlanks )
             }
 
             return;
-        } else if( req[ "Content-Type"] == "application/x-www-form-urlencoded" ) {
+        } else if( t == "application/x-www-form-urlencoded" ) {
            istream &is = req.getInputStream();
 
             parse( is, keepBlanks );
