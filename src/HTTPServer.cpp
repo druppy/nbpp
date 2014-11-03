@@ -690,7 +690,7 @@ FieldStorage::FieldStorage( Request &req, bool keepBlanks )
         if( t.substr( 0, 19 ) == "multipart/form-data" ) {
             Multipart mp( req );
 
-            for( int i = 0; mp.size() > i; i++ ) { 
+            for( size_t i = 0; i < mp.size(); i++ ) { 
                 string val = dynamic_cast<MemPart &>( mp[ i ] ).str();
 
                 if( keepBlanks || !val.empty())
@@ -704,7 +704,8 @@ FieldStorage::FieldStorage( Request &req, bool keepBlanks )
             parse( is, keepBlanks );
 
             return;
-        }
+        } else
+            throw invalid_argument( "unknown mime type for form" );
     }
 
     throw invalid_argument( "request is not a valid form type" );
