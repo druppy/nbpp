@@ -15,7 +15,7 @@ SET( NBPP_VERSION_MINOR 7 )
 SET( NBPP_VERSION_REV 8 )
 SET( NBPP_VERSION ${NBPP_VERSION_MAJOR}.${NBPP_VERSION_MINOR}.${NBPP_VERSION_REV} )
 
-SET( CMAKE_CXX_FLAGS "-std=c++98 -pthread" )
+SET( CMAKE_CXX_FLAGS "-std=c++98 -pthread -fno-strict-aliasing" )
 
 #SET( _REENTRANT 1 )
 #SET( _GNU_SOURCE 1 )  # GNU source extentions
@@ -114,7 +114,7 @@ CONFIGURE_FILE( include/nb++/config.h.cmake include/nb++/config.h )
 CONFIGURE_FILE( nbpp.pc.cmake nbpp.pc )
 CONFIGURE_FILE( doc/doxygen.config.cmake doc/doxygen.config )
 
-FILE( MAKE_DIRECTORY doc/html ) 
+FILE( MAKE_DIRECTORY doc/html )
 ADD_CUSTOM_TARGET(api-docs ALL ${DOXYGEN_EXECUTABLE} doc/doxygen.config )
 #ADD_COMMAND( OUTPUT doc/html/index.html )
 
@@ -122,10 +122,10 @@ INSTALL( DIRECTORY doc/html DESTINATION share/doc/nbpp-dev/html
          PATTERN ".svn" EXCLUDE )
 
 INSTALL( DIRECTORY include/ DESTINATION include
-         PATTERN ".svn" EXCLUDE 
+         PATTERN ".svn" EXCLUDE
          PATTERN "include/*.h*" )
 
-INSTALL( FILES nbpp.pc DESTINATION lib/pkgconfig ) 
+INSTALL( FILES nbpp.pc DESTINATION lib/pkgconfig )
 
 ADD_SUBDIRECTORY( src )
 ADD_SUBDIRECTORY( utils )
