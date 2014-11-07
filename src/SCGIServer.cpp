@@ -13,6 +13,7 @@ static void sendSCGIError( Request &req, HTTPRequestHandler::Result res )
         const char *pszError = getHttpError( res, &pszErrorDesc );
 
         req.append( "Content-Type", "text/plain" );
+        req.append( "Cache-Control", "max-age=0, no-cache" );
 
         ostream &os = req.getOutputStream();
         os << pszErrorDesc;
