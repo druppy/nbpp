@@ -119,6 +119,9 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
     if( has_a( "content_length" ))
         _header_in[ "content-length" ] = get( "content_length" );
 
+    if( has_a( "content_type" ))
+        _header_in[ "content-type" ] = get( "content_type" );
+
     if( has_a( "http_cookie" ))
         _header_in[ "cookie" ] = get( "http_cookie" );
 
