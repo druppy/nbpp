@@ -167,7 +167,7 @@ bool Multipart::parse( istream &is )
                         do {
                             ch = is.get();
                         } while( isspace( ch ) && is );
-                        clog << "--- end of multipart ---" << endl;
+                        // clog << "--- end of multipart ---" << endl;
                         valid = true;
                         break;
                     } else
@@ -200,7 +200,7 @@ bool Multipart::parse( istream &is )
                 }
 
                 _parts.push_back( part );
-                clog << "--- multipart add new part : " << part->filename_get() << endl;
+                // clog << "--- multipart add new part : " << part->filename_get() << endl;
             }
             continue;
         } else {

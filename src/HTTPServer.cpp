@@ -438,6 +438,14 @@ HTTPRequest::HTTPRequest( Socket &socket ) : Request( socket )
 void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
 {
 	if( _nVersion > 0.9 && !_header_send ) {
+        // Read all that is left in case of error
+        if( has_a( "Content-Length" )) {
+            istream &is = getInputStream();
+
+            while( !is.eof())
+                is.get();
+        }
+
 		ostream &os = _sock.getOutputStream();
 
         if( _method != HEAD ) {

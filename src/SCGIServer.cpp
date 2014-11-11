@@ -165,25 +165,17 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
         throw invalid_argument( "missing CONTENT_LENGTH in SCGI request" );
 }
 
-// read all data from socket
-string SCGIRequest::read_all()
-{
-    if( _max_bytes > -1 ) {
-        istream &is = getInputStream();
-
-        auto_ptr<char> buffer( new char[ _max_bytes ] );
-
-        is.read( buffer.get(), _max_bytes );
-
-        return string( buffer.get(), _max_bytes );
-    }
-
-    return "";
-}
-
 void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
 {
     if( !header_send()) {
+        // Read all that is left in case of error
+        if( has_a( "content_length" )) {
+            istream &is = getInputStream();
+
+            while( !is.eof())
+                is.get();
+        }
+
         ostream &os = _sock.getOutputStream();
 
         const char *pszErrorDesc = NULL;

@@ -96,7 +96,7 @@ namespace nbpp {
         typedef list<pair<float, string> > langs_t; // quality / language
 
         Request( Socket &sock );
-        ~Request();
+        virtual ~Request();
 
 		enum Method {
 			UNKNOWN,

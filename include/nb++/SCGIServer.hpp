@@ -18,11 +18,9 @@ namespace nbpp {
     public:
         SCGIRequest( Socket &sock );
         
-        void send_out_header(HTTPRequestHandler::Result res );
+        void send_out_header( HTTPRequestHandler::Result res );
         
         ostream &dump( ostream &os ) const;
-
-        string read_all();
     };
 
     /**
@@ -31,7 +29,7 @@ namespace nbpp {
     class SCGIServer : public HTTPServer {
 	public:
         SCGIServer( const string &name ) : HTTPServer( name ) {
-            setInetAddress( InetAddress::getAnyLocalHost( 9000 ));
+            setInetAddress( InetAddress::getAnyLocalHost( 9001 ));
         }
         
     protected:    

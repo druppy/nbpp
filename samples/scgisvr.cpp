@@ -14,9 +14,15 @@ public:
     Result handle( Request &req ) {
         req.getOutputStream() << "Hello, world";
 
-        cout << "hello world request added" << endl;
+        clog << "hello world request added" << endl;
 
-        cout << req << endl;
+        clog << req << endl;
+
+        if( req.getMethod() == Request::POST ) {
+            FieldStorage fs( req );
+
+            clog << "fields " << fs.toString() << endl;
+        }
 
         return HTTP_OK;
     }

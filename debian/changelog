@@ -1,3 +1,10 @@
+nbpp (0.7.8-2) unstable; urgency=low
+
+  * http errors are set to no cache
+  * http / scgi request are reading all its request stream on error
+
+ -- Bo Lorentsen <bl@moch.dk>  Mon, 10 Nov 2014 16:46:01 +0100
+
 nbpp (0.7.8-1) unstable; urgency=low
 
   * set istream to 0 when no Content-Length is given in HTTP
