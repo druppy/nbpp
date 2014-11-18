@@ -58,6 +58,7 @@ void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) 
                 if( res >= 400 && req.getOutStreamSize() == 0)
                     sendSCGIError( req, res );
             } catch( const exception &ex ) {
+                clog << "ERROR: handling SCGI request " << ex.what() << endl;
                 res = HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR;
                 sendSCGIError( req, res );
             }
@@ -65,9 +66,9 @@ void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) 
             req.send_out_header( res );
         }
 	} catch( const Exception &ex ) {
-		clog << ex.toString() << endl;
+		clog << "ERROR: " << ex.toString() << endl;
 	} catch( const exception &ex ) {
-		clog << ex.what() << endl;
+		clog << "ERROR: " << ex.what() << endl;
 	}
 }
 

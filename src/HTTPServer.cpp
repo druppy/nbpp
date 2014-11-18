@@ -652,6 +652,7 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
                     if( res == 301 )
                         persist = false;
                 } catch( const exception &ex ) {
+                    clog << "ERROR: handling HTTP request " << ex.what() << endl;
                     res = HTTPRequestHandler::HTTP_INTERNAL_SERVER_ERROR;
                     sendHttpError( req, res );
                 }
@@ -663,9 +664,9 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
             req.send_out_header( res );
         }
 	} catch( const Exception &ex ) {
-		cerr << ex.toString() << endl;
+		cerr << "ERROR: " << ex.toString() << endl;
 	} catch( const exception &ex ) {
-		cerr << ex.what() << endl;
+		cerr << "ERROR: " << ex.what() << endl;
 	}
 }
 
