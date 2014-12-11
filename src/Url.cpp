@@ -52,7 +52,7 @@ public:
             return m_type = tReserved;
         }
 
-        if( isalnum( *m_iter ) || strchr( "*$-._%~+", *m_iter )) {
+        if( isalnum( *m_iter ) || strchr( "*$-._%~+()", *m_iter )) {
             string sRes;
             do {
                 if( *m_iter == '%' ) {
@@ -213,14 +213,14 @@ void URL::set( const string &sUrl )
     // Get path info, if any
     if( lex.getType() == UrlLex::tReserved && lex.getToken() == "/" ) {
         m_sPath = "/";
-        lex.next();
+        lex.next( "?/" );
 
         do {
             if( lex.getType() == UrlLex::tSymbol ) {
                 m_sPath += lex.getToken();
                 if( lex.next() == UrlLex::tReserved && lex.getToken() == "/" ) {
                     m_sPath += "/";
-                    lex.next();
+                    lex.next( "?/" );
                 }
             }
             else
