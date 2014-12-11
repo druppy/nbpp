@@ -1,3 +1,9 @@
+nbpp (0.7.8-3) unstable; urgency=low
+
+  * url parser error (Linkedin filter)
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 11 Dec 2014 12:24:50 +0100
+
 nbpp (0.7.8-2) unstable; urgency=low
 
   * http errors are set to no cache
