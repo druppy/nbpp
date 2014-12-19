@@ -109,7 +109,14 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
             if( name.empty()) {
                 name = string( s, i );
             } else {
-                _header_in[ string_tolower( name ) ] = string( s, i );
+                string lname(string_tolower( name )); 
+
+                _header_in[ lname ] = string( s, i );
+
+                // map all http_ prefixed names to plain http name
+                if( lname.find( "http_" ) != string::npos ) 
+                    _header_in[ lname.substr( 5 ) ] = string( s, i );
+                    
                 name.clear();
             }
             s = i; s++;
@@ -122,18 +129,6 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
 
     if( has_a( "content_type" ))
         _header_in[ "content-type" ] = get( "content_type" );
-
-    if( has_a( "http_cookie" ))
-        _header_in[ "cookie" ] = get( "http_cookie" );
-
-    if( has_a( "http_accept" ))
-        _header_in[ "accept" ] = get( "http_accept" );
-
-    if( has_a( "http_accept_encoding" ))
-        _header_in[ "accept-encoding" ] = get( "http_accept_encoding" );
-
-    if( has_a( "http_accept_language" ))
-        _header_in[ "accept-language" ] = get( "http_accept_language" );
 
     // validate headers and update values
     if( has_a( "content_length" ) ) {
@@ -186,12 +181,8 @@ void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
         os << "Status: " << res << " " << pszError << "\r\n";
 
         // Make sure the Content length are presend and valid
-        if( _method != HEAD ) {
-            values_t::const_iterator hi = _header_out.find( "Content-Length" );
-
-            if( !_os.str().empty() && hi == _header_out.end())
-                append( "Content-Length", _os.str().length() );
-        }
+        if( _method != HEAD && !_os.str().empty())
+            append( "Content-Length", _os.str().length() );
 
         values_t::const_iterator i;
         for( i = _header_out.begin(); i != _header_out.end(); i++ ) {
