@@ -1,6 +1,6 @@
 nbpp (0.7.8-4) unstable; urgency=low
 
- * cleanup in http header representation to fix mix of _ and -
+  * cleanup in http header representation to fix mix of _ and -
 
  -- Bo Lorentsen <bl@moch.dk>  Tue, 27 Jan 2015 16:42:00 +0100
 
