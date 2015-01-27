@@ -88,12 +88,20 @@ ostream &Request::getOutputStream()
 
 bool Request::has_a( const string &name ) const
 {
-    return _header_in.count( string_tolower( name )) > 0;
+    string lname = string_tolower( name );
+
+    replace( lname.begin(), lname.end(), '-', '_' );
+
+    return _header_in.count( lname ) > 0;
 }
 
 string Request::get( const string &name ) const
 {
-    values_t::const_iterator i = _header_in.find( string_tolower( name ));
+    string lname = string_tolower( name );
+
+    replace( lname.begin(), lname.end(), '-', '_' );
+
+    values_t::const_iterator i = _header_in.find( lname );
 
     if( i != _header_in.end())
         return i->second;
@@ -415,6 +423,9 @@ HTTPRequest::HTTPRequest( Socket &socket ) : Request( socket )
 
 				if( split_head( sLine, name, value )) {
                     string n = string_tolower( name );
+
+                    if( n.find( '-' ))
+                        replace( n.begin(), n.end(), '-', '_' );
 
                     if( _header_in.count( n ) == 0 )
                         _header_in[ n ] = value;

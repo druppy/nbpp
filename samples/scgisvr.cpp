@@ -19,10 +19,14 @@ public:
         clog << req << endl;
 
         if( req.getMethod() == Request::POST ) {
+            clog << "-- POST method validabels" << endl;
             FieldStorage fs( req );
 
             clog << "fields " << fs.toString() << endl;
         }
+
+        clog << "-- variables given by WEB server" << endl;
+        clog << req << endl;
 
         return HTTP_OK;
     }

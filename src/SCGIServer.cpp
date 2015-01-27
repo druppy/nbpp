@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <stdexcept>
 #include <memory>
+#include <algorithm>
 
 using namespace std;
 using namespace nbpp;
@@ -111,6 +112,9 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
             } else {
                 string lname(string_tolower( name )); 
 
+                if( lname.find( '-' ))
+                    replace( lname.begin(), lname.end(), '-', '_' );
+
                 _header_in[ lname ] = string( s, i );
 
                 // map all http_ prefixed names to plain http name
@@ -122,13 +126,6 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
             s = i; s++;
         }
     }
-
-    // Normalize header data for non CGI aware tools
-    if( has_a( "content_length" ))
-        _header_in[ "content-length" ] = get( "content_length" );
-
-    if( has_a( "content_type" ))
-        _header_in[ "content-type" ] = get( "content_type" );
 
     // validate headers and update values
     if( has_a( "content_length" ) ) {
