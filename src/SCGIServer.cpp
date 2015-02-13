@@ -158,15 +158,19 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
         throw invalid_argument( "missing CONTENT_LENGTH in SCGI request" );
 }
 
-void SCGIRequest::send_out_header(HTTPRequestHandler::Result res )
+void SCGIRequest::send_out_header( HTTPRequestHandler::Result res )
 {
     if( !header_send()) {
         // Read all that is left in case of error
         if( has_a( "content_length" )) {
             istream &is = getInputStream();
 
-            while( !is.eof())
+            long long max = atoll(get( "content_length" ).c_str());
+
+            while( is && max > 0 ) {
                 is.get();
+                --max;
+            }
         }
 
         ostream &os = _sock.getOutputStream();

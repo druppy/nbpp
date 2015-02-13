@@ -257,7 +257,7 @@ bool Request::sendFile( const string &sFname )
 
             send_out_header();
 
-            while( !is.eof() && os.good() && stat_buf.st_size ) {
+            while( is && os.good() && stat_buf.st_size ) {
                     char szBuffer[ 1024 ];
                     int nChunk = sizeof( szBuffer );
 
@@ -269,7 +269,7 @@ bool Request::sendFile( const string &sFname )
                     stat_buf.st_size -= nChunk;
             }
         }
-            return true;
+        return true;
     }
     return false;
 }
@@ -322,7 +322,7 @@ bool Request::sendFile( const string &sFname, size_t offset, size_t length )
             if( offset != 0 )
                 is.seekg( offset, ios::beg );
 
-            while( !is.eof() && os.good() && length ) {
+            while( is && os.good() && length ) {
                 char szBuffer[ 1024 ];
                 int nChunk = sizeof( szBuffer );
 
@@ -453,8 +453,12 @@ void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
         if( has_a( "Content-Length" )) {
             istream &is = getInputStream();
 
-            while( !is.eof())
+            long long max = atoll(get( "content_length" ).c_str());
+
+            while( is && max > 0 ) {
                 is.get();
+                --max;
+            }
         }
 
 		ostream &os = _sock.getOutputStream();
