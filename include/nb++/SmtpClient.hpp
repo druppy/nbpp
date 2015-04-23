@@ -94,7 +94,9 @@ private:
 */
 class Utf8Message : public Message
 {
-    string _body, _subject;
+    string _body, 
+    _subject,
+    _mimetype;
 public:
     /**
         Construct a special message that handle the body content as UTF8,
@@ -116,8 +118,9 @@ public:
         of this body string to be in UTF8.
 
         @param body content of the message
+        @param mimetype of the given body (all is utf8)
     */
-    void body_set( const string &body );
+    void body_set( const string &body, const string &mimetype = "text/plain" );
 
     ostream &out( ostream &os ) const;
 };

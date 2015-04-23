@@ -113,9 +113,10 @@ namespace Smtp {
         _subject = subj;
     }
 
-    void Utf8Message::body_set( const string &body )
+    void Utf8Message::body_set( const string &body, const string &mimetype )
     {
         _body = body;
+        _mimetype = mimetype; // text/plain
     }
 
     ostream &Utf8Message::out( ostream &os ) const
@@ -123,7 +124,8 @@ namespace Smtp {
         Message::out( os );
 
         os << "Subject: " << encode_subj( _subject ) << "\r\n";
-        os << "Content-Type: text/plain; charset=UTF8;\r\n";
+        os << "Mime-Version: 1.0\r\n";
+        os << "Content-Type: " << _mimetype << "; charset=UTF8;\r\n";
         os << "Content-Transfer-Encoding: 8bit\r\n";
 
         os << _body;
