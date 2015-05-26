@@ -257,7 +257,7 @@ bool Request::sendFile( const string &sFname )
 
             send_out_header();
 
-            while( is && os.good() && stat_buf.st_size ) {
+            while( !is.eof() && os.good() && stat_buf.st_size ) {
                     char szBuffer[ 1024 ];
                     int nChunk = sizeof( szBuffer );
 
@@ -322,7 +322,7 @@ bool Request::sendFile( const string &sFname, size_t offset, size_t length )
             if( offset != 0 )
                 is.seekg( offset, ios::beg );
 
-            while( is && os.good() && length ) {
+            while( !is.eof() && os.good() && length ) {
                 char szBuffer[ 1024 ];
                 int nChunk = sizeof( szBuffer );
 
@@ -454,10 +454,11 @@ void HTTPRequest::send_out_header( HTTPRequestHandler::Result res )
             istream &is = getInputStream();
 
             long long max = atoll(get( "content_length" ).c_str());
-
-            while( is && max > 0 ) {
-                is.get();
-                --max;
+            if( errno == 0 ) {
+                while( !is.eof() && max > 0 ) {
+                    is.get();
+                    --max;
+                }
             }
         }
 

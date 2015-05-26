@@ -167,9 +167,11 @@ void SCGIRequest::send_out_header( HTTPRequestHandler::Result res )
 
             long long max = atoll(get( "content_length" ).c_str());
 
-            while( is && max > 0 ) {
-                is.get();
-                --max;
+            if( errno == 0 ) {
+                while( !is.eof() && max > 0 ) {
+                    is.get();
+                    --max;
+                }
             }
         }
 
