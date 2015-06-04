@@ -11,6 +11,7 @@
 #include <list>
 #include <string>
 #include <nb++/Socket.hpp>
+#include <nb++/String.hpp>
 
 namespace nbpp {
 namespace Smtp {
@@ -71,6 +72,9 @@ public:
 
     string from_email_get() const {return _from;}
     string to_email_get() const {return _to;}
+
+    // return all adresses to send to
+    Strings all_from_email_get() const;
 
     /**
         Used by the Client to serialize the content of this message in the

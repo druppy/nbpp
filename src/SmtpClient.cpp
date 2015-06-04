@@ -35,6 +35,18 @@ namespace Smtp {
         _from_name = name;
     }
 
+    Strings Message::all_from_email_get() const 
+    {
+        Strings addr;
+
+        addr.push_back( _to );
+        
+        for( rcpt_t::const_iterator i = _rcpt.begin(); i != _rcpt.end(); i++ )
+            addr.push_back( i->second );
+
+        return addr;
+    }
+
     void Message::rcpt_add( const string &email, const string &name, addr_t type )
     {
         ostringstream os;
@@ -55,7 +67,7 @@ namespace Smtp {
     {
         char timebuf[ 40 ];
         struct tm tm;
-        string bcc, cc, to;
+        string cc, to;
 
         time_t now = time(NULL);
         localtime_r( &now, &tm );
@@ -71,11 +83,7 @@ namespace Smtp {
 
         for( rcpt_t::const_iterator i = _rcpt.begin(); i != _rcpt.end(); i++ ) {
             switch( i->first ) {
-                case addr_bcc:
-                    if( !bcc.empty())
-                        bcc += ", ";
-
-                    bcc += i->second;
+                case addr_bcc:  // Bcc is not shown in mail
                     break;
 
                 case addr_cc:
@@ -99,9 +107,6 @@ namespace Smtp {
 
         if( !cc.empty())
             os << "Cc: " << cc << "\r\n";
-
-        if( !bcc.empty())
-            os << "Bcc: " << bcc << "\r\n";
 
         return os;
     }
@@ -184,19 +189,23 @@ namespace Smtp {
     {
         ostream &os = _sock.getOutputStream();
 
-        os << "MAIL FROM: <" << mail.from_email_get() << ">\r\n";
-        reply_check( 250 );
+        // Send the same mail body to all recipients 
+        Strings recps = mail.all_from_email_get();
+        for( Strings::iterator ito = recps.begin(); ito != recps.end(); ito++ ) {
+            os << "MAIL FROM: <" << mail.from_email_get() << ">\r\n";
+            reply_check( 250 );
 
-        os << "RCPT TO: <" << mail.to_email_get() << ">\r\n";
-        reply_check( 250 );
+            os << "RCPT TO: <" << *ito << ">\r\n";
+            reply_check( 250 );
 
-        os << "DATA \r\n";
-        reply_check( 354 );
+            os << "DATA \r\n";
+            reply_check( 354 );
 
-        mail.out( os );
+            mail.out( os );
 
-        os << "\r\n.\r\n";
-        reply_check( 250 );
+            os << "\r\n.\r\n";
+            reply_check( 250 );
+        }
         return true;
     }
 }
