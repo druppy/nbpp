@@ -189,23 +189,24 @@ namespace Smtp {
     {
         ostream &os = _sock.getOutputStream();
 
-        // Send the same mail body to all recipients 
+        os << "MAIL FROM: <" << mail.from_email_get() << ">\r\n";
+        reply_check( 250 );
+
+        // Send to all recipients 
         Strings recps = mail.all_from_email_get();
         for( Strings::iterator ito = recps.begin(); ito != recps.end(); ito++ ) {
-            os << "MAIL FROM: <" << mail.from_email_get() << ">\r\n";
-            reply_check( 250 );
-
             os << "RCPT TO: <" << *ito << ">\r\n";
             reply_check( 250 );
-
-            os << "DATA \r\n";
-            reply_check( 354 );
-
-            mail.out( os );
-
-            os << "\r\n.\r\n";
-            reply_check( 250 );
         }
+
+        os << "DATA \r\n";
+        reply_check( 354 );
+
+        mail.out( os );
+
+        os << "\r\n.\r\n";
+        reply_check( 250 );
+
         return true;
     }
 }
