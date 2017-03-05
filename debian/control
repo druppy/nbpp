@@ -26,7 +26,7 @@ Package: libnbpp-dev
 Architecture: any
 Section: libdevel
 Provides: libnbpp-dev
-Depends: libc6-dev, libssl-dev, libnbpp (= ${Source-Version})
+Depends: libc6-dev, libssl-dev, libnbpp (= ${source:Version})
 Description: This package contains the static libraries, header files 
  and documentation necessary for development of programs that will use 
  the nb++ library.
