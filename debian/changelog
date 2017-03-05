@@ -1,3 +1,16 @@
+nbpp (0.7.8-6) unstable; urgency=low
+
+  * make Smtp code send to ALL recipients to MTA
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 04 Jun 2015 17:05:06 +0200
+
+nbpp (0.7.8-5) unstable; urgency=low
+
+  * Added project to githup
+  * Add mime type to smtp handling
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 23 Apr 2015 11:31:24 +0200
+
 nbpp (0.7.8-4) unstable; urgency=low
 
   * cleanup in http header representation to fix mix of _ and -

@@ -11,6 +11,7 @@
 #include <list>
 #include <string>
 #include <nb++/Socket.hpp>
+#include <nb++/String.hpp>
 
 namespace nbpp {
 namespace Smtp {
@@ -72,6 +73,9 @@ public:
     string from_email_get() const {return _from;}
     string to_email_get() const {return _to;}
 
+    // return all adresses to send to
+    Strings all_from_email_get() const;
+
     /**
         Used by the Client to serialize the content of this message in the
         rfc822 way.
@@ -94,7 +98,9 @@ private:
 */
 class Utf8Message : public Message
 {
-    string _body, _subject;
+    string _body, 
+    _subject,
+    _mimetype;
 public:
     /**
         Construct a special message that handle the body content as UTF8,
@@ -116,8 +122,9 @@ public:
         of this body string to be in UTF8.
 
         @param body content of the message
+        @param mimetype of the given body (all is utf8)
     */
-    void body_set( const string &body );
+    void body_set( const string &body, const string &mimetype = "text/plain" );
 
     ostream &out( ostream &os ) const;
 };

@@ -35,6 +35,18 @@ namespace Smtp {
         _from_name = name;
     }
 
+    Strings Message::all_from_email_get() const 
+    {
+        Strings addr;
+
+        addr.push_back( _to );
+        
+        for( rcpt_t::const_iterator i = _rcpt.begin(); i != _rcpt.end(); i++ )
+            addr.push_back( i->second );
+
+        return addr;
+    }
+
     void Message::rcpt_add( const string &email, const string &name, addr_t type )
     {
         ostringstream os;
@@ -55,7 +67,7 @@ namespace Smtp {
     {
         char timebuf[ 40 ];
         struct tm tm;
-        string bcc, cc, to;
+        string cc, to;
 
         time_t now = time(NULL);
         localtime_r( &now, &tm );
@@ -71,11 +83,7 @@ namespace Smtp {
 
         for( rcpt_t::const_iterator i = _rcpt.begin(); i != _rcpt.end(); i++ ) {
             switch( i->first ) {
-                case addr_bcc:
-                    if( !bcc.empty())
-                        bcc += ", ";
-
-                    bcc += i->second;
+                case addr_bcc:  // Bcc is not shown in mail
                     break;
 
                 case addr_cc:
@@ -100,9 +108,6 @@ namespace Smtp {
         if( !cc.empty())
             os << "Cc: " << cc << "\r\n";
 
-        if( !bcc.empty())
-            os << "Bcc: " << bcc << "\r\n";
-
         return os;
     }
 
@@ -113,9 +118,10 @@ namespace Smtp {
         _subject = subj;
     }
 
-    void Utf8Message::body_set( const string &body )
+    void Utf8Message::body_set( const string &body, const string &mimetype )
     {
         _body = body;
+        _mimetype = mimetype; // text/plain
     }
 
     ostream &Utf8Message::out( ostream &os ) const
@@ -123,7 +129,8 @@ namespace Smtp {
         Message::out( os );
 
         os << "Subject: " << encode_subj( _subject ) << "\r\n";
-        os << "Content-Type: text/plain; charset=UTF8;\r\n";
+        os << "Mime-Version: 1.0\r\n";
+        os << "Content-Type: " << _mimetype << "; charset=UTF8;\r\n";
         os << "Content-Transfer-Encoding: 8bit\r\n";
 
         os << _body;
@@ -185,8 +192,12 @@ namespace Smtp {
         os << "MAIL FROM: <" << mail.from_email_get() << ">\r\n";
         reply_check( 250 );
 
-        os << "RCPT TO: <" << mail.to_email_get() << ">\r\n";
-        reply_check( 250 );
+        // Send to all recipients 
+        Strings recps = mail.all_from_email_get();
+        for( Strings::iterator ito = recps.begin(); ito != recps.end(); ito++ ) {
+            os << "RCPT TO: <" << *ito << ">\r\n";
+            reply_check( 250 );
+        }
 
         os << "DATA \r\n";
         reply_check( 354 );
@@ -195,6 +206,7 @@ namespace Smtp {
 
         os << "\r\n.\r\n";
         reply_check( 250 );
+
         return true;
     }
 }
