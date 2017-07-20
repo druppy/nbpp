@@ -70,15 +70,21 @@ Request::Request( Socket &sock ) : _sock( sock ), _method( UNKNOWN ), _takeover(
 
 Request::~Request()
 {
-    if( !_header_send )
-		send_out_header();
+    try {
+        if( !_header_send )
+    		send_out_header();
 
-	ostream &os = _sock.getOutputStream();
-	if( !_os.str().empty())
-		os << _os.str();
+    	ostream &os = _sock.getOutputStream();
+    	if( !_os.str().empty())
+    		os << _os.str();
 
-	os.flush();
-    _sock.waitToSend();
+    	os.flush();
+        _sock.waitToSend();
+    } catch( const exception &ex ) {
+        cerr << "error " << ex.what() << " in request dector" << endl;
+    } catch( ... ) {
+        cerr << "unknown error in request dector" << endl;
+    }
 }
 
 ostream &Request::getOutputStream()

@@ -253,7 +253,6 @@ void CurlConnection::perform( const string &sPostData )
 		if( res >= 300 ) {
 			stringstream ostr;
 
-			ostr << "HTTP error : " << res;
 			throw ConnectException( ostr.str());
 		}
 

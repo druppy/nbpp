@@ -24,7 +24,7 @@ namespace nbpp {
     };
 
     /**
-        This is like the HTTP server but handles SCGI requestes instead
+        This is like the HTTP server but handles SCGI requested instead
     */
     class SCGIServer : public HTTPServer {
 	public:

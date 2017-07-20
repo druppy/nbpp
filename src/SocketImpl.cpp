@@ -123,7 +123,7 @@ namespace nbpp
         in(0), out(0)
     {
         connect();
-         getStreams();
+        getStreams();
     }
 
     SocketImpl::SocketImpl(int fd, NetworkAddress networkAddress)
@@ -137,8 +137,10 @@ namespace nbpp
     {
         delete in;
         delete out;
+#if __GNUC__ >= 2
         delete bin;
         delete bout;
+#endif
 		close();
     }
 

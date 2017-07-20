@@ -550,6 +550,9 @@ void HTTPConnection::perform( const string &sPostData = "" )
 
 void HTTPConnection::perform( istream &inputStream, size_t nLength )
 {
+    unsigned nStatus = 0;
+    char szDesc[ 256 ] = "";
+
     ostream &os = m_sock.getOutputStream();
 
     os << "GET " << m_url.getPath() << "HTTP/1.1\r\n";
@@ -585,7 +588,6 @@ void HTTPConnection::perform( istream &inputStream, size_t nLength )
 
     if( is.get() == 'H' ) {
         float nVersion;
-        unsigned nStatus;
         char szDesc[ 256 ];
         string sLine;
 
@@ -626,6 +628,12 @@ void HTTPConnection::perform( istream &inputStream, size_t nLength )
     }
 
     m_pStream = &m_result;
+
+    if( nStatus >= 300 )
+        throw ConnectException( ostr.str());
+
+    if( nStatus != 200 )
+        throw ConnectException( szError );
 }
 
 ostream &HTTPConnection::getOutputStream( void )
