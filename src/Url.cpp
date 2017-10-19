@@ -200,7 +200,7 @@ void URL::set( const string &sUrl )
             }
 
             if( m_sHost.empty()) {
-                if( lex.getToken() == "/" )
+                if( lex.getToken() == "/" || lex.getToken() == "?" )
                     m_sHost = sName;
                 else
                     throw URLException( "Missing host name " + sUrl );
