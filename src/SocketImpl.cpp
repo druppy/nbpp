@@ -91,18 +91,21 @@ namespace nbpp
 			// First try using nonblock
 			int nErrno, cnt;
 			do {
-				int nMask = fcntl( m_socket.getFd(), F_GETFL, 0);  // Get original mask
-
-				if(fcntl(m_socket.getFd(), F_SETFL, nMask | O_NONBLOCK) < 0)
-					throw ConnectException( errno );
-
 				int nLen = BUFSIZ - 4;
 				if( m_nMaxLength != -1 )
 					nLen = (nLen < m_nMaxLength - m_nCount) ? nLen : m_nMaxLength - m_nCount;
 
+                if( nLen == 0 )
+                    return EOF;
+
+                int nMask = fcntl( m_socket.getFd(), F_GETFL, 0);  // Get original mask
+
+                if(fcntl(m_socket.getFd(), F_SETFL, nMask | O_NONBLOCK) < 0)
+                    throw ConnectException( errno );
+
 				errno = 0;
                 
-                clog << "XXX: reading " << nLen << " from socket " << endl;
+                // clog << "XXX: reading " << nLen << " from socket " << endl;
 
 				cnt = read( m_socket.getFd(), m_buffer + 4, nLen );
 				nErrno = errno; // Save errno
@@ -114,7 +117,7 @@ namespace nbpp
 					throw ConnectException( errno );
 
 				// cout << "Stream read " << m_nMaxLength << ", " << cnt << ", " << m_nCount << endl;
-				if( cnt < 0 ) {
+				if( cnt <= 0 ) {
 					if( nErrno == EAGAIN ) {
 						// cout << "Begin wait " << m_nMaxLength << ", " << cnt << ", " << m_nCount << endl;
 						m_socket.waitForInput();
@@ -123,7 +126,7 @@ namespace nbpp
 					else
 						return EOF;
 				}
-			} while( cnt < 0 );
+			} while( cnt <= 0 );
 
 			setg( m_buffer + (4 - nPutback),
 				  m_buffer + 4,
