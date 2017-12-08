@@ -37,7 +37,7 @@ namespace nbpp
 		setsockopt(m_fd, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
 
         // Bind the socket to the port.
-        if (bind(m_fd, address.getNativeForm(), address.getNativeFormSize())) {
+        if (bind(m_fd, address.getNativeForm(), address.getNativeFormSize()) == -1) {
             close();
             throw BindException(errno);
         }
@@ -61,18 +61,22 @@ namespace nbpp
             int conn;
             socklen_t len = clientAddress.getNativeFormMaxSize();
             unsigned char clientAddrBuf [len];
-            if ((conn = ::accept(m_fd, reinterpret_cast<sockaddr*>(clientAddrBuf), &len)) < 0)
+            if ((conn = ::accept(m_fd, reinterpret_cast<sockaddr*>(clientAddrBuf), &len)) < 0) {
+                if( errno == EAGAIN || errno == EWOULDBLOCK)
+                    continue;
+
                 throw ConnectException(errno);
+            }
 
             if (clientAddress)
                 clientAddress.assignFromNativeForm(
 					reinterpret_cast<sockaddr*>(clientAddrBuf), len);
 
 			// Timeout after 10 sec if not closed right
-			struct linger lin;
-			lin.l_onoff = 1;
-			lin.l_linger = 10;
-			setsockopt(conn, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
+			//struct linger lin;
+			//lin.l_onoff = 1;
+			//lin.l_linger = 10;
+			//setsockopt(conn, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
 
             return Socket(conn, clientAddress);
         }

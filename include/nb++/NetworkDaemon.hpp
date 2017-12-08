@@ -196,7 +196,7 @@ namespace nbpp
 				try {
 					conn.sock = serverSock.accept(conn.address);
 
-					if( conn.sock ) {
+					if( conn.sock != -1 ) {
 						threader.queue(Command
 									   (new OneArgCommandImpl<NetworkConnection<AddressType>,
 										NetworkDaemon<AddressType> >
