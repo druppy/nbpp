@@ -81,6 +81,9 @@ static string netstring( istream &is )
     while( !is.eof() ) {
         char ch = is.get();
 
+        if( !is )
+            break;
+
         if( len != 0 && str.length() < len )
             str += ch;
         else if( len != 0 && str.length() == len ) {
