@@ -59,7 +59,20 @@ namespace nbpp
                 m_nMaxLength = -1;
 		}
 	protected:
-		virtual int_type underflow( void ) {
+
+        virtual int_type underflow() {
+            if(gptr() < egptr())
+                return *gptr();
+
+            int num;
+            if((num = recv(m_socket.getFd(), reinterpret_cast<char*>(m_buffer), BUFSIZ, 0)) <= 0)
+                return traits_type::eof();
+
+            setg(m_buffer, m_buffer, m_buffer + num);
+            return *gptr();
+        }
+
+		virtual int_type underflow_old( void ) {
 			// Is read buffer before the end ?
 			if( gptr() > egptr())
 				return traits_type::to_int_type( *gptr());
@@ -107,7 +120,7 @@ namespace nbpp
 					else
 						return EOF;
 				}
-			} while( cnt <= 0 );
+			} while( cnt < 0 );
 
 			setg( m_buffer + (4 - nPutback),
 				  m_buffer + 4,
