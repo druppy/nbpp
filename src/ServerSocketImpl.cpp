@@ -57,7 +57,7 @@ namespace nbpp
     Socket ServerSocketImpl::accept(NetworkAddress clientAddress) const
         throw(IOException, AssertException, exception)
     {
-        if (wait(m_fd, true, false)) {
+        while (wait(m_fd, true, false)) {
             int conn;
             socklen_t len = clientAddress.getNativeFormMaxSize();
             unsigned char clientAddrBuf [len];
@@ -80,7 +80,7 @@ namespace nbpp
 
             return Socket(conn, clientAddress);
         }
-        else // The timeout expired.
-            throw TimeoutException( "Timed out waiting for a connection" );
+        
+        throw TimeoutException( "Timed out waiting for a connection" );
     }
 }
