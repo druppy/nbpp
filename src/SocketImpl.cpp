@@ -98,7 +98,7 @@ namespace nbpp
 					throw ConnectException( errno );
 
 				// cout << "Stream read " << m_nMaxLength << ", " << cnt << ", " << m_nCount << endl;
-				if( cnt <= 0 ) {
+				if( cnt < 0 ) {
 					if( nErrno == EAGAIN ) {
 						// cout << "Begin wait " << m_nMaxLength << ", " << cnt << ", " << m_nCount << endl;
 						m_socket.waitForInput();
