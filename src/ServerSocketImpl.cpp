@@ -57,11 +57,11 @@ namespace nbpp
     Socket ServerSocketImpl::accept(NetworkAddress clientAddress) const
         throw(IOException, AssertException, exception)
     {
-        while (wait(m_fd, true, false)) {
+        //while (wait(m_fd, true, false)) {
             int conn;
             socklen_t len = clientAddress.getNativeFormMaxSize();
             unsigned char clientAddrBuf [len];
-            if ((conn = ::accept(m_fd, reinterpret_cast<sockaddr*>(clientAddrBuf), &len)) < 0) {
+            while((conn = ::accept(m_fd, reinterpret_cast<sockaddr*>(clientAddrBuf), &len)) < 0) {
                 if( errno == EAGAIN || errno == EWOULDBLOCK)
                     continue;
 
@@ -79,8 +79,8 @@ namespace nbpp
 			//setsockopt(conn, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
 
             return Socket(conn, clientAddress);
-        }
+        //}
         
-        throw TimeoutException( "Timed out waiting for a connection" );
+        //throw TimeoutException( "Timed out waiting for a connection" );
     }
 }
