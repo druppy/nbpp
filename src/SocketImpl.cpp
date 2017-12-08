@@ -60,7 +60,7 @@ namespace nbpp
 		}
 	protected:
 
-        virtual int_type underflow() {
+        virtual int_type underflow_simple() {
             if(gptr() < egptr())
                 return *gptr();
 
@@ -72,7 +72,7 @@ namespace nbpp
             return *gptr();
         }
 
-		virtual int_type underflow_old( void ) {
+		virtual int_type underflow( void ) {
 			// Is read buffer before the end ?
 			if( gptr() > egptr())
 				return traits_type::to_int_type( *gptr());
@@ -101,6 +101,9 @@ namespace nbpp
 					nLen = (nLen < m_nMaxLength - m_nCount) ? nLen : m_nMaxLength - m_nCount;
 
 				errno = 0;
+                
+                clog << "XXX: reading " << nLen << " from socket " << endl;
+
 				cnt = read( m_socket.getFd(), m_buffer + 4, nLen );
 				nErrno = errno; // Save errno
 
