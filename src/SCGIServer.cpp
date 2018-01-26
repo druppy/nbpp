@@ -131,34 +131,33 @@ SCGIRequest::SCGIRequest( Socket &sock ) : Request( sock )
     }
 
     // validate headers and update values
-    if( has_a( "content_length" ) ) {
-        if( has_a( "scgi" ) && get( "scgi" ) == "1" ) {
-            if( has_a( "request_method" )) {
-                string m = get( "request_method" );
+    if( has_a( "scgi" ) && get( "scgi" ) == "1" ) {
+        if( has_a( "request_method" )) {
+            string m = get( "request_method" );
 
-                if( m == "GET" )
-                    _method = GET;
-                else if( m == "PUT" )
-                    _method = PUT;
-                else if( m == "POST" )
-                    _method = POST;
-                else if( m == "HEAD" )
-                    _method = HEAD;
-                else if( m == "DELETE" )
-                    _method = DELETE;
-                else
-                    throw invalid_argument( "unknown SCGI request method " + m );
-            }
+            if( m == "GET" )
+                _method = GET;
+            else if( m == "PUT" )
+                _method = PUT;
+            else if( m == "POST" )
+                _method = POST;
+            else if( m == "HEAD" )
+                _method = HEAD;
+            else if( m == "DELETE" )
+                _method = DELETE;
+            else
+                throw invalid_argument( "unknown SCGI request method " + m );
+        }
 
-            _max_bytes = atoll(get( "content_length" ).c_str());
+        if( has_a( "content_length" )) {
+            _max_bytes = atoll(get( "content_length" ).c_str());    
             _sock.setMaxBytes( _max_bytes );
-
-            if( has_a( "request_uri" ))
-                _url.set( get( "request_uri" ));
-        } else
-            throw invalid_argument( "missing SCGI value in request" );
+        }
+        
+        if( has_a( "request_uri" ))
+            _url.set( get( "request_uri" ));
     } else
-        throw invalid_argument( "missing CONTENT_LENGTH in SCGI request" );
+        throw invalid_argument( "missing SCGI value in request" );
 }
 
 void SCGIRequest::send_out_header( HTTPRequestHandler::Result res )

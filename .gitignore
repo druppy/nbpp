@@ -1,0 +1,7 @@
+doc/html
+Makefile
+CMakeFiles
+debian
+*.sublime*
+*.cmake
+CMakeCache.txt
