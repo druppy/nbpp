@@ -57,7 +57,7 @@ namespace nbpp
     Socket ServerSocketImpl::accept(NetworkAddress clientAddress) const
         throw(IOException, AssertException, exception)
     {
-        //while (wait(m_fd, true, false)) {
+        while (wait(m_fd, true, false)) {
             int conn;
             socklen_t len = clientAddress.getNativeFormMaxSize();
             unsigned char clientAddrBuf [len];
@@ -73,14 +73,14 @@ namespace nbpp
 					reinterpret_cast<sockaddr*>(clientAddrBuf), len);
 
 			// Timeout after 10 sec if not closed right
-			//struct linger lin;
-			//lin.l_onoff = 1;
-			//lin.l_linger = 10;
-			//setsockopt(conn, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
+			struct linger lin;
+			lin.l_onoff = 1;
+			lin.l_linger = 10;
+			setsockopt(conn, SOL_SOCKET, SO_LINGER, &lin, sizeof( struct linger ));
 
             return Socket(conn, clientAddress);
-        //}
+        }
         
-        //throw TimeoutException( "Timed out waiting for a connection" );
+        throw TimeoutException( "Timed out waiting for a connection" );
     }
 }

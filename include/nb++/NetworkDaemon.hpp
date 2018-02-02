@@ -205,9 +205,7 @@ namespace nbpp
 					}
 				} catch( const TimeoutException &ex ) {
 					nbpp::log.put( "Ignoring timeout exception." );
-				} catch( const exception &ex ) {
-					nbpp::log.put( "Ignoring exception : %s", ex.what());
-				}
+                }
 
 				return true;
 			}
