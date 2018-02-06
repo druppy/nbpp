@@ -1,3 +1,11 @@
+nbpp (0.7.8-7) unstable; urgency=low
+
+  * make timeout possible directly on NetworkDaemon
+  * Allow for missing Content-Length in SCGI handler
+  * Fix stream boundry hanging (end detection fix)
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 06 Feb 2018 09:03:00 +0200
+
 nbpp (0.7.8-6) unstable; urgency=low
 
   * make Smtp code send to ALL recipients to MTA

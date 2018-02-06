@@ -621,7 +621,6 @@ void HTTPServer::handleConnection( NetworkConnection<InetAddress> &connection )
 {
 	try {
         bool persist = true;
-		connection.sock.setTimeout( 10 ); // Prevent socket to initially hang
 
         while( persist ) {
             connection.sock.setMaxBytes( -1 );

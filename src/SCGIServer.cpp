@@ -24,8 +24,6 @@ static void sendSCGIError( Request &req, HTTPRequestHandler::Result res )
 void SCGIServer::handleConnection( NetworkConnection<InetAddress> &connection ) throw( exception, Exception )
 {
 	try {
-		connection.sock.setTimeout( 10 ); // Prevent socket to initially hang
-
         connection.sock.setMaxBytes( -1 );
 
         HTTPRequestHandler::Result res = HTTPRequestHandler::HTTP_OK;

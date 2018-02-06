@@ -67,6 +67,7 @@ namespace nbpp
     template<class AddressType>
         class NetworkDaemon : public Daemon
         {
+            int _timeout; // Timeout set on each new accepted socket
         public:
             /**
 			   Constructs a NetworkDaemon.  Detects whether inetd is being used.
@@ -81,6 +82,7 @@ namespace nbpp
             {
                 socklen_t namelen = 0;
                 fromInetd = ::getsockname(0, NULL, &namelen) != -1;
+                _timeout = -1;
             }
 
             /**
@@ -88,6 +90,7 @@ namespace nbpp
              */
             virtual ~NetworkDaemon() throw() { }
 
+            void setTimeout( int timeout = -1 ) { _timeout = timeout;}
             /**
 			   If inetd is being used, calls setSignals() and handleConnection().  Otherwise,
 			   calls initServerSocket(), then Daemon::run().  If an Exception is caught, it is
@@ -197,6 +200,9 @@ namespace nbpp
 					conn.sock = serverSock.accept(conn.address);
 
 					if( conn.sock != -1 ) {
+                        if( _timeout > 0 )
+                            conn.sock.setTimeout( _timeout );
+
 						threader.queue(Command
 									   (new OneArgCommandImpl<NetworkConnection<AddressType>,
 										NetworkDaemon<AddressType> >
