@@ -16,18 +16,20 @@ namespace nbpp
 {
     SocketBaseImpl::SocketBaseImpl() throw(AssertException, exception) { }
 
-    SocketBaseImpl::SocketBaseImpl(NetworkAddress arg_address, int arg_timeoutSec)
+    SocketBaseImpl::SocketBaseImpl(NetworkAddress arg_address, int timeout_in_seconds )
         throw(IOException, AssertException, exception) :
-        address(arg_address), timeoutSec(arg_timeoutSec)
+        address(arg_address), timeoutSec(0)
     {
         // Get a socket file descriptor from the kernel.
         if ((m_fd = socket(address.getNativeFormFamily(), SOCK_STREAM, 0)) < 0)
             throw IOException( errno );
+
+        setTimeout( timeout_in_seconds );
     }
 
     SocketBaseImpl::SocketBaseImpl(int arg_fd, NetworkAddress arg_networkAddress)
         throw(AssertException, exception) :
-        m_fd(arg_fd), address(arg_networkAddress), timeoutSec(0) { }
+        m_fd(arg_fd), address(arg_networkAddress), timeoutSec(0) {}
 
     SocketBaseImpl::~SocketBaseImpl() throw()
     {
@@ -85,10 +87,17 @@ namespace nbpp
         return getPeerAddress(NetworkAddress(address.makeEmptyClone()));
     }
 
-    void SocketBaseImpl::setTimeout(int sec) throw(AssertException, exception)
+    void SocketBaseImpl::setTimeout(int timeout_in_seconds) throw(AssertException, exception)
     {
         WriteLock writeLock(timeoutLock);
-        timeoutSec = sec;
+        timeoutSec = timeout_in_seconds;
+
+        // Set the value on the socket too
+        struct timeval tv;
+
+        tv.tv_sec = timeout_in_seconds;
+        tv.tv_usec = 0;
+        setsockopt(m_fd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
     }
 
     int SocketBaseImpl::getTimeout() const throw(AssertException, exception)
