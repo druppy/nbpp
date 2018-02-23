@@ -58,10 +58,12 @@ namespace nbpp
 
                 if (canceled) break;
 
-                state.working();
-                cmd.execute();
-		// cerr << "CommandThreadImpl::run(): executed the Command" << endl;
-                state.idle();
+                if( cmd ) {
+                    state.working();
+                    cmd.execute();
+    		// cerr << "CommandThreadImpl::run(): executed the Command" << endl;
+                    state.idle();
+                }
             }
         } catch (...) { }
 

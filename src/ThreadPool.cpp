@@ -61,6 +61,8 @@ namespace nbpp
             threads.push_back(CommandThread(*this, commandQueue, maxRequestsPerThread));
             threads.back().start();
         }
+
+        clog << "DEBUG: init thread pool size " << threads.size() << endl;
     }
 
     void ThreadPool::queue(const Command& cmd)
@@ -91,6 +93,8 @@ namespace nbpp
                 threads.push_back(CommandThread(*this, commandQueue, maxRequestsPerThread));
                 threads.back().start();
             }
+            
+            clog << "DEBUG: new thread pool size " << threads.size() << " of max " << maxThreads << endl;
         }
     }
 

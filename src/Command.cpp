@@ -12,7 +12,8 @@ namespace nbpp
 
     void Command::execute()
     {
-        impl->execute();
+        if( impl )
+            impl->execute();
     }
 
     Command::Command() throw(exception) { }

@@ -25,7 +25,7 @@ namespace nbpp
 		}
         else if (block)
         {
-			lock.wait();
+			lock.wait( 10 ); // timeout after 10 sec ... one never knowns
 
 			if (!q.empty())
             {
