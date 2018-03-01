@@ -367,6 +367,9 @@ ostream &Request::dump( ostream &os ) const
         case DELETE:
             os << "DELETE";
             break;
+        default:
+            os << "UNKNOWN";
+            break;
     };
 
     os << endl << "URI: " << _url.toString() << endl;

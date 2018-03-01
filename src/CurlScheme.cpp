@@ -152,7 +152,6 @@ void CurlConnection::setopt( CURLoption curl_option, long curl_data )
 
 CurlConnection::CurlConnection( const URL &url ) : URLConnection( url )
 {
-	memset( m_szError, 0, sizeof( m_szError ));
 	memset( m_margin,  0, sizeof( m_margin ));
 
 	curl_global_init();
@@ -162,14 +161,15 @@ CurlConnection::CurlConnection( const URL &url ) : URLConnection( url )
 	m_curl = curl_easy_init();
 
 	setopt( CURLOPT_ERRORBUFFER, m_szError );
-
+	m_szError[0] = 0;
+	
 	setopt( CURLOPT_WRITEFUNCTION, (void *)stream_writer );
 	setopt( CURLOPT_HEADERFUNCTION, (void *)header_writer );
 	setopt( CURLOPT_READFUNCTION, (void *)stream_reader );
 
 	// setopt( CURLOPT_DNS_CACHE_TIMEOUT, (long)0 );     // Disable dns cacheing
 	setopt( CURLOPT_DNS_USE_GLOBAL_CACHE, (long)0 );  // This is not thread safe
-	setopt( CURLOPT_FAILONERROR, 1 );
+	setopt( CURLOPT_FAILONERROR, (long)0 );
 	setopt( CURLOPT_SSL_VERIFYPEER, (long)0 );  // Don't verify SSL
 	setopt( CURLOPT_SSL_VERIFYHOST, (long)2 );  // Its OK not to dif. host name
 	setopt( CURLOPT_NOPROGRESS, 1 );
@@ -250,13 +250,22 @@ void CurlConnection::perform( const string &sPostData )
 		if( res == CURLE_OPERATION_TIMEOUTED )
 			throw TimeoutException( m_szError );
 
-		if( res >= 300 ) {
-			stringstream ostr;
+		if( strlen( m_szError ) == 0 )
+			throw ConnectException( curl_easy_strerror(res));
+		else
+			throw ConnectException( m_szError );
+	} else {
+    	long response_code = 0;
+    	curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &response_code);
 
-			throw ConnectException( ostr.str());
-		}
+    	// Note that the output buffer now contain the error body !
+    	if( response_code > 200 ) {
+    		stringstream os;
+    		
+    		os << "HTTP error : " << response_code;
 
-		throw ConnectException( m_szError );
+    		throw ConnectException( (int)response_code, os.str() );
+    	}
 	}
 }
 
