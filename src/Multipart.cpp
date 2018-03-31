@@ -108,14 +108,16 @@ Multipart::Multipart( nbpp::Request &req )
         if( pos != string::npos && boundary.substr( 0, pos ) == "boundary" ) {
             _boundary = boundary.substr( pos + 1, string::npos );
 
-            parse( is );
+            if( !parse( is ))
+                throw invalid_argument("multipart content parser error");
         }
     }
 }
 
 Multipart::Multipart( istream &is, const string &boundary ) : _boundary( boundary )
 {
-    parse( is );
+    if( !parse( is ))
+        throw invalid_argument("multipart content parser error");
 }
 
 Multipart::~Multipart()

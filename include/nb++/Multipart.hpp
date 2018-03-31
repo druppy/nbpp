@@ -101,8 +101,11 @@ public:
 
 /**
     Read the multipart data from the istream provided in the constructor
-    and for each part found make a MimePart containíng the header and
+    and for each part found make a MimePart containing the header and
     the content ad a stream.
+
+    If the multipart can't parse, ½the constructores will throw
+    invalid_argument exception.
 */
 class Multipart {
     string _boundary;

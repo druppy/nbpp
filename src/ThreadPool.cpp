@@ -41,12 +41,12 @@ namespace nbpp
                     catch (...) { }
                 }
             }
-            
+
             while (!threads.empty())
             {
                 Lock lock(mutex);
                 while (!mustCleanUp) lock.wait();
-    
+
                 mustCleanUp = false;
                 threads.remove_if(IsDone());
             }
@@ -93,7 +93,7 @@ namespace nbpp
                 threads.push_back(CommandThread(*this, commandQueue, maxRequestsPerThread));
                 threads.back().start();
             }
-            
+
             clog << "DEBUG: new thread pool size " << threads.size() << " of max " << maxThreads << endl;
         }
     }
@@ -131,8 +131,14 @@ namespace nbpp
 
     bool ThreadPool::canWait() throw(AssertException, exception)
     {
-        Lock lock(mutex);
-        return !maxSpare || !commandQueue.empty() || (idleThreads < maxSpare);
+        bool empty = false;
+        {
+            Lock lock(mutex);
+
+            empty = !maxSpare || (idleThreads < maxSpare);
+        }
+
+        return empty || !commandQueue.empty(); // prevent deadlock by not keeping mutex when calling cmd queue
     }
 
     unsigned int ThreadPool::getStartThreads() const throw(AssertException, exception)
@@ -204,6 +210,6 @@ namespace nbpp
     {
         Lock lock(mutex);
         maxThreads = arg_maxThreads;
-        return *this;        
+        return *this;
     }
 }
