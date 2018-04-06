@@ -163,7 +163,7 @@ namespace nbpp
     {
         int ret;
 
-        if( ret = pthread_cond_wait( &_cond, &_mutex )) {
+        if((ret = pthread_cond_wait( &_cond, &_mutex )) != 0) {
             if( ret != ETIMEDOUT ) {
                 string err = strerror( ret );
                 throw AssertException( "nbpp::Mutex::wait() error : " + err );
@@ -178,7 +178,7 @@ namespace nbpp
 
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += sec;
-        if( ret = pthread_cond_timedwait(&_cond, &_mutex, &now)) {
+        if((ret = pthread_cond_timedwait(&_cond, &_mutex, &now) != 0))  {
             if( ret != ETIMEDOUT ) {
                 string err = strerror( ret );
                 throw AssertException( "nbpp::Mutex::wait(unsigend int) error : " + err );

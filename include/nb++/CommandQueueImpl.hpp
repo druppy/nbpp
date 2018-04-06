@@ -28,7 +28,7 @@ namespace nbpp
         void notifyAll() throw(AssertException, exception);
 
     private:
-        mutable RecursiveMutex mutex;
+        mutable Mutex mutex;
         queue<Command> q;
 
         Command getNext(bool block) throw(AssertException, exception);
