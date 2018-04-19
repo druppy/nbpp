@@ -10,6 +10,7 @@
 
 #include <list>
 #include <algorithm>
+#include <sstream>
 
 namespace nbpp
 {
@@ -148,14 +149,14 @@ namespace nbpp
     void Mutex::lock() throw(AssertException, exception)
     {
         int ret;
-        if( ret = pthread_mutex_lock( &_mutex ))
+        if((ret = pthread_mutex_lock( &_mutex )) != 0)
             throw AssertException( "nbpp::Mutex::lock() error" );
     }
 
     void Mutex::unlock() throw(AssertException, exception)
     {
         int ret;
-        if( ret = pthread_mutex_unlock( &_mutex ))
+        if((ret = pthread_mutex_unlock( &_mutex )) != 0)
             throw AssertException( "nbpp::Mutex::unlock() error" );
     }
 
@@ -178,10 +179,11 @@ namespace nbpp
 
         clock_gettime(CLOCK_REALTIME, &now);
         now.tv_sec += sec;
-        if((ret = pthread_cond_timedwait(&_cond, &_mutex, &now) != 0))  {
+        now.tv_nsec = 0;
+        if((ret = pthread_cond_timedwait(&_cond, &_mutex, &now)) != 0)  {
             if( ret != ETIMEDOUT ) {
                 string err = strerror( ret );
-                throw AssertException( "nbpp::Mutex::wait(unsigend int) error : " + err );
+                throw AssertException( "nbpp::Mutex::wait() error : " + err );
             }
         }
     }

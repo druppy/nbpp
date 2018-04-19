@@ -33,7 +33,7 @@ namespace nbpp
     				q.pop();
     			}
             } catch( const AssertException &ex ) {
-                std::clog << "ERROR: " << __FILE__ << ":" << __LINE__ << std::endl;
+                std::clog << "ERROR: " << __FILE__ << ":" << __LINE__ << ", say " << ex.what() << std::endl;
             }
 		}
 
