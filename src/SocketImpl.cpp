@@ -154,8 +154,11 @@ namespace nbpp
 
     SocketImpl::~SocketImpl() throw()
     {
-        delete in;
-        delete out;
+        if( in != NULL)
+            delete in;
+
+        if( out != NULL )
+            delete out;
 #if __GNUC__ >= 2
         delete bin;
         delete bout;
