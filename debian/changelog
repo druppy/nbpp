@@ -1,3 +1,10 @@
+nbpp (0.7.9-1) unstable; urgency=low
+
+  * Thread pool deadlock
+  * upload error handing in constructor
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 19 Feb 2018 09:08:00 +0200
+
 nbpp (0.7.8-7) unstable; urgency=low
 
   * make timeout possible directly on NetworkDaemon
