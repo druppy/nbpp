@@ -203,14 +203,14 @@ namespace nbpp
                         if( _timeout > 0 )
                             conn.sock.setTimeout( _timeout );
 
-						threader.queue(Command
-									   (new OneArgCommandImpl<NetworkConnection<AddressType>,
-										NetworkDaemon<AddressType> >
-										(conn, this,
-										 &NetworkDaemon<AddressType>::handleConnection)));
+						threader.queue(
+                            Command(new OneArgCommandImpl<NetworkConnection<AddressType>,
+                                NetworkDaemon<AddressType> >(conn, this, &NetworkDaemon<AddressType>::handleConnection)));
 					}
 				} catch( const TimeoutException &ex ) {
 					nbpp::log.put( "Ignoring timeout exception." );
+                } catch( ... ) {
+                    return false;
                 }
 
 				return true;

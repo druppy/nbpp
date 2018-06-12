@@ -24,17 +24,12 @@ namespace nbpp
 			q.pop();
 			return cmd;
 		} else if (block) {
-            try {
-    			lock.wait( 10 ); // timeout after 10 sec ... one never knowns
+			lock.wait( 10 ); // timeout after 10 sec ... one never knowns
 
-    			if (!q.empty())
-                {
-    				cmd = q.front();
-    				q.pop();
-    			}
-            } catch( const AssertException &ex ) {
-                std::clog << "ERROR: " << __FILE__ << ":" << __LINE__ << ", say " << ex.what() << std::endl;
-            }
+			if (!q.empty()) {
+				cmd = q.front();
+				q.pop();
+			}
 		}
 
 		return cmd;
