@@ -1,3 +1,10 @@
+
+nbpp (0.7.9-2) unstable; urgency=low
+
+  * terminate http server fix
+
+ -- Bo Lorentsen <bl@moch.dk>  Thu, 21 Jun 2018 18:32:05 +0200
+
 nbpp (0.7.9-1) unstable; urgency=low
 
   * Thread pool deadlock
