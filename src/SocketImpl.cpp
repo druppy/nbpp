@@ -104,7 +104,7 @@ namespace nbpp
                     throw ConnectException( errno );
 
 				errno = 0;
-                
+
                 // clog << "XXX: reading " << nLen << " from socket " << endl;
 
 				cnt = read( m_socket.getFd(), m_buffer + 4, nLen );
@@ -162,6 +162,9 @@ namespace nbpp
 #if __GNUC__ >= 2
         delete bin;
         delete bout;
+        // __gnu_cxx::stdio_filebuf will close the socket on destruction,
+        // so don't repeat or another thread may end up have its socket closed
+        m_fd = -1;
 #endif
 		close();
     }
